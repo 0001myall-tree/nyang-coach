@@ -3566,7 +3566,15 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      z-index: 600;
+      z-index: 2100; /* 알람 팝업보다 높게 설정 */
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .time-modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .time-modal {
@@ -11450,7 +11458,7 @@ ${outputRules}`;
   </div>
 
   <!-- 알람 설정 모달 (팝업) -->
-  <div class="time-modal-overlay hidden" id="alarm-settings-overlay" onclick="toggleAlarmSettings(false)">
+  <div class="time-modal-overlay" id="alarm-settings-overlay" onclick="toggleAlarmSettings(false)">
     <div style="background:white; border-radius:28px 28px 0 0; padding:24px 20px 32px; width:100%; max-width:480px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1);"
       onclick="event.stopPropagation()">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
@@ -11805,11 +11813,9 @@ ${outputRules}`;
       if (show) {
         document.getElementById('alarm-input-time').value = nyangAlarmTime;
         renderAlarmCoachSelect();
-        overlay.classList.remove('hidden');
-        setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+        overlay.classList.add('show');
       } else {
-        overlay.style.opacity = '0';
-        setTimeout(() => { overlay.classList.add('hidden'); }, 300);
+        overlay.classList.remove('show');
       }
     }
 
