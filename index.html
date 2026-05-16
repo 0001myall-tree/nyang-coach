@@ -8215,6 +8215,7 @@ ${MEM_RULES.pro}`
 ${MEM_RULES.pro}`
       },
       writer: {
+        tier: 'pro',
         emoji: '✍️', name: '작가 코치', statusName: '작가 코치',
         accentColor: '#7C3AED', accentLight: '#F5F3FF',
         imgUrl: 'images/writer.png',
@@ -11838,7 +11839,7 @@ ${outputRules}`;
             </div>
             <div class="coach-info-small">
               <div class="coach-name-small" style="font-size:14px; font-weight:800; color:${isSelected ? 'var(--accent)' : 'var(--text)'}">${cfg.statusName}</div>
-              <div class="coach-tag-small" style="font-size:11px; color:var(--muted);">${cfg.tier.toUpperCase()} 티어</div>
+              <div class="coach-tag-small" style="font-size:11px; color:var(--muted);">${(cfg.tier || 'pro').toUpperCase()} 티어</div>
             </div>
             ${isSelected ? '<div style="color:var(--accent); font-weight:900; font-size:14px; margin-left:auto;">✓</div>' : ''}
           </div>
