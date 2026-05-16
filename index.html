@@ -11458,7 +11458,7 @@ ${outputRules}`;
   </div>
 
   <!-- 알람 설정 모달 (팝업) -->
-  <div class="time-modal-overlay" id="alarm-settings-overlay" onclick="toggleAlarmSettings(false)">
+  <div class="time-modal-overlay hidden" id="alarm-settings-overlay" onclick="toggleAlarmSettings(false)">
     <div style="background:white; border-radius:28px 28px 0 0; padding:24px 20px 32px; width:100%; max-width:480px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1);"
       onclick="event.stopPropagation()">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
@@ -11810,12 +11810,15 @@ ${outputRules}`;
 
     function toggleAlarmSettings(show) {
       const overlay = document.getElementById('alarm-settings-overlay');
+      if (!overlay) return;
       if (show) {
         document.getElementById('alarm-input-time').value = nyangAlarmTime;
         renderAlarmCoachSelect();
-        overlay.classList.add('show');
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => overlay.classList.add('show'));
       } else {
         overlay.classList.remove('show');
+        overlay.addEventListener('transitionend', () => overlay.classList.add('hidden'), { once: true });
       }
     }
 
