@@ -1407,7 +1407,7 @@
       box-shadow: 0 0 0 4px rgba(75, 115, 67, 0.18);
     }
 
-    .char-card.unni.selected {
+    .char-card.halmae.selected {
       border-color: #B91C1C;
       box-shadow: 0 0 0 4px rgba(185, 28, 28, 0.18);
     }
@@ -6378,7 +6378,7 @@
           <div class="new-cs-quote">"오늘도 내가 달달하게 응원해줄게♡"</div>
         </div>
       </div>
-      <div class="new-cs-card" id="ncard-unni" onclick="newSelectChar('unni')">
+      <div class="new-cs-card" id="ncard-halmae" onclick="newSelectChar('halmae')">
         <img src="images/halmae.png" alt="욕쟁이 할매">
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
@@ -6854,7 +6854,7 @@
         </div>
       </div>
 
-      <div class="char-card unni" id="card-unni" onclick="selectChar('unni')">
+      <div class="char-card halmae" id="card-halmae" onclick="selectChar('halmae')">
         <div class="char-card-img">
           <img src="images/halmae.png" alt="욕쟁이 할매">
         </div>
@@ -7493,12 +7493,14 @@
               style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--lavender-mid);background:white;font-size:17px;font-weight:800;cursor:pointer;">A</button>
           </div>
         </div>
-        <button onclick="resetKey()"
-          style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--lavender-mid);background:var(--lavender-soft);color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">🔑
-          API 키 변경</button>
+
         <button onclick="changeChar()"
           style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--lavender-mid);background:var(--lavender-soft);color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">👤
           코치 바꾸기</button>
+
+        <button onclick="toggleAlarmSettings(true)"
+          style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--lavender-mid);background:var(--lavender-soft);color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">⏰
+          알람 설정</button>
 
         <div style="background:var(--lavender-soft);border-radius:16px;padding:16px;">
           <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px;">🔄 오늘의 할 일 리셋 시간</div>
@@ -8159,7 +8161,7 @@ ${MEM_RULES.pro}`
 
 ${MEM_RULES.pro}`
       },
-      unni: {
+      halmae: {
         tier: 'pro',
         emoji: '👵', name: '욕쟁이 할매 👵', statusName: '욕쟁이 할매',
         accentColor: '#B91C1C', accentLight: '#FEF2F2',
@@ -8594,7 +8596,7 @@ ${MEM_RULES.master}`
       const map = {
         bro: { rate: 0.88, pitch: 0.78 },
         army: { rate: 1.06, pitch: 0.78 },
-        unni: { rate: 1.0, pitch: 0.85 },
+        halmae: { rate: 1.0, pitch: 0.85 },
         boyfriend: { rate: 0.92, pitch: 0.82 },
         girlfriend: { rate: 1.00, pitch: 1.12 },
         cat: { rate: 1.02, pitch: 1.18 },
@@ -8646,7 +8648,7 @@ ${MEM_RULES.master}`
       const samples = {
         bro: '음성 모드 켰다. 말 줄이고, 오늘 할 일부터 시작하자.',
         army: '음성 모드 시작. 10분만 집중한다. 실시.',
-        unni: '오냐, 할미다! 기운 내서 하나씩 해보자.',
+        halmae: '오냐, 할미다! 기운 내서 하나씩 해보자.',
         boyfriend: '음성 모드 켰어. 오늘도 같이 해보자.',
         girlfriend: '음성 모드 켰어. 우리 하나씩 해보자.',
         cat: '음성 모드 켰다냥. 오늘도 같이 해보자냥.',
@@ -8676,7 +8678,7 @@ ${MEM_RULES.master}`
           greet: ['잘왔다. 나는 군인 코치다. 오늘 임무를 정한다.', '복귀했군. 다시 시작한다. 후퇴는 없다.', '반갑다. 여기 들어온 이상 각오는 됐겠지?'],
           status: ['현재 상황 보고하라.', '목표 달성까지 멈추지 마라. 이상.']
         },
-        unni: {
+        halmae: {
           task: ['오냐오냐, 내 새끼 잘했다! 👵❤️', '하나 했네? 역시 내 강아지 기특해!', '잘했어! 이 할미가 다 봤다!'],
           all: ['세상에!! 우리 새끼 전부 다 했어?? 😭❤️', '아이고 내 강아지 최고다! 할미가 뽀뽀 백 번 해줄게!!'],
           goal: ['목표 하나 넘겼네. 역시 내 눈은 못 속여! 👵✨', '장하다 내 새끼! 이 기세로 끝까지 가보자!'],
@@ -9192,7 +9194,7 @@ ${MEM_RULES.master}`
       document.body.setAttribute('data-tier', tier);
 
       // friends 티어 캐릭터는 아바타 테두리를 흰색으로 고정
-      const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'army', 'unni'];
+      const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'army', 'halmae'];
       const av = document.getElementById('header-avatar');
       if (av) av.style.borderColor = friendsChars.includes(charId) ? 'white' : '';
     }
@@ -10258,7 +10260,7 @@ ${outputRules}`;
         girlfriend: `좋아! 오늘은 “${text}”부터 가자. 하나만 끝내도 오늘 달라져.`,
         bro: `좋아. 오늘의 핵심은 “${text}”. 목표를 적는 순간 현실이 된다.`,
         army: `핵심 임무 확정. “${text}”. 즉시 착수한다.`,
-        unni: `오냐, 오늘은 "${text}" 요거부터 해보자. 할미 믿지?`,
+        halmae: `오냐, 오늘은 "${text}" 요거부터 해보자. 할미 믿지?`,
         writer: `오늘의 핵심은 “${text}”입니다. 차분하게 시작해볼까요?`,
         ceo: `결정됐군요. 오늘 KPI는 “${text}”입니다. 바로 실행합시다.`,
         student: `좋아! 오늘 공부 핵심은 “${text}”야. 이것부터 끝내고 다른 것도 보자!`
@@ -10950,7 +10952,7 @@ ${outputRules}`;
       // 코치 멘트: friends 티어만 표시
       const msgEl = document.getElementById('cg-msg');
       if (msgEl) {
-        const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'army', 'unni'];
+        const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'army', 'halmae'];
         const isFriends = friendsChars.includes(currentChar);
         const msgs = {
           cat: '오늘도 함께 가보자냥!',
@@ -10958,7 +10960,7 @@ ${outputRules}`;
           girlfriend: '오늘도 응원할게, 파이팅!',
           bro: '하나씩 해치우자, 가즈아',
           army: '오늘도 완수한다, 전진!',
-          unni: '에이구 내 새끼, 할미랑 같이 하면 다 할 수 있어!',
+          halmae: '에이구 내 새끼, 할미랑 같이 하면 다 할 수 있어!',
         };
         msgEl.textContent = isFriends ? (msgs[currentChar] || '오늘도 함께 해보자!') : '';
         msgEl.style.display = isFriends ? 'block' : 'none';
@@ -11432,6 +11434,51 @@ ${outputRules}`;
     </div>
   </div>
 
+  <!-- 알람 작동 시 나타나는 팝업 (Alarm Trigger Popup) -->
+  <div class="modal-overlay hidden" id="alarm-trigger-overlay" style="z-index: 2000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+    <div style="text-align:center; width:100%; max-width:400px; padding:40px 20px;">
+      <div id="alarm-trigger-img-wrap" style="width:160px; height:160px; border-radius:50%; margin:0 auto 24px; border:4px solid var(--accent); padding:6px; background:white; position:relative;">
+        <img id="alarm-trigger-img" src="images/cat.png" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+        <div style="position:absolute; bottom:0; right:0; background:var(--accent); width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:20px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">⏰</div>
+      </div>
+      <div id="alarm-trigger-name" style="font-size:22px; font-weight:900; color:var(--text); margin-bottom:8px;">냥냥 코치</div>
+      <div style="font-size:16px; color:var(--muted); margin-bottom:40px; font-weight:600;">약속한 시간이 되었어요!<br>얼른 일어나서 오늘을 시작해볼까요?</div>
+      
+      <button onclick="stopAlarm()" 
+        style="width:100%; padding:20px; border-radius:24px; border:none; background:var(--accent); color:white; font-size:18px; font-weight:900; cursor:pointer; font-family:inherit; box-shadow: 0 10px 25px rgba(139, 124, 255, 0.3);">알람 끄고 시작하기</button>
+    </div>
+  </div>
+
+  <!-- 알람 설정 모달 (팝업) -->
+  <div class="time-modal-overlay hidden" id="alarm-settings-overlay" onclick="toggleAlarmSettings(false)">
+    <div style="background:white; border-radius:28px 28px 0 0; padding:24px 20px 32px; width:100%; max-width:480px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1);"
+      onclick="event.stopPropagation()">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <div style="font-size:19px; font-weight:900; color:var(--text);">⏰ 모닝콜 설정</div>
+        <button onclick="toggleAlarmSettings(false)"
+          style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted);">✕</button>
+      </div>
+
+      <!-- 알람 시간 -->
+      <div class="detail-section" style="margin-bottom:24px;">
+        <div class="detail-label">🔔 깨울 시간</div>
+        <input type="time" id="alarm-input-time" 
+          style="width:100%; padding:14px; border-radius:16px; border:1.5px solid var(--border); font-size:20px; font-weight:900; color:var(--accent); font-family:inherit; outline:none; text-align:center;">
+      </div>
+
+      <!-- 코치 선택 -->
+      <div class="detail-section" style="margin-bottom:24px;">
+        <div class="detail-label">👤 누구 목소리로 깨워줄까요?</div>
+        <div class="coach-select-list" id="alarm-coach-select" style="max-height:220px; overflow-y:auto; padding-right:4px;">
+          <!-- 코치 리스트 -->
+        </div>
+      </div>
+
+      <button onclick="saveAlarmSettings()"
+        style="width:100%; padding:16px; border-radius:18px; border:none; background:var(--accent); color:white; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; box-shadow: 0 8px 20px rgba(139, 124, 255, 0.25);">저장하기</button>
+    </div>
+  </div>
+
   <script>
     // ── 장기 비전 로직 ────────────────────────────────────
     let editingVisionId = null;
@@ -11749,7 +11796,135 @@ ${outputRules}`;
       closeVisionDetail();
     }
 
-    window.addEventListener('load', loadMasterSettings);
+    // ── 알람 설정 로직 ────────────────────────────────────
+    let nyangAlarmTime = localStorage.getItem('nyang_alarm_time') || '07:00';
+    let nyangAlarmCoachId = localStorage.getItem('nyang_alarm_coach') || 'cat';
+
+    function toggleAlarmSettings(show) {
+      const overlay = document.getElementById('alarm-settings-overlay');
+      if (show) {
+        document.getElementById('alarm-input-time').value = nyangAlarmTime;
+        renderAlarmCoachSelect();
+        overlay.classList.remove('hidden');
+        setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+      } else {
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.classList.add('hidden'); }, 300);
+      }
+    }
+
+    function renderAlarmCoachSelect() {
+      const container = document.getElementById('alarm-coach-select');
+      const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo', 'student'];
+      
+      container.innerHTML = coachIds.map(id => {
+        const cfg = CHARS[id];
+        if (!cfg) return '';
+        const isSelected = (id === nyangAlarmCoachId);
+        return `
+          <div class="coach-select-item" onclick="selectAlarmCoach('${id}')" 
+            style="border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; background:${isSelected ? 'var(--accent-light)' : 'white'}; margin-bottom:8px; display:flex; align-items:center; padding:12px; border-radius:16px; cursor:pointer; transition:all 0.2s;">
+            <div class="coach-av-small" style="width:40px; height:40px; border-radius:50%; overflow:hidden; margin-right:12px; border:1px solid #eee; background:white;">
+              <img src="${cfg.imgUrl || 'images/cat.png'}" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <div class="coach-info-small">
+              <div class="coach-name-small" style="font-size:14px; font-weight:800; color:${isSelected ? 'var(--accent)' : 'var(--text)'}">${cfg.statusName}</div>
+              <div class="coach-tag-small" style="font-size:11px; color:var(--muted);">${cfg.tier.toUpperCase()} 티어</div>
+            </div>
+            ${isSelected ? '<div style="color:var(--accent); font-weight:900; font-size:14px; margin-left:auto;">✓</div>' : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectAlarmCoach(id) {
+      nyangAlarmCoachId = id;
+      renderAlarmCoachSelect();
+    }
+
+    function saveAlarmSettings() {
+      nyangAlarmTime = document.getElementById('alarm-input-time').value;
+      localStorage.setItem('nyang_alarm_time', nyangAlarmTime);
+      localStorage.setItem('nyang_alarm_coach', nyangAlarmCoachId);
+      
+      if (typeof showFlirt === 'function') {
+        showFlirt(`⏰ ${nyangAlarmTime}에 ${CHARS[nyangAlarmCoachId].statusName} 알람이 설정되었어요!`);
+      } else {
+        alert(`⏰ ${nyangAlarmTime}에 ${CHARS[nyangAlarmCoachId].statusName} 알람이 설정되었어요!`);
+      }
+      toggleAlarmSettings(false);
+    }
+
+    // ── 알람 작동 엔진 (Alarm Engine) ──
+    let alarmAudio = null;
+    let lastAlarmFiredTime = null;
+
+    function startAlarmEngine() {
+      setInterval(() => {
+        const now = new Date();
+        const currentHHMM = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        
+        // 설정 시간과 일치하고, 이번 분에 아직 알람이 울리지 않았을 때
+        if (currentHHMM === nyangAlarmTime && lastAlarmFiredTime !== currentHHMM) {
+          lastAlarmFiredTime = currentHHMM;
+          fireAlarm();
+        }
+      }, 10000); // 10초마다 체크
+    }
+
+    function fireAlarm() {
+      const cfg = CHARS[nyangAlarmCoachId] || CHARS.cat;
+      
+      // UI 업데이트
+      document.getElementById('alarm-trigger-img').src = cfg.imgUrl || 'images/cat.png';
+      document.getElementById('alarm-trigger-name').innerText = cfg.statusName;
+      document.getElementById('alarm-trigger-overlay').classList.remove('hidden');
+      
+      // 랜덤 음성 재생 (1~3번 중 랜덤 시도)
+      // 현재 할머니(halmae)는 1~2번만 있으므로, 파일이 없을 경우를 대비한 처리가 필요함
+      playRandomCoachVoice(nyangAlarmCoachId);
+    }
+
+    async function playRandomCoachVoice(coachId) {
+      if (alarmAudio) { alarmAudio.pause(); alarmAudio = null; }
+      
+      // 1~3번 중 랜덤 선택
+      const randNum = Math.floor(Math.random() * 3) + 1;
+      const audioPath = `voice/${coachId}_${randNum}.mp3`;
+      
+      alarmAudio = new Audio(audioPath);
+      alarmAudio.loop = true; // 끄기 전까지 계속 반복
+      
+      try {
+        await alarmAudio.play();
+      } catch (e) {
+        console.warn('Audio play failed, retrying with number 1...', e);
+        // 만약 3번이 없거나 해서 실패하면 1번으로 재시도
+        if (randNum !== 1) {
+          alarmAudio = new Audio(`voice/${coachId}_1.mp3`);
+          alarmAudio.loop = true;
+          alarmAudio.play().catch(err => console.error('Final audio play failed:', err));
+        }
+      }
+    }
+
+    function stopAlarm() {
+      if (alarmAudio) {
+        alarmAudio.pause();
+        alarmAudio = null;
+      }
+      document.getElementById('alarm-trigger-overlay').classList.add('hidden');
+      
+      // 알람 끈 후 코치가 한마디 더 하게 하거나 앱으로 진입
+      if (typeof showFlirt === 'function') {
+        showFlirt('좋은 아침이에요! 오늘도 힘내봐요! 🐾');
+      }
+    }
+
+    window.addEventListener('load', () => {
+      loadMasterSettings();
+      startAlarmEngine(); // 엔진 가동
+    });
 
     // Firebase 전역 함수 초기화 (ReferenceError 방지)
     window.syncToFirebase = null;
