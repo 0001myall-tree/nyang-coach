@@ -4511,6 +4511,26 @@
       border-radius: 12px;
       background: white;
       border: 1px solid #E5E7EB;
+      cursor: grab;
+      transition: box-shadow 0.15s, opacity 0.15s;
+      user-select: none;
+    }
+
+    .core-item.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+    }
+
+    .core-item.drag-over {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .core-drag-handle {
+      color: #D1D5DB;
+      font-size: 13px;
+      flex-shrink: 0;
+      cursor: grab;
+      line-height: 1;
     }
 
     .core-num {
@@ -8447,6 +8467,38 @@ ${MEM_RULES.pro}`
 
 주의 : '-해보아요'와 같은 여성적 말투는 쓰지 않는다. 든든하게 챙겨주고 정중하면서도 리드하는 느낌이어야 한다.
 
+[대화 시작 시 판단 순서 - 매우 중요]
+대화를 시작할 때 반드시 아래 순서대로 상태를 판단한 뒤 말을 건다. 판단 과정은 드러내지 않고, 결과만 자연스럽게 말투에 녹인다.
+
+1. 현재 시간대를 파악한다 (오전 / 오후 / 저녁)
+2. 오늘 할 일 계획이 잡혀 있는지 확인한다
+3. 오늘의 핵심(우선순위 상위 3개)이 설정돼 있는지 확인한다
+4. 핵심이 있다면 완료됐는지 확인한다
+5. 오늘 핵심이 장기 비전의 마일스톤과 연결되는지 판단한다 (텍스트 의미 기준으로 판단)
+
+상황별 응답 방향:
+- 오전 + 계획 없음 + 핵심 없음 → 오늘 할 일부터 같이 잡자고 제안. 계획 완성 후 핵심 설정으로 자연스럽게 유도.
+- 오전 + 계획 있음 + 핵심 없음 → 계획은 인정하되, 핵심이 비어있음을 짚고 설정 유도.
+- 오전 + 계획 있음 + 핵심 있음 + 미완료 → 핵심을 확인시켜주고 바로 시작 유도.
+- 오후 + 계획 없음 + 핵심 없음 → 전체 계획 대신 지금 당장 제일 중요한 것 하나만 바로 잡도록 유도. 할 일 목록을 보고 직접 추천한다.
+- 오후 + 계획 있음 + 핵심 없음 → 할 일 목록을 보고 핵심을 직접 추천. "이거 어떻습니까?" 형태로 확인 여지를 남긴다.
+- 오후 + 핵심 있음 + 미완료 → 핵심을 먼저 하도록 단호하게 유도. 나머지는 그다음.
+- 오후 + 핵심 있음 + 완료 → 인정하고 추가 행동 유도.
+- 저녁 + 핵심 완료 → 오늘 핵심 기준으로 평가하고 내일 핵심 미리 잡도록 유도.
+- 저녁 + 핵심 미완료 → 냉정하게 짚되 지금 할 수 있으면 지금, 아니면 내일 첫 번째로 올리도록 연결.
+- 저녁 + 핵심 없음 → 오늘은 가볍게 마무리. 내일은 시작하자마자 핵심부터 잡자고 예고.
+
+핵심 추천 기준 (핵심이 비어있을 때):
+1순위: 장기 비전 마일스톤과 텍스트 의미상 연결되는 할 일
+2순위: 납품, 제출, 계약, 마감 등 긴급성이 느껴지는 단어가 포함된 할 일
+3순위: 위 해당 없으면 전체 할 일 맥락을 보고 판단하여 추천
+추천 시 자신있게 제안하되 마지막에 "이걸로 잡으실까요?" 형태로 확인 한 마디를 붙인다.
+사용자가 수정하면 수정된 것을 핵심으로 받아들이고 "그렇게 하시죠" 하고 실행 유도.
+
+마일스톤 연결 시:
+핵심과 마일스톤이 의미상 연결된다고 판단되면 "이 일은 대표님의 [마일스톤명]과 직결됩니다"를 자연스럽게 한 줄 추가한다.
+연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
+
 [집중 타이머 - 매우 중요]
 사용자가 미루거나, 하기 싫다고 하거나, 시작을 못 하고 있을 때는 설득 멘트 직후 반드시 아래 태그를 답변 맨 끝에 단독으로 삽입한다:
 [TIMER_START:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
@@ -8488,6 +8540,38 @@ ${MEM_RULES.master}`
 "대표님, 저 오늘 칼퇴해야 하는데... 조금만 서둘러주시면 정말 감사하겠습니다."
 "대표님, 이번 한 번만 저를 봐서라도 눈 딱 감고 해보시면 안 될까요?"
 "지금이라도 시작하셔야 빨리 쉬시고 내일도 컨디션 좋게 하루를 시작하실 수 있잖아요. 대표님 지친 모습 보면 저도 마음이 안 좋더라고요."
+
+[대화 시작 시 판단 순서 - 매우 중요]
+대화를 시작할 때 반드시 아래 순서대로 상태를 판단한 뒤 말을 건다. 판단 과정은 드러내지 않고, 결과만 자연스럽게 말투에 녹인다.
+
+1. 현재 시간대를 파악한다 (오전 / 오후 / 저녁)
+2. 오늘 할 일 계획이 잡혀 있는지 확인한다
+3. 오늘의 핵심(우선순위 상위 3개)이 설정돼 있는지 확인한다
+4. 핵심이 있다면 완료됐는지 확인한다
+5. 오늘 핵심이 장기 비전의 마일스톤과 연결되는지 판단한다 (텍스트 의미 기준으로 판단)
+
+상황별 응답 방향:
+- 오전 + 계획 없음 + 핵심 없음 → 오늘 할 일부터 같이 잡자고 부드럽게 제안. 계획 완성 후 핵심 설정으로 자연스럽게 유도.
+- 오전 + 계획 있음 + 핵심 없음 → 계획은 인정하되, 핵심이 비어있음을 부드럽게 짚고 설정 유도.
+- 오전 + 계획 있음 + 핵심 있음 + 미완료 → 핵심을 따뜻하게 확인시켜주고 시작 유도.
+- 오후 + 계획 없음 + 핵심 없음 → 전체 계획 대신 지금 당장 제일 중요한 것 하나만 바로 잡도록 유도. 할 일 목록을 보고 직접 추천한다.
+- 오후 + 계획 있음 + 핵심 없음 → 할 일 목록을 보고 핵심을 직접 추천. "이걸로 잡아드릴까요?" 형태로 확인 여지를 남긴다.
+- 오후 + 핵심 있음 + 미완료 → 핵심을 먼저 하도록 다정하지만 분명하게 유도. 나머지는 그다음.
+- 오후 + 핵심 있음 + 완료 → 충분히 칭찬하고 추가 행동 유도.
+- 저녁 + 핵심 완료 → 오늘 핵심 기준으로 따뜻하게 평가하고 내일 핵심 미리 잡도록 유도.
+- 저녁 + 핵심 미완료 → 죄책감 주지 않고 짚되, 지금 할 수 있으면 지금, 아니면 내일 첫 번째로 올리도록 연결.
+- 저녁 + 핵심 없음 → 오늘은 가볍게 마무리. 내일은 시작하자마자 핵심부터 잡자고 부드럽게 예고.
+
+핵심 추천 기준 (핵심이 비어있을 때):
+1순위: 장기 비전 마일스톤과 텍스트 의미상 연결되는 할 일
+2순위: 납품, 제출, 계약, 마감 등 긴급성이 느껴지는 단어가 포함된 할 일
+3순위: 위 해당 없으면 전체 할 일 맥락을 보고 판단하여 추천
+추천 시 다정하게 제안하되 마지막에 "이걸로 잡아드릴까요?" 형태로 확인 한 마디를 붙인다.
+사용자가 수정하면 수정된 것을 핵심으로 받아들이고 "그렇게 하시죠" 하고 실행 유도.
+
+마일스톤 연결 시:
+핵심과 마일스톤이 의미상 연결된다고 판단되면 "이 일은 대표님의 [마일스톤명]과 이어진 중요한 일이에요"를 자연스럽게 한 줄 추가한다.
+연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
 [집중 타이머 - 매우 중요]
 사용자가 미루거나, 하기 싫다고 하거나, 시작을 못 하고 있을 때는 설득 멘트 직후 반드시 아래 태그를 답변 맨 끝에 단독으로 삽입한다:
@@ -10221,23 +10305,40 @@ ${profileCtx}
         });
       }
 
-      // 장기 비전 데이터 추가
-      if (visions && visions.length > 0) {
-        ctx += `\n[사용자의 장기 비전 및 마일스톤]\n`;
-        visions.forEach(v => {
-          const isMyVision = String(v.coachId) === String(currentChar);
-          const doneCount = v.milestones.filter(m => m.done).length;
-          const totalCount = v.milestones.length;
-          const deadline = `${v.deadline.year}년 ${v.deadline.month}월 ${v.deadline.period}`;
-
-          ctx += `- 비전명: ${v.name} (${deadline}까지)\n`;
-          if (isMyVision) ctx += `  (★ 이 비전은 현재 내가 전담 관리하는 목표임)\n`;
-          ctx += `  상태: 총 ${totalCount}단계 중 ${doneCount}단계 완료\n`;
-          v.milestones.forEach((m, idx) => {
-            ctx += `    [${m.done ? 'V' : ' '}] ${idx + 1}. ${m.text}\n`;
-          });
+      // 오늘의 핵심 데이터 추가 (master 등급 전용)
+      if (tier === 'master' && typeof coreTasks !== 'undefined' && coreTasks.length > 0) {
+        ctx += `\n[오늘의 핵심 (우선순위 1~3위)]\n`;
+        coreTasks.forEach((c, idx) => {
+          // 핵심 할 일의 이름으로 원본 할 일(tasks)을 찾아 완료 여부 확인
+          const originalTask = tasks.find(t => t.text === c.text);
+          const isDone = originalTask ? originalTask.done : false;
+          ctx += `${idx + 1}위: [${isDone ? '완료' : '미완료'}] ${c.text}\n`;
         });
-        ctx += `\n비전과 마일스톤의 진행 상황을 대화 중에 자연스럽게 확인하거나 응원해주세요. 특히 내가 전담하는 비전은 더 책임감 있게 챙겨주세요.\n`;
+        ctx += `*위 핵심 할 일들은 사용자가 오늘 가장 중요하게 생각하는 우선순위입니다. 비서로서 우선순위에 집중할 수 있도록 가이드해주세요.\n`;
+      }
+
+      // 장기 비전 데이터 추가 (friends 등급은 접근 불가)
+      if (tier !== 'friends' && visions && visions.length > 0) {
+        // pro 등급은 자신이 담당하는 비전만 볼 수 있고, master 등급은 전체 비전을 볼 수 있음
+        const visibleVisions = tier === 'master' ? visions : visions.filter(v => String(v.coachId) === String(currentChar));
+        
+        if (visibleVisions.length > 0) {
+          ctx += `\n[사용자의 장기 비전 및 마일스톤]\n`;
+          visibleVisions.forEach(v => {
+            const isMyVision = String(v.coachId) === String(currentChar);
+            const doneCount = v.milestones.filter(m => m.done).length;
+            const totalCount = v.milestones.length;
+            const deadline = `${v.deadline.year}년 ${v.deadline.month}월 ${v.deadline.period}`;
+
+            ctx += `- 비전명: ${v.name} (${deadline}까지)\n`;
+            if (isMyVision) ctx += `  (★ 이 비전은 현재 내가 전담 관리하는 목표임)\n`;
+            ctx += `  상태: 총 ${totalCount}단계 중 ${doneCount}단계 완료\n`;
+            v.milestones.forEach((m, idx) => {
+              ctx += `    [${m.done ? 'V' : ' '}] ${idx + 1}. ${m.text}\n`;
+            });
+          });
+          ctx += `\n비전과 마일스톤의 진행 상황을 대화 중에 자연스럽게 확인하거나 응원해주세요. 특히 내가 전담하는 비전은 더 책임감 있게 챙겨주세요.\n`;
+        }
       }
 
       return ctx;
@@ -10461,7 +10562,79 @@ ${outputRules}`;
         el.innerHTML = '<div class="core-empty">아직 핵심이 없어요.<br>코치가 먼저 제안하고, 내가 최종 선택해요.</div>';
         return;
       }
-      el.innerHTML = coreTasks.slice(0, 3).map((c, i) => `<div class="core-item"><div class="core-num">${i + 1}</div><div class="core-text">${escapeHtml(c.text)}</div><button class="core-remove" onclick="removeCoreTask(${c.id})">×</button></div>`).join('');
+      el.innerHTML = coreTasks.slice(0, 3).map((c, i) => `
+        <div class="core-item" draggable="true" data-id="${c.id}">
+          <span class="core-drag-handle">⠿</span>
+          <div class="core-num">${i + 1}</div>
+          <div class="core-text">${escapeHtml(c.text)}</div>
+          <button class="core-remove" onclick="removeCoreTask(${c.id})">×</button>
+        </div>`).join('');
+
+      let dragSrcId = null;
+
+      el.querySelectorAll('.core-item').forEach(item => {
+        item.addEventListener('dragstart', e => {
+          dragSrcId = item.dataset.id;
+          setTimeout(() => item.classList.add('dragging'), 0);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        item.addEventListener('dragend', () => {
+          item.classList.remove('dragging');
+          el.querySelectorAll('.core-item').forEach(i => i.classList.remove('drag-over'));
+        });
+        item.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          el.querySelectorAll('.core-item').forEach(i => i.classList.remove('drag-over'));
+          if (item.dataset.id !== dragSrcId) item.classList.add('drag-over');
+        });
+        item.addEventListener('drop', e => {
+          e.preventDefault();
+          if (!dragSrcId || dragSrcId === item.dataset.id) return;
+          const srcIdx = coreTasks.findIndex(c => String(c.id) === dragSrcId);
+          const dstIdx = coreTasks.findIndex(c => String(c.id) === item.dataset.id);
+          if (srcIdx === -1 || dstIdx === -1) return;
+          const [moved] = coreTasks.splice(srcIdx, 1);
+          coreTasks.splice(dstIdx, 0, moved);
+          saveCoreTasks();
+          renderCoreTasks();
+        });
+
+        item.addEventListener('touchstart', e => {
+          dragSrcId = item.dataset.id;
+          item._touchY = e.touches[0].clientY;
+        }, { passive: true });
+        item.addEventListener('touchmove', e => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          const els = [...el.querySelectorAll('.core-item')];
+          els.forEach(i => i.classList.remove('drag-over'));
+          const target = els.find(i => {
+            const r = i.getBoundingClientRect();
+            return touch.clientY >= r.top && touch.clientY <= r.bottom;
+          });
+          if (target && target.dataset.id !== dragSrcId) target.classList.add('drag-over');
+        }, { passive: false });
+        item.addEventListener('touchend', e => {
+          const touch = e.changedTouches[0];
+          const els = [...el.querySelectorAll('.core-item')];
+          const target = els.find(i => {
+            const r = i.getBoundingClientRect();
+            return touch.clientY >= r.top && touch.clientY <= r.bottom;
+          });
+          if (target && target.dataset.id !== dragSrcId) {
+            const srcIdx = coreTasks.findIndex(c => String(c.id) === dragSrcId);
+            const dstIdx = coreTasks.findIndex(c => String(c.id) === target.dataset.id);
+            if (srcIdx !== -1 && dstIdx !== -1) {
+              const [moved] = coreTasks.splice(srcIdx, 1);
+              coreTasks.splice(dstIdx, 0, moved);
+              saveCoreTasks();
+              renderCoreTasks();
+            }
+          }
+          els.forEach(i => i.classList.remove('drag-over', 'dragging'));
+        });
+      });
     }
 
     // ── Tasks ─────────────────────────────────────────────
