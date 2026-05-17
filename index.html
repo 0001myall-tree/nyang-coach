@@ -934,30 +934,7 @@
       color: #B45309;
     }
 
-    /* Master 전용 비서 설정 스타일 */
-    .master-settings-section {
-      background: white;
-      border: 1px solid #E8E4F0;
-      border-radius: 28px;
-      padding: 0;
-      margin-top: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .master-settings-section:active {
-      transform: scale(0.98);
-    }
-
-    .master-settings-section::before {
-      display: none;
-    }
-
-    .master-settings-title {
-      padding: 24px 20px;
+    .char-cards {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -965,389 +942,6 @@
       user-select: none;
       position: relative;
     }
-
-    .master-settings-title:hover {
-      background: #F9F9FF;
-    }
-
-    .master-title-main {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-    }
-
-    .master-icon-circle {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #F0EEFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: #6D5DF6;
-    }
-
-    .master-text-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .master-title-text {
-      font-size: 18px;
-      font-weight: 900;
-      color: #1A1A2E;
-      letter-spacing: -0.5px;
-      margin-bottom: 2px;
-    }
-
-    .master-desc-text {
-      font-size: 13px;
-      color: #8E8EA0;
-      font-weight: 500;
-      line-height: 1.5;
-    }
-
-    .master-badge-inline {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      background: #F0EEFF;
-      color: #6D5DF6;
-      padding: 2.5px 7px;
-      border-radius: 10px;
-      font-size: 8px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      box-shadow: 0 2px 6px rgba(109, 93, 246, 0.05);
-      border: 1px solid rgba(109, 93, 246, 0.1);
-    }
-
-    .master-toggle-arrow {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #B0B0C0;
-    }
-
-    .master-settings-content {
-      display: none;
-      /* Hide internal content in the main settings card */
-    }
-
-    /* ══════ Master Secretary Screen Modal ══════ */
-    .master-secretary-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 2000;
-      background: rgba(26, 26, 46, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(6px);
-      padding: 20px;
-    }
-
-    .master-secretary-screen.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .master-popup-content {
-      background: white;
-      width: 100%;
-      max-width: 380px;
-      max-height: 85vh;
-      border-radius: 32px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transform: scale(0.9) translateY(20px);
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
-    }
-
-    .master-secretary-screen.active .master-popup-content {
-      transform: scale(1) translateY(0);
-    }
-
-    .m-screen-header {
-      padding: 24px 24px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: white;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      border-bottom: 1px solid #F0F0F8;
-    }
-
-    .m-screen-back {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #F9F9FF;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      color: #4B5563;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .m-screen-title {
-      font-size: 20px;
-      font-weight: 900;
-      color: #1A1A2E;
-      flex: 1;
-      text-align: center;
-    }
-
-    .m-screen-body {
-      padding: 20px 20px 32px;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-
-    .master-option-group {
-      margin-top: 24px;
-      margin-bottom: 24px;
-    }
-
-    .master-option-label {
-      font-size: 13px;
-      font-weight: 800;
-      color: #1A1A2E;
-      margin-bottom: 12px;
-      display: block;
-    }
-
-    .master-choice-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .master-partner-card {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 16px;
-      border-radius: 20px;
-      border: 1.5px solid #F0F0F8;
-      background: white;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .master-partner-card:hover {
-      border-color: #D1CCFF;
-      background: #F9F9FF;
-    }
-
-    .master-partner-card.active {
-      border-color: #6D5DF6;
-      background: #F5F3FF;
-      box-shadow: 0 4px 14px rgba(109, 93, 246, 0.08);
-    }
-
-    .mp-img-wrap {
-      width: 56px;
-      height: 56px;
-      border-radius: 14px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: #F3F4F6;
-    }
-
-    .mp-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .mp-info {
-      flex: 1;
-    }
-
-    .mp-name {
-      font-size: 14px;
-      font-weight: 800;
-      color: #1A1A2E;
-      margin-bottom: 1px;
-    }
-
-    .mp-desc {
-      font-size: 11px;
-      color: #8E8EA0;
-      font-weight: 500;
-    }
-
-    .mp-check {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2.5px solid #E5E7EB;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      font-size: 10px;
-      color: transparent;
-    }
-
-    .master-partner-card.active .mp-check {
-      background: #6D5DF6;
-      border-color: #6D5DF6;
-      color: white;
-    }
-
-    .master-choice-btn {
-      flex: 1;
-      padding: 12px;
-      border: 1.5px solid #E5E7EB;
-      border-radius: 14px;
-      background: white;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      color: #6B7280;
-      transition: all 0.2s ease;
-      text-align: center;
-    }
-
-    .master-choice-btn.active {
-      border-color: #6D5DF6;
-      background: #F5F3FF;
-      color: #6D5DF6;
-      box-shadow: 0 4px 14px rgba(109, 93, 246, 0.08);
-    }
-
-    .master-time-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px dashed #F3F4F6;
-    }
-
-    .master-time-item:last-child {
-      border-bottom: none;
-    }
-
-    .master-time-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .master-time-icon {
-      font-size: 16px;
-    }
-
-    .master-time-text {
-      font-size: 13px;
-      font-weight: 700;
-      color: #4B5563;
-    }
-
-    .master-time-input {
-      border: 1.5px solid #E5E7EB;
-      border-radius: 8px;
-      padding: 4px 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #3D3A4E;
-      outline: none;
-    }
-
-    .master-time-input:focus {
-      border-color: #6D5DF6;
-      box-shadow: 0 0 0 3px rgba(109, 93, 246, 0.05);
-    }
-
-    .master-callsign-input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid #E5E7EB;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 700;
-      outline: none;
-      background: #F9FAFB;
-    }
-
-    .master-callsign-input:focus {
-      border-color: #6D5DF6;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(109, 93, 246, 0.05);
-    }
-
-    .master-simulate-btn {
-      width: 100%;
-      padding: 14px;
-      background: #8B7CFF;
-      color: white;
-      border: none;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 900;
-      cursor: pointer;
-      margin-top: 10px;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-      transition: all 0.2s ease;
-    }
-
-    .master-simulate-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
-    }
-
-    .master-toggle {
-      position: relative;
-      width: 40px;
-      height: 22px;
-      background: #D1D5DB;
-      border-radius: 11px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .master-toggle.active {
-      background: #B5AEDD;
-    }
-
-    .master-toggle::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.3s;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .master-toggle.active::after {
-      transform: translateX(18px);
-    }
-
 
     .char-cards {
       display: flex;
@@ -6615,10 +6209,10 @@
         desc.textContent = '비즈니스와 일상 모두를 보조하는 마스터 코치입니다. 복잡한 일정과 우선순위를 논리적으로 분석하여 최적의 경로를 제안합니다.';
         features.innerHTML = `
       <div class="master-feature-item">
-        <div class="m-feat-icon m-icon-purple">📅</div>
+        <div class="m-feat-icon m-icon-purple">👋</div>
         <div class="m-feat-text">
-          <div class="m-feat-title">오늘 브리핑 미리보기</div>
-          <div class="m-feat-sub">오늘의 핵심 일정 3개를 브리핑합니다.</div>
+          <div class="m-feat-title">찾아오면 바로 파악</div>
+          <div class="m-feat-sub">앱을 열면 오늘 상황을 즉시 파악하고 맞이합니다.</div>
         </div>
       </div>
       <div class="master-feature-item">
@@ -7564,140 +7158,12 @@
           </div>
         </div>
 
-        <!-- Master 전용 비서 설정 진입 카드 -->
-        <div class="master-settings-section" id="master-settings-card" onclick="toggleMasterSettings(true)">
-          <div class="master-settings-title">
-            <div class="master-title-main">
-              <div class="master-text-wrap">
-                <div class="master-title-text" style="display:flex; align-items:center; gap:8px;">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round" style="color:#6D5DF6; flex-shrink:0;">
-                    <path d="M18 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="11" cy="7" r="4"></circle>
-                    <path d="M19 8l.3 1 .3-1 1-.3-1-.3-.3-1-.3 1-1 .3 1 .3z" fill="currentColor" stroke="none"></path>
-                    <path d="M21 12l.2.6.6.2-.6.2-.2.6-.2-.6-.6-.2.6-.2.2-.6z" fill="currentColor" stroke="none"></path>
-                  </svg>
-                  전담 비서 설정
-                </div>
-                <div class="master-desc-text">나만의 비서와 함께<br>더 체계적으로 관리받으세요</div>
-              </div>
-            </div>
 
-            <div class="master-badge-inline">
-              <span style="font-size:11px;">👑</span> MASTER ONLY
-            </div>
-
-            <div class="master-toggle-arrow">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- ══════ Master Secretary 전용 관리 화면 (팝업 모드) ══════ -->
-    <div id="master-secretary-screen" class="master-secretary-screen">
-      <div class="master-popup-content">
-        <div class="m-screen-header">
-          <button class="m-screen-back" onclick="toggleMasterSettings(false)">×</button>
-          <div class="m-screen-title">브리핑 설정</div>
-          <div class="master-badge-inline" style="position:static; margin-left:12px;">
-            <span style="font-size:10px;">👑</span> MASTER ONLY
-          </div>
-        </div>
 
-        <div class="m-screen-body">
-          <div class="master-option-group" style="margin-top:0;">
-            <label class="master-option-label">담당 비서 파트너 선택</label>
-            <div class="master-choice-wrap">
-              <!-- 남비서 카드 -->
-              <div class="master-partner-card active" id="m-choice-male" onclick="setMasterPartner('sec_male')">
-                <div class="mp-img-wrap">
-                  <img src="images/sec_male.png" alt="남비서">
-                </div>
-                <div class="mp-info">
-                  <div class="mp-name">남비서 코치</div>
-                  <div class="mp-desc">차분하고 분석적인 스타일</div>
-                </div>
-                <div class="mp-check">✓</div>
-              </div>
-              <!-- 여비서 카드 -->
-              <div class="master-partner-card" id="m-choice-female" onclick="setMasterPartner('sec_female')">
-                <div class="mp-img-wrap">
-                  <img src="images/sec_female.png" alt="여비서">
-                </div>
-                <div class="mp-info">
-                  <div class="mp-name">여비서 코치</div>
-                  <div class="mp-desc">따뜻하고 공감적인 스타일</div>
-                </div>
-                <div class="mp-check">✓</div>
-              </div>
-            </div>
-          </div>
 
-          <div class="master-option-group">
-            <div class="master-time-item">
-              <div class="master-time-info">
-                <span class="master-time-icon">☀️</span>
-                <span class="master-time-text">오전 브리핑</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <input type="time" class="master-time-input" id="m-time-morning" value="08:30"
-                  onchange="saveMasterSettings()">
-                <div class="master-toggle active" id="m-toggle-morning" onclick="toggleMasterBrief('morning')"></div>
-              </div>
-            </div>
-
-            <div class="master-time-item">
-              <div class="master-time-info">
-                <span class="master-time-icon">⛅</span>
-                <span class="master-time-text">중간 점검</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <input type="time" class="master-time-input" id="m-time-afternoon" value="14:00"
-                  onchange="saveMasterSettings()">
-                <div class="master-toggle active" id="m-toggle-afternoon" onclick="toggleMasterBrief('afternoon')">
-                </div>
-              </div>
-            </div>
-
-            <div class="master-time-item">
-              <div class="master-time-info">
-                <span class="master-time-icon">🌙</span>
-                <span class="master-time-text">저녁 마무리</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <input type="time" class="master-time-input" id="m-time-evening" value="21:00"
-                  onchange="saveMasterSettings()">
-                <div class="master-toggle active" id="m-toggle-evening" onclick="toggleMasterBrief('evening')"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 맞춤형 관리 안내 -->
-          <div class="master-option-group" style="margin-top:32px; padding-top:24px; border-top:1px dashed #E8E4F0;">
-            <div style="display:flex; gap:16px; align-items:center;">
-              <div
-                style="width:44px; height:44px; border-radius:12px; background:#F0EEFF; display:flex; align-items:center; justify-content:center; color:#6D5DF6; flex-shrink:0;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <path
-                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
-                  </path>
-                </svg>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:2px;">
-                <div style="font-size:14px; font-weight:800; color:#1A1A2E;">맞춤형 관리</div>
-                <div style="font-size:11.5px; color:#8E8EA0; font-weight:500; line-height:1.5;">설정한 일정에 맞춰 전담 비서가<br>당신의
-                  하루를 체계적으로 관리해드려요</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   </div>
@@ -9485,6 +8951,41 @@ ${MEM_RULES.master}`
 
     // ── Init ─────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
+      // ── 기존 소수점 id 마이그레이션 ──
+      try {
+        // habits id 정수화
+        let needHabitSave = false;
+        habits.forEach(h => {
+          if (String(h.id).includes('.')) {
+            const newId = Math.round(h.id);
+            // habitLogs도 같이 마이그레이션
+            if (habitLogs[String(h.id)]) {
+              habitLogs[String(newId)] = habitLogs[String(h.id)];
+              delete habitLogs[String(h.id)];
+            }
+            h.id = newId;
+            needHabitSave = true;
+          }
+        });
+        if (needHabitSave) {
+          localStorage.setItem('nyang_habits', JSON.stringify(habits));
+          localStorage.setItem('nyang_habit_logs', JSON.stringify(habitLogs));
+        }
+        // tasks의 habitId 및 habit_ id도 정수화
+        let needTaskSave = false;
+        tasks.forEach(t => {
+          if (t.habitId && String(t.habitId).includes('.')) {
+            t.habitId = Math.round(t.habitId);
+            needTaskSave = true;
+          }
+          if (typeof t.id === 'string' && t.id.startsWith('habit_') && t.id.includes('.')) {
+            t.id = t.id.replace(/(\d+)\.(\d+)/, (_, a, b) => a + '_' + b);
+            needTaskSave = true;
+          }
+        });
+        if (needTaskSave) localStorage.setItem('nyang_tasks', JSON.stringify(tasks));
+      } catch(e) { console.warn('migration error', e); }
+
       checkNewDay();
       const now = new Date();
       document.getElementById('date-label').textContent = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
@@ -9642,7 +9143,7 @@ ${MEM_RULES.master}`
       todaySchedules.forEach(s => {
         if (!existingTexts.includes(s.text.trim())) {
           tasks.push({
-            id: Date.now() + Math.random(),
+            id: Date.now() + Math.floor(Math.random() * 1000),
             text: s.text.trim(),
             category: 'today',
             done: false,
@@ -10383,6 +9884,22 @@ ${profileCtx}
         ctx += `*위 핵심 할 일들은 사용자가 오늘 가장 중요하게 생각하는 우선순위입니다. 비서로서 우선순위에 집중할 수 있도록 가이드해주세요.\n`;
       }
 
+      // 주간/월간 목표 데이터 추가 (pro, master 등급)
+      if (tier !== 'friends') {
+        if (weekGoals && weekGoals.length > 0) {
+          ctx += `\n[이번 주 목표]\n`;
+          weekGoals.forEach(g => {
+            ctx += `- [${g.done ? 'V' : ' '}] ${g.text}\n`;
+          });
+        }
+        if (monthGoals && monthGoals.length > 0) {
+          ctx += `\n[이번 달 목표]\n`;
+          monthGoals.forEach(g => {
+            ctx += `- [${g.done ? 'V' : ' '}] ${g.text}\n`;
+          });
+        }
+      }
+
       // 장기 비전 데이터 추가 (friends 등급은 접근 불가)
       if (tier !== 'friends' && visions && visions.length > 0) {
         // pro 등급은 자신이 담당하는 비전만 볼 수 있고, master 등급은 전체 비전을 볼 수 있음
@@ -10404,6 +9921,56 @@ ${profileCtx}
             });
           });
           ctx += `\n비전과 마일스톤의 진행 상황을 대화 중에 자연스럽게 확인하거나 응원해주세요. 특히 내가 전담하는 비전은 더 책임감 있게 챙겨주세요.\n`;
+        }
+      }
+
+      // 연속 미완료 습관 데이터 추가 (master 등급 전용)
+      if (tier === 'master' && habits && habits.length > 0) {
+        const today = new Date();
+        const dismissals = JSON.parse(localStorage.getItem('nyang_habit_dismissals') || '{}');
+        const longAbsentHabits = [];
+
+        habits.forEach(h => {
+          const logs = habitLogs[String(h.id)] || {};
+          // 최근 7일 연속 미완료 체크
+          let consecutiveMiss = 0;
+          for (let i = 1; i <= 7; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const ds = d.toISOString().slice(0, 10);
+            const log = logs[ds];
+            if (!log || !log.done) consecutiveMiss++;
+            else break;
+          }
+
+          if (consecutiveMiss >= 7) {
+            const dismissInfo = dismissals[String(h.id)] || { count: 0, lastAsked: null };
+            // 2회 이상 거부했으면 제외
+            if (dismissInfo.count >= 2) return;
+            // 마지막으로 물어본 지 7일 안됐으면 제외
+            if (dismissInfo.lastAsked) {
+              const last = new Date(dismissInfo.lastAsked);
+              const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+              if (diffDays < 7) return;
+            }
+            longAbsentHabits.push({ name: h.name, days: consecutiveMiss });
+          }
+        });
+
+        if (longAbsentHabits.length > 0) {
+          ctx += `\n[7일 이상 연속 미완료 습관 - 개입 필요]\n`;
+          longAbsentHabits.forEach(h => {
+            ctx += `- "${h.name}" (${h.days}일 연속 미완료)\n`;
+          });
+          ctx += `
+*위 습관들에 대해 오늘 할 일 정리가 마무리된 흐름에서 자연스럽게 한 번 꺼낸다.
+*반드시 아래 순서를 따른다:
+1. 먼저 이유를 물어본다 ("요즘 어떻게 된 건지 여쭤봐도 될까요?")
+2. 사용자 답변을 듣고 판단한다:
+   - 못 할 것 같다는 뉘앙스 → "그러면 잠깐 내려놓으시는 건 어떨까요?" 제안. 동의하면 [HABIT_DISMISS:습관명] 태그를 답변 끝에 추가.
+   - 거부하면 응원하고 [HABIT_KEEP:습관명] 태그를 답변 끝에 추가.
+   - 하고 싶다는 뉘앙스 → "오늘 언제 하실 것 같으세요?" 하고 물어본다. 사용자가 시간을 말하면 할 일에 시간을 등록해주고 응원한다.
+*절대 처음부터 삭제/내려놓기를 제안하지 말 것.\n`;
         }
       }
 
@@ -10588,7 +10155,7 @@ ${outputRules}`;
       pendingCoreSelections.forEach(id => {
         const t = tasks.find(x => String(x.id) === String(id));
         if (t && !coreTasks.some(c => c.text === t.text)) {
-          coreTasks.push({ id: Date.now() + Math.random(), text: t.text, category: 'direct' });
+          coreTasks.push({ id: Date.now() + Math.floor(Math.random() * 1000), text: t.text, category: 'direct' });
           addedTexts.push(t.text);
         }
       });
@@ -10707,14 +10274,53 @@ ${outputRules}`;
     function parseAndAddTasks(text) {
       const regex = /\[TASK_ADD:\s*(\{[^}]+\})\]/g;
       const suggestRegex = /\[TASK_SUGGEST:\s*(\{[^}]+\})\]/g;
-      const simpleTaskRegex = /\[TASK:\s*(.+?)\]/g; // 추가: 단순 형식 지원
+      const simpleTaskRegex = /\[TASK:\s*(.+?)\]/g;
       const chipRegex = /\[CHIPS:\s*(.+?)\]/g;
       const timerRegex = /\[TIMER_START:(\d+)\]/g;
+      const habitDismissRegex = /\[HABIT_DISMISS:(.+?)\]/g;
       let match, clean = text;
       let proposedTasks = [];
       let suggestedTasks = [];
       let chips = [];
       let timerMinutes = null;
+
+      // HABIT_DISMISS 감지 → 해당 습관 삭제 + dismissal 기록
+      while ((match = habitDismissRegex.exec(text)) !== null) {
+        const habitName = match[1].trim();
+        const habit = habits.find(h => h.name === habitName);
+        if (habit) {
+          // dismissal 횟수 기록
+          const dismissals = JSON.parse(localStorage.getItem('nyang_habit_dismissals') || '{}');
+          const info = dismissals[String(habit.id)] || { count: 0, lastAsked: null };
+          info.count += 1;
+          info.lastAsked = new Date().toISOString();
+          dismissals[String(habit.id)] = info;
+          localStorage.setItem('nyang_habit_dismissals', JSON.stringify(dismissals));
+
+          // 습관 삭제
+          habits = habits.filter(h => String(h.id) !== String(habit.id));
+          localStorage.setItem('nyang_habits', JSON.stringify(habits));
+          injectTodayHabits();
+          if (typeof renderHabits === 'function') renderHabits();
+        }
+        clean = clean.replace(match[0], '').trim();
+      }
+
+      // HABIT_KEEP 감지 → 거부 카운트만 기록 (삭제 안 함)
+      const habitKeepRegex = /\[HABIT_KEEP:(.+?)\]/g;
+      while ((match = habitKeepRegex.exec(text)) !== null) {
+        const habitName = match[1].trim();
+        const habit = habits.find(h => h.name === habitName);
+        if (habit) {
+          const dismissals = JSON.parse(localStorage.getItem('nyang_habit_dismissals') || '{}');
+          const info = dismissals[String(habit.id)] || { count: 0, lastAsked: null };
+          info.count += 1;
+          info.lastAsked = new Date().toISOString();
+          dismissals[String(habit.id)] = info;
+          localStorage.setItem('nyang_habit_dismissals', JSON.stringify(dismissals));
+        }
+        clean = clean.replace(match[0], '').trim();
+      }
 
       // TIMER_START 감지
       while ((match = timerRegex.exec(text)) !== null) {
@@ -10758,7 +10364,7 @@ ${outputRules}`;
       return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes };
     }
     function addTask(text, category = 'today', time = null, timeEnd = null) {
-      const task = { id: Date.now() + Math.random(), text: text.trim(), category, done: false, createdAt: new Date().toISOString() };
+      const task = { id: Date.now() + Math.floor(Math.random() * 1000), text: text.trim(), category, done: false, createdAt: new Date().toISOString() };
       if (time) {
         task.timeStart = time;
         if (timeEnd) {
@@ -10799,7 +10405,7 @@ ${outputRules}`;
     }
 
     function toggleTask(id) {
-      const t = tasks.find(t => String(t.id) === String(id)); if (!t) return;
+      const t = tasks.find(t => String(t.id) === String(id) || (typeof t.id === 'number' && t.id === parseFloat(id))); if (!t) return;
 
       // 완료 취소
       if (t.done) {
@@ -10891,7 +10497,7 @@ ${outputRules}`;
     function addGoalById(type, input) {
       const text = input.value.trim(); if (!text) return;
       const goals = type === 'week' ? weekGoals : monthGoals;
-      goals.push({ id: Date.now() + Math.random(), text, done: false });
+      goals.push({ id: Date.now() + Math.floor(Math.random() * 1000), text, done: false });
       saveGoals(type); renderGoals(type); input.value = ''; renderMobileTasks();
     }
     function toggleGoal(type, id) {
@@ -11118,7 +10724,7 @@ ${outputRules}`;
       if (_habitFreq === 'weekly' && _habitDays.length === 0) { alert('요일을 하나 이상 선택해주세요!'); return; }
 
       const habit = {
-        id: _habitEditId !== null ? _habitEditId : Date.now() + Math.random(),
+        id: _habitEditId !== null ? _habitEditId : Date.now() + Math.floor(Math.random() * 1000),
         name,
         freq: _habitFreq,
         days: _habitFreq === 'weekly' ? [..._habitDays] : [],
@@ -11260,7 +10866,7 @@ ${outputRules}`;
         const isVacation = !isDone && checkVacationForDate(today);
 
         const task = {
-          id: 'habit_' + h.id + '_' + today,
+          id: 'habit_' + String(h.id).replace('.', '_') + '_' + today,
           habitId: h.id,
           text: h.name,
           category: 'habit',
@@ -11700,71 +11306,7 @@ ${outputRules}`;
     </div>`).join('');
     }
 
-    // ── Master Secretary Settings Logic ──
-    let masterSettings = {
-      partner: 'sec_male',
-      callSign: '대표님',
-      briefings: {
-        morning: { active: true, time: '08:30' },
-        afternoon: { active: true, time: '14:00' },
-        evening: { active: true, time: '21:00' }
-      }
-    };
 
-    function loadMasterSettings() {
-      const saved = localStorage.getItem('nyang_master_settings');
-      if (saved) {
-        try {
-          masterSettings = JSON.parse(saved);
-        } catch (e) { }
-      }
-      updateMasterUI();
-    }
-
-    function updateMasterUI() {
-      if (!document.getElementById('m-choice-male')) return;
-      // 파트너 선택 UI
-      document.getElementById('m-choice-male').classList.toggle('active', masterSettings.partner === 'sec_male');
-      document.getElementById('m-choice-female').classList.toggle('active', masterSettings.partner === 'sec_female');
-
-      // 브리핑 시간 및 토글
-      document.getElementById('m-time-morning').value = masterSettings.briefings.morning.time;
-      document.getElementById('m-toggle-morning').classList.toggle('active', masterSettings.briefings.morning.active);
-
-      document.getElementById('m-time-afternoon').value = masterSettings.briefings.afternoon.time;
-      document.getElementById('m-toggle-afternoon').classList.toggle('active', masterSettings.briefings.afternoon.active);
-
-      document.getElementById('m-time-evening').value = masterSettings.briefings.evening.time;
-      document.getElementById('m-toggle-evening').classList.toggle('active', masterSettings.briefings.evening.active);
-    }
-
-    function saveMasterSettings() {
-      masterSettings.briefings.morning.time = document.getElementById('m-time-morning').value;
-      masterSettings.briefings.afternoon.time = document.getElementById('m-time-afternoon').value;
-      masterSettings.briefings.evening.time = document.getElementById('m-time-evening').value;
-
-      localStorage.setItem('nyang_master_settings', JSON.stringify(masterSettings));
-    }
-
-    function setMasterPartner(id) {
-      masterSettings.partner = id;
-      updateMasterUI();
-      saveMasterSettings();
-    }
-
-    function toggleMasterBrief(type) {
-      masterSettings.briefings[type].active = !masterSettings.briefings[type].active;
-      updateMasterUI();
-      saveMasterSettings();
-    }
-
-    function toggleMasterSettings(show) {
-      const el = document.getElementById('master-secretary-screen');
-      if (el) {
-        if (show) el.classList.add('active');
-        else el.classList.remove('active');
-      }
-    }
 
   </script>
 
@@ -12430,7 +11972,7 @@ ${outputRules}`;
     }
 
     window.addEventListener('load', () => {
-      loadMasterSettings();
+
       startAlarmEngine(); // 엔진 가동
     });
 
