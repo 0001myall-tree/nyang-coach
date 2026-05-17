@@ -6378,14 +6378,6 @@
           <div class="new-cs-quote">"투정도 언제든지 받아줄게."</div>
         </div>
       </div>
-      <div class="new-cs-card" id="ncard-girlfriend" onclick="newSelectChar('girlfriend')">
-        <img src="images/girlfriend.png" alt="여친 코치">
-        <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
-          <div class="new-cs-name">여친 코치</div>
-          <div class="new-cs-quote">"오늘도 내가 달달하게 응원해줄게♡"</div>
-        </div>
-      </div>
       <div class="new-cs-card" id="ncard-halmae" onclick="newSelectChar('halmae')">
         <img src="images/halmae.png" alt="욕쟁이 할매">
         <div class="new-cs-card-body">
@@ -6400,6 +6392,14 @@
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
           <div class="new-cs-name">군인 코치</div>
           <div class="new-cs-quote">"망설일 시간 없다. 실시!"</div>
+        </div>
+      </div>
+      <div class="new-cs-card" id="ncard-girlfriend" onclick="newSelectChar('girlfriend')">
+        <img src="images/girlfriend.png" alt="여친 코치">
+        <div class="new-cs-card-body">
+          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
+          <div class="new-cs-name">여친 코치</div>
+          <div class="new-cs-quote">"오늘도 내가 달달하게 응원해줄게♡"</div>
         </div>
       </div>
       <div class="new-cs-card" id="ncard-bro" onclick="newSelectChar('bro')">
@@ -7351,6 +7351,19 @@
       </div>
     </div>
 
+    <!-- 날짜별 상세 기록 모달 -->
+    <div id="date-detail-overlay" class="modal-overlay hidden" onclick="closeDateDetail(event)">
+      <div class="modal" style="max-width:360px;width:92%;max-height:80vh;overflow-y:auto;padding:24px 20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div id="date-detail-title" style="font-size:17px;font-weight:900;color:var(--text);"></div>
+          <button onclick="closeDateDetail()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);">✕</button>
+        </div>
+        <div id="date-detail-summary" style="display:flex;gap:8px;margin-bottom:16px;"></div>
+        <div id="date-detail-tasks" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div id="date-detail-empty" class="hidden" style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px;">이 날의 기록이 없어요</div>
+      </div>
+    </div>
+
     <!-- 기록 서랍 (record panel) -->
     <div class="record-panel" id="record-panel">
       <button class="drawer-close-btn" onclick="closeAllDrawers()">✕ 닫기</button>
@@ -7923,7 +7936,6 @@ ${MEM_RULES.pro}`
 - 답변은 너무 길지 않게, 실제 메신저에서 여자친구와 대화하는 것처럼 2~3문장 내외로 자연스럽게 작성해.
 - 절대 "너"라는 호칭을 사용하지 마. 무조건 "오빠" 또는 "자기"라고만 불러야 해.
 
-[중요] 할 일 추가 시: [TASK_ADD: {"text": "할 일", "category": "today|goal|habit"}]
 
 ${MEM_RULES.pro}`
       },
@@ -8210,7 +8222,6 @@ ${MEM_RULES.pro}`
 - 너무 딱딱한 표준어 사용
 - 공감 없이 비판만 하는 것
 
-할 일 추가 시: [TASK_ADD: {"text": "할 일", "category": "today|goal|habit"}]
 
 ${MEM_RULES.pro}`
       },
@@ -8960,7 +8971,7 @@ ${MEM_RULES.master}`
         const barColor = isVacation ? 'background:#E5E7EB;' : '';
         const pctLabel = isVacation ? '🌙' : (r.totalCount > 0 ? pct + '%' : '-');
 
-        return `<div class="pattern-day">
+        return `<div class="pattern-day" onclick="showDateDetail('${r.date}')" style="cursor:pointer;">
       <div class="pattern-day-name" style="${nameStyle}">${getDayLabel(r.date)}</div>
       <div class="pattern-date">${r.date.slice(5).replace('-', '/')}</div>
       <div class="pattern-bar-wrap"><div class="pattern-bar-fill" style="width:${isVacation ? 100 : pct}%; ${barColor}"></div></div>
@@ -9389,6 +9400,16 @@ ${MEM_RULES.master}`
 
       addMessage('user', msg);
 
+      // 사용자 동의 표현 감지 → 직전 AI 제안 할 일 버튼 띄우기
+      const intentTasks = parseUserIntent(msg);
+      if (intentTasks.length > 0) {
+        // 잠깐 후에 버튼 렌더링 (사용자 메시지 표시 후)
+        setTimeout(() => {
+          addMessage('ai', { text: '', suggestedTasks: intentTasks, tasks: [], chips: [], timerMinutes: null });
+          _lastAiSuggestedText = null;
+        }, 100);
+      }
+
       // 로컬 답변 시도 (비용 절감)
       const localReply = getLocalResponse(msg);
       if (localReply) {
@@ -9709,7 +9730,22 @@ ${MEM_RULES.master}`
         };
       }
 
-      // TASK_SUGGEST: 제안 버튼 (추가하기 / 괜찮아)
+      // TASK_SUGGEST: 제안 버튼 (추가하기 / 괜찮아) - 이미 오늘 할 일에 있는 항목은 제외
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayTasks = (tasks || []).filter(t => {
+        if (t.category !== 'today') return false;
+        if (!t.done) return true; // 미완료는 항상 포함
+        // 완료된 건 오늘 완료한 것만 포함
+        const doneDate = (t.completedAt || '').slice(0, 10);
+        return doneDate === todayStr;
+      });
+      suggestedTasks = suggestedTasks.filter(st => {
+        const stNorm = st.text.replace(/\s/g, '').toLowerCase();
+        return !todayTasks.some(tt => {
+          const ttNorm = tt.text.replace(/\s/g, '').toLowerCase();
+          return ttNorm === stNorm || ttNorm.includes(stNorm) || stNorm.includes(ttNorm);
+        });
+      });
       if (suggestedTasks.length > 0) {
         const cfg = CHARS[currentChar] || CHARS.cat;
         const accent = cfg.accentColor || '#4B7BF5';
@@ -9747,13 +9783,116 @@ ${MEM_RULES.master}`
       btn.style.cursor = "not-allowed";
     }
 
+    // 마지막으로 시간 없이 추가된 task 추적 (시간 후속 설정용)
+    let _lastAddedTaskId = null;
+    let _lastAddedTaskText = null;
+    let _lastAiSuggestedText = null; // 직전 AI가 언급한 할 일 후보
+
+    // ── 사용자 발화에서 할 일 의도 감지 ──────────────────────
+    function parseUserIntent(msg) {
+      const trimmed = msg.trim();
+
+      // 1. 동의 표현 + 직전 AI 제안이 있을 때
+      const agreeRegex = /^(응|어|맞아|그래|ㅇㅇ|넹|넵|ㅇㅋ|오키|오케이|알겠어|알겠다|해볼게|해야겠다|그래야겠다|그렇게 할게|그렇게 해야겠다|해볼까|해야지|할게|좋아|그거 해볼게|그렇게 해볼게)[.!~\s]*$/;
+      if (agreeRegex.test(trimmed) && _lastAiSuggestedText) {
+        return [{ text: _lastAiSuggestedText }];
+      }
+
+      // 2. 사용자가 직접 의지/계획 표현
+      const intentRegex = /^(.{1,20}?)(?:할 거야|할거야|할 거에요|할거에요|해야겠다|해야지|해야 할 것 같아|해야할 것 같아|하려고 해|하려고|할 예정이야|하기로 했어|해야 돼|해야해|해야 해|못 했는데 오늘은|못했는데 오늘은|해볼 거야|해볼거야)/;
+      const intentMatch = trimmed.match(intentRegex);
+      if (intentMatch) {
+        const taskText = intentMatch[1].trim();
+        if (taskText.length >= 2) return [{ text: taskText }];
+      }
+
+      return [];
+    }
+
     function confirmSuggestTask(btn, text, category, time, timeEnd) {
-      addTask(text, category, time || null, timeEnd || null);
+      const taskId = addTask(text, category, time || null, timeEnd || null);
       const card = btn.closest('.suggest-task-card');
       if (card) {
         const timeLabel = time ? (' 🕐 ' + fmt12(time) + (timeEnd ? ' ~ ' + fmt12(timeEnd) : '')) : '';
         card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}" 추가됐어요!${timeLabel}</div>`;
       }
+      // 시간 없이 추가된 경우만 추적
+      if (!time) {
+        _lastAddedTaskId = taskId;
+        _lastAddedTaskText = text;
+      } else {
+        _lastAddedTaskId = null;
+        _lastAddedTaskText = null;
+      }
+    }
+
+    // ── 날짜별 상세 기록 ─────────────────────────────────
+    function showDateDetail(dateStr) {
+      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+      const d = new Date(dateStr);
+      const dayName = dayNames[d.getDay()];
+      const [y, m, day] = dateStr.split('-');
+
+      // 제목
+      document.getElementById('date-detail-title').textContent = `${m}/${day} (${dayName})`;
+
+      // history에서 해당 날짜 레코드 찾기
+      const rec = history.find(h => h.date === dateStr);
+      const recTasks = rec ? (rec.tasks || []) : [];
+      const doneCount = recTasks.filter(t => t.done).length;
+      const totalCount = recTasks.length;
+      const pct = totalCount > 0 ? Math.round(doneCount / totalCount * 100) : 0;
+      const isVacation = rec ? (rec.isVacation || checkVacationForDate(dateStr)) : false;
+
+      // 요약 배지
+      const summaryEl = document.getElementById('date-detail-summary');
+      if (isVacation) {
+        summaryEl.innerHTML = `<div style="padding:6px 12px;background:#F3F4F6;border-radius:20px;font-size:12px;font-weight:700;color:var(--muted);">🌙 휴식일</div>`;
+      } else if (totalCount === 0) {
+        summaryEl.innerHTML = `<div style="padding:6px 12px;background:#F3F4F6;border-radius:20px;font-size:12px;font-weight:700;color:var(--muted);">기록 없음</div>`;
+      } else {
+        const badgeColor = pct === 100 ? '#10B981' : pct >= 50 ? 'var(--accent)' : '#F59E0B';
+        summaryEl.innerHTML = `
+          <div style="padding:6px 12px;background:${badgeColor}20;border-radius:20px;font-size:12px;font-weight:800;color:${badgeColor};">✓ ${doneCount}/${totalCount} 완료</div>
+          <div style="padding:6px 12px;background:#F3F4F6;border-radius:20px;font-size:12px;font-weight:800;color:var(--text);">${pct}% 달성</div>`;
+      }
+
+      // completedLog에서 해당 날짜 완료 시각 매핑
+      const logMap = {};
+      (completedLog || []).filter(l => l.date === dateStr).forEach(l => { logMap[l.text] = l.time; });
+
+      // 할 일 목록
+      const tasksEl = document.getElementById('date-detail-tasks');
+      const emptyEl = document.getElementById('date-detail-empty');
+
+      if (recTasks.length === 0) {
+        tasksEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+      } else {
+        emptyEl.classList.add('hidden');
+        // 완료 먼저, 미완료 나중
+        const sorted = [...recTasks].sort((a, b) => b.done - a.done);
+        tasksEl.innerHTML = sorted.map(t => {
+          const timeLabel = logMap[t.text] ? `<span style="font-size:10px;color:var(--muted);margin-left:6px;">${logMap[t.text]}</span>` : '';
+          const doneStyle = t.done
+            ? 'background:#F0FDF4;border:1.5px solid #BBF7D0;'
+            : 'background:#FAFAFA;border:1.5px solid var(--border);';
+          const textStyle = t.done ? 'color:#10B981;text-decoration:line-through;' : 'color:var(--text);';
+          const icon = t.done ? '✓' : '○';
+          const iconColor = t.done ? '#10B981' : '#D1D5DB';
+          return `<div style="${doneStyle}border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:14px;font-weight:900;color:${iconColor};flex-shrink:0;">${icon}</span>
+            <span style="font-size:13px;font-weight:700;${textStyle}flex:1;">${escapeHtml(t.text)}${timeLabel}</span>
+          </div>`;
+        }).join('');
+      }
+
+      document.getElementById('date-detail-overlay').classList.remove('hidden');
+    }
+
+    function closeDateDetail(e) {
+      if (e && e.target !== document.getElementById('date-detail-overlay')) return;
+      document.getElementById('date-detail-overlay').classList.add('hidden');
     }
 
     function dismissSuggestTask(btn) {
@@ -10082,14 +10221,6 @@ ${profileCtx}
         });
       }
 
-      // 오늘 할 일 데이터 추가
-      if (tasks && tasks.length > 0) {
-        ctx += `\n[오늘 할 일 현황]\n`;
-        tasks.forEach(t => {
-          ctx += `- [${t.done ? 'V' : ' '}] ${t.text}${t.time ? ' (' + t.time + ')' : ''}\n`;
-        });
-      }
-
       // 장기 비전 데이터 추가
       if (visions && visions.length > 0) {
         ctx += `\n[사용자의 장기 비전 및 마일스톤]\n`;
@@ -10131,9 +10262,8 @@ ${profileCtx}
 
         if (isMaster) {
           outputRules += `
-3. 할 일 제안 시 답변 맨 끝에 [TASK: 할 일 내용] 형식을 사용하세요. 문장 중간에 넣지 마세요.
-4. 타이머 제안 시 [TIMER_START:분] 형식을 사용하세요. (예: [TIMER_START:25])
-5. 선택 칩 제안 시 [CHIPS: 칩1|칩2] 형식을 사용하세요.`;
+3. 타이머 제안 시 [TIMER_START:분] 형식을 사용하세요. (예: [TIMER_START:25])
+4. 선택 칩 제안 시 [CHIPS: 칩1|칩2] 형식을 답변 맨 끝에 사용하세요.`;
         } else {
           outputRules += `
 3. [TASK], [TIMER]와 같은 기술적인 기호나 태그는 절대 사용하지 마세요. 오직 자연스러운 대화로만 격려하고 제안하세요.
@@ -10160,6 +10290,34 @@ ${outputRules}`;
 
         chatHistory.push({ role: 'assistant', content: replyText });
         saveChatHistory();
+
+        // AI 응답에서 할 일 후보 추출 → 사용자 동의 감지용으로 저장
+        // "~하는 건 어때요?", "~해보세요", "~해볼까요?" 패턴에서 앞 명사 추출
+        const suggestMatch = replyText.match(/['"]?([가-힣a-zA-Z0-9\s]{2,15})['"]?(?:하는 건 어때|해보는 건 어때|해볼까요|해보세요|하는 게 어때|해보시는 건|부터 해볼까|부터 시작해|먼저 해볼)/);
+        _lastAiSuggestedText = suggestMatch ? suggestMatch[1].trim() : null;
+
+        // 시간 없이 추가된 task가 있고, AI 응답에서 시간이 감지된 경우 → 해당 task에 시간 설정
+        if (_lastAddedTaskId && cleaned.suggestedTasks.length === 0) {
+          const timeMatch = replyText.match(/(\d{1,2})\s*시\s*(\d{0,2})\s*분?/);
+          if (timeMatch) {
+            const h = parseInt(timeMatch[1]);
+            const m = parseInt(timeMatch[2] || '0');
+            const hh = String(h).padStart(2, '0');
+            const mm = String(m).padStart(2, '0');
+            const timeStr = `${hh}:${mm}`;
+            const t = tasks.find(t => String(t.id) === String(_lastAddedTaskId));
+            if (t && !t.timeStart) {
+              t.timeStart = timeStr;
+              t.time = fmt12(timeStr);
+              saveTasks(); renderTasks(); renderMobileTasks();
+              // AI 응답 텍스트에 시간 반영 안내 추가
+              cleaned.text += `
+시간도 오늘 할 일에 반영해뒀어요 🕐`;
+            }
+            _lastAddedTaskId = null;
+            _lastAddedTaskText = null;
+          }
+        }
 
         return cleaned;
       } catch (error) {
@@ -10359,6 +10517,7 @@ ${outputRules}`;
       }
       tasks.push(task);
       saveTasks(); renderTasks(); renderMobileTasks(); renderPattern();
+      return task.id; // id 반환 (시간 후속 설정용)
     }
     function editTask(id, el) {
       if (!el || el.querySelector('input')) return;
@@ -11475,6 +11634,18 @@ ${outputRules}`;
           style="width:100%; padding:14px; border-radius:16px; border:1.5px solid var(--border); font-size:20px; font-weight:900; color:var(--accent); font-family:inherit; outline:none; text-align:center;">
       </div>
 
+      <!-- 알람 토글 -->
+      <div style="margin-bottom:24px; background:var(--accent-light); padding:16px; border-radius:16px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center;">
+          <div style="font-size:20px; margin-right:12px;">✨</div>
+          <div>
+            <div style="font-size:14px; font-weight:800; color:var(--accent);">매일 설정한 시간에 알람이 울려요</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">알람은 매일 자동으로 반복됩니다.</div>
+          </div>
+        </div>
+        <div class="master-toggle active" id="alarm-toggle-btn" onclick="toggleDailyAlarm()"></div>
+      </div>
+
       <!-- 코치 선택 -->
       <div class="detail-section" style="margin-bottom:24px;">
         <div class="detail-label">👤 누구 목소리로 깨워줄까요?</div>
@@ -11808,12 +11979,21 @@ ${outputRules}`;
     // ── 알람 설정 로직 ────────────────────────────────────
     let nyangAlarmTime = localStorage.getItem('nyang_alarm_time') || '07:00';
     let nyangAlarmCoachId = localStorage.getItem('nyang_alarm_coach') || 'cat';
+    let nyangAlarmEnabled = localStorage.getItem('nyang_alarm_enabled') !== 'false';
+
+    function toggleDailyAlarm() {
+      nyangAlarmEnabled = !nyangAlarmEnabled;
+      const btn = document.getElementById('alarm-toggle-btn');
+      if (btn) btn.classList.toggle('active', nyangAlarmEnabled);
+    }
 
     function toggleAlarmSettings(show) {
       const overlay = document.getElementById('alarm-settings-overlay');
       if (!overlay) return;
       if (show) {
         document.getElementById('alarm-input-time').value = nyangAlarmTime;
+        const toggleBtn = document.getElementById('alarm-toggle-btn');
+        if (toggleBtn) toggleBtn.classList.toggle('active', nyangAlarmEnabled);
         renderAlarmCoachSelect();
         overlay.classList.remove('hidden');
         requestAnimationFrame(() => overlay.classList.add('show'));
@@ -11827,23 +12007,49 @@ ${outputRules}`;
       const container = document.getElementById('alarm-coach-select');
       const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo', 'student'];
       
-      container.innerHTML = coachIds.map(id => {
+      const isRandomSelected = ('random' === nyangAlarmCoachId);
+      let html = `
+        <div class="coach-select-item" onclick="selectAlarmCoach('random')" 
+          style="border:1.5px solid ${isRandomSelected ? 'var(--accent)' : 'var(--border)'}; background:${isRandomSelected ? 'var(--accent-light)' : 'white'}; margin-bottom:8px; display:flex; align-items:center; padding:12px; border-radius:16px; cursor:pointer; transition:all 0.2s;">
+          <div class="coach-av-small" style="width:48px; height:48px; border-radius:12px; margin-right:12px; background:linear-gradient(135deg, #A78BFA, #7C3AED); display:flex; align-items:center; justify-content:center; position:relative; box-shadow: inset 0 2px 4px rgba(255,255,255,0.4); flex-shrink:0;">
+            <div style="font-size:24px; font-weight:900; color:white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">?</div>
+            <div style="position:absolute; top:4px; left:4px; font-size:12px; color:rgba(255,255,255,0.8);">✦</div>
+            <div style="position:absolute; bottom:4px; right:4px; font-size:10px; color:rgba(255,255,255,0.8);">✦</div>
+          </div>
+          <div class="coach-info-small" style="flex:1;">
+            <div class="coach-name-small" style="font-size:15px; font-weight:800; color:${isRandomSelected ? 'var(--accent)' : 'var(--text)'};">랜덤 코치 알람</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:2px;">보유한 코치 중 한 명이 랜덤으로 깨워줘요</div>
+          </div>
+          <div style="width:24px; height:24px; border-radius:50%; border:2px solid ${isRandomSelected ? 'var(--accent)' : '#E5E7EB'}; margin-left:auto; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:white;">
+            ${isRandomSelected ? '<div style="width:12px; height:12px; border-radius:50%; background:var(--accent);"></div>' : ''}
+          </div>
+        </div>
+      `;
+
+      html += coachIds.map(id => {
         const cfg = CHARS[id];
         if (!cfg) return '';
         const isSelected = (id === nyangAlarmCoachId);
         return `
           <div class="coach-select-item" onclick="selectAlarmCoach('${id}')" 
             style="border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; background:${isSelected ? 'var(--accent-light)' : 'white'}; margin-bottom:8px; display:flex; align-items:center; padding:12px; border-radius:16px; cursor:pointer; transition:all 0.2s;">
-            <div class="coach-av-small" style="width:40px; height:40px; border-radius:50%; overflow:hidden; margin-right:12px; border:1px solid #eee; background:white;">
+            <div class="coach-av-small" style="width:48px; height:48px; border-radius:50%; overflow:hidden; margin-right:12px; border:1px solid #eee; background:white; flex-shrink:0;">
               <img src="${cfg.imgUrl || 'images/cat.png'}" style="width:100%; height:100%; object-fit:cover;">
             </div>
-            <div class="coach-info-small">
-              <div class="coach-name-small" style="font-size:14px; font-weight:800; color:${isSelected ? 'var(--accent)' : 'var(--text)'}">${cfg.statusName}</div>
+            <div class="coach-info-small" style="flex:1;">
+              <div class="coach-name-small" style="font-size:15px; font-weight:800; color:${isSelected ? 'var(--accent)' : 'var(--text)'}; display:flex; align-items:center; gap:6px;">
+                ${cfg.statusName}
+                ${cfg.isPro ? '<span style="font-size:9px; background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-weight:800;">PRO</span>' : ''}
+              </div>
             </div>
-            ${isSelected ? '<div style="color:var(--accent); font-weight:900; font-size:14px; margin-left:auto;">✓</div>' : ''}
+            <div style="width:24px; height:24px; border-radius:50%; border:2px solid ${isSelected ? 'var(--accent)' : '#E5E7EB'}; margin-left:auto; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:white;">
+              ${isSelected ? '<div style="width:12px; height:12px; border-radius:50%; background:var(--accent);"></div>' : ''}
+            </div>
           </div>
         `;
       }).join('');
+      
+      container.innerHTML = html;
     }
 
     function selectAlarmCoach(id) {
@@ -11855,11 +12061,17 @@ ${outputRules}`;
       nyangAlarmTime = document.getElementById('alarm-input-time').value;
       localStorage.setItem('nyang_alarm_time', nyangAlarmTime);
       localStorage.setItem('nyang_alarm_coach', nyangAlarmCoachId);
+      localStorage.setItem('nyang_alarm_enabled', nyangAlarmEnabled);
+      
+      let coachName = '랜덤 코치';
+      if (nyangAlarmCoachId !== 'random' && CHARS[nyangAlarmCoachId]) {
+        coachName = CHARS[nyangAlarmCoachId].statusName;
+      }
       
       if (typeof showFlirt === 'function') {
-        showFlirt(`⏰ ${nyangAlarmTime}에 ${CHARS[nyangAlarmCoachId].statusName} 알람이 설정되었어요!`);
+        showFlirt(`⏰ ${nyangAlarmTime}에 ${coachName} 알람이 설정되었어요!`);
       } else {
-        alert(`⏰ ${nyangAlarmTime}에 ${CHARS[nyangAlarmCoachId].statusName} 알람이 설정되었어요!`);
+        alert(`⏰ ${nyangAlarmTime}에 ${coachName} 알람이 설정되었어요!`);
       }
       toggleAlarmSettings(false);
     }
@@ -11870,19 +12082,28 @@ ${outputRules}`;
 
     function startAlarmEngine() {
       setInterval(() => {
+        if (!nyangAlarmEnabled) return;
+        
         const now = new Date();
         const currentHHMM = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        const currentDate = now.toDateString(); // 날짜 기준 저장
         
-        // 설정 시간과 일치하고, 이번 분에 아직 알람이 울리지 않았을 때
-        if (currentHHMM === nyangAlarmTime && lastAlarmFiredTime !== currentHHMM) {
-          lastAlarmFiredTime = currentHHMM;
+        // 설정 시간과 일치하고, 오늘 아직 알람이 울리지 않았을 때
+        if (currentHHMM === nyangAlarmTime && lastAlarmFiredTime !== currentDate) {
+          lastAlarmFiredTime = currentDate;
           fireAlarm();
         }
       }, 10000); // 10초마다 체크
     }
 
     function fireAlarm() {
-      const cfg = CHARS[nyangAlarmCoachId] || CHARS.cat;
+      let targetCoachId = nyangAlarmCoachId;
+      if (targetCoachId === 'random') {
+        const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo', 'student'];
+        targetCoachId = coachIds[Math.floor(Math.random() * coachIds.length)];
+      }
+
+      const cfg = CHARS[targetCoachId] || CHARS.cat;
       
       // UI 업데이트
       document.getElementById('alarm-trigger-img').src = cfg.imgUrl || 'images/cat.png';
@@ -11891,7 +12112,7 @@ ${outputRules}`;
       
       // 랜덤 음성 재생 (1~3번 중 랜덤 시도)
       // 현재 할머니(halmae)는 1~2번만 있으므로, 파일이 없을 경우를 대비한 처리가 필요함
-      playRandomCoachVoice(nyangAlarmCoachId);
+      playRandomCoachVoice(targetCoachId);
     }
 
     // 코치별 음성 파일 개수 (파일을 추가하면 여기 숫자를 수정하세요)
