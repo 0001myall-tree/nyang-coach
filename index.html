@@ -10361,7 +10361,7 @@ ${outputRules}`;
         `;
           }
           return `
-        <div class="core-choice" style="display:flex;align-items:center;gap:10px;" onclick="toggleCoreSelection('${t.id}', this)">
+        <div class="core-choice" id="core-choice-${t.id}" style="display:flex;align-items:center;gap:10px;" onclick="toggleCoreSelection('${t.id}')">
           <div class="core-check" style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;"></div>
           <div style="flex:1;">${escapeHtml(t.text)}</div>
         </div>
@@ -10376,26 +10376,40 @@ ${outputRules}`;
       if (modal) modal.classList.add('hidden');
     }
 
-    function toggleCoreSelection(id, el) {
+    function toggleCoreSelection(id) {
       const idx = pendingCoreSelections.indexOf(id);
-      const checkEl = el.querySelector('.core-check');
       if (idx > -1) {
         pendingCoreSelections.splice(idx, 1);
-        el.classList.remove('selected');
-        checkEl.style.background = 'transparent';
-        checkEl.style.borderColor = 'var(--border)';
-        checkEl.innerHTML = '';
       } else {
         if (coreTasks.length + pendingCoreSelections.length >= 3) {
           alert('오늘의 핵심은 최대 3개까지만 고를 수 있어요.');
           return;
         }
         pendingCoreSelections.push(id);
-        el.classList.add('selected');
-        checkEl.style.background = 'var(--accent)';
-        checkEl.style.borderColor = 'var(--accent)';
-        checkEl.innerHTML = '<span style="color:white;font-size:12px;font-weight:bold;">✓</span>';
       }
+      updateCoreSelectionUI();
+    }
+
+    function updateCoreSelectionUI() {
+      tasks.forEach(t => {
+        const el = document.getElementById(`core-choice-${t.id}`);
+        if (!el) return;
+        const checkEl = el.querySelector('.core-check');
+        if (!checkEl) return;
+        
+        const idx = pendingCoreSelections.indexOf(String(t.id));
+        if (idx > -1) {
+          el.classList.add('selected');
+          checkEl.style.background = 'var(--accent)';
+          checkEl.style.borderColor = 'var(--accent)';
+          checkEl.innerHTML = `<span style="color:white;font-size:12px;font-weight:bold;">${coreTasks.length + idx + 1}</span>`;
+        } else {
+          el.classList.remove('selected');
+          checkEl.style.background = 'transparent';
+          checkEl.style.borderColor = 'var(--border)';
+          checkEl.innerHTML = '';
+        }
+      });
     }
 
     function confirmCoreTaskSelections() {
