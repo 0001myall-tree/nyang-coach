@@ -2215,6 +2215,139 @@
       font-size: 14px;
     }
 
+    /* MASTER 전용 프리미엄 학습 카드 스타일 */
+    .premium-learn-card {
+      background-color: #FFFDF8;
+      border: 1px solid #E7C978;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(231, 201, 120, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      margin-top: 8px;
+    }
+
+    .premium-learn-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(231, 201, 120, 0.18);
+      background-color: #FFFDF4;
+    }
+
+    .premium-learn-card:active {
+      transform: translateY(0);
+    }
+
+    .premium-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .premium-badge-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #B5963E;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .premium-badge-right {
+      background: #FFF6DF;
+      border: 1px solid #E7C978;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      color: #A07C2E;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .premium-main-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .premium-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: #F0EEFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .premium-text-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .premium-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .premium-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #1A1A2E;
+    }
+
+    .premium-new-tag {
+      background: #F5F3FF;
+      color: #8B7CFF;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #DDD6FE;
+    }
+
+    .premium-desc {
+      font-size: 11px;
+      color: #5B4E7A;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .premium-arrow {
+      color: #8B7CFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .premium-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid #FFFDF8;
+      border-top: 2.5px solid #B5963E;
+      border-radius: 50%;
+      animation: spinPremium 0.8s linear infinite;
+    }
+
+    @keyframes spinPremium {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .input-box {
       flex: 1;
       padding: 11px 16px;
@@ -7271,6 +7404,36 @@
           </div>
         </div>
 
+        <!-- MASTER 전용 프리미엄 카드: 비서 학습 설정 -->
+        <div class="premium-learn-card" onclick="openPremiumLearnSettings()">
+          <div class="premium-top-row">
+            <div class="premium-badge-left">
+              <span>👑</span> MASTER 전용
+            </div>
+            <div class="premium-badge-right">
+              <span>🔒</span> MASTER
+            </div>
+          </div>
+          <div class="premium-main-content">
+            <div class="premium-icon-wrap">
+              📅
+            </div>
+            <div class="premium-text-column">
+              <div class="premium-title-row">
+                <span class="premium-title">비서 학습 설정</span>
+                <span class="premium-new-tag">NEW</span>
+              </div>
+              <div class="premium-desc">
+                고정 일정과 취침 시간을 설정하면 비서가 더 완벽한 일정을 짜드려요.
+              </div>
+            </div>
+            <div class="premium-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -7329,6 +7492,71 @@
         </span>
         <span>설정</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 비서 학습 설정 모달 (MASTER 전용) -->
+  <div id="premium-learn-overlay" class="modal-overlay hidden" onclick="closePremiumLearn(event)">
+    <div class="modal" style="max-width:380px; width:92%; padding:28px 24px; border-radius:28px; border: 1.5px solid #E7C978; box-shadow: 0 10px 30px rgba(231, 201, 120, 0.2); position: relative;" onclick="event.stopPropagation()">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">👑</span>
+          <span style="font-size:16px; font-weight:900; color:#B5963E; letter-spacing:-0.5px;">비서 학습 설정</span>
+        </div>
+        <button onclick="closePremiumLearn()" style="background:none; border:none; font-size:18px; cursor:pointer; color:#A0A0B0; transition: color 0.2s;">✕</button>
+      </div>
+      
+      <!-- Sleep pattern -->
+      <div style="background:#FFFDF8; border:1px solid #E7C978; border-radius:18px; padding:16px; margin-bottom:16px; box-shadow: 0 2px 8px rgba(231,201,120,0.05);">
+        <div style="font-size:13px; font-weight:800; color:#A07C2E; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+          💤 수면 시간대 설정
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-size:10px; color:#A0A0B0; margin-bottom:4px; font-weight:700;">취침 시간</div>
+            <input type="time" id="bedtime-input" value="23:00" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid #EEE9FF; font-family:inherit; font-size:13px; font-weight:600; outline:none; text-align:center;">
+          </div>
+          <div style="font-size:12px; color:#B5AEDD; font-weight:700; margin-top:14px;">~</div>
+          <div style="flex:1;">
+            <div style="font-size:10px; color:#A0A0B0; margin-bottom:4px; font-weight:700;">기상 시간</div>
+            <input type="time" id="waketime-input" value="07:00" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid #EEE9FF; font-family:inherit; font-size:13px; font-weight:600; outline:none; text-align:center;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Fixed routines -->
+      <div style="background:#FFFDF8; border:1px solid #E7C978; border-radius:18px; padding:16px; margin-bottom:20px; box-shadow: 0 2px 8px rgba(231,201,120,0.05);">
+        <div style="font-size:13px; font-weight:800; color:#A07C2E; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+          💼 고정 일정 (루틴)
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="text" id="routine-name-1" value="🏢 회사 업무" style="flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:12px; font-family:inherit; font-weight:600; outline:none;">
+            <input type="time" id="routine-time-1-start" value="09:00" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
+            <span style="font-size:10px; color:#B5AEDD;">~</span>
+            <input type="time" id="routine-time-1-end" value="18:00" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="text" id="routine-name-2" value="🏋️ 운동/독서" style="flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:12px; font-family:inherit; font-weight:600; outline:none;">
+            <input type="time" id="routine-time-2-start" value="20:00" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
+            <span style="font-size:10px; color:#B5AEDD;">~</span>
+            <input type="time" id="routine-time-2-end" value="21:30" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action button -->
+      <button id="learn-action-btn" onclick="savePremiumLearnSettings()" style="width:100%; padding:15px; border-radius:14px; border:none; background: linear-gradient(135deg, #E7C978, #B5963E); color:white; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; box-shadow: 0 4px 15px rgba(181, 150, 62, 0.2); transition: all 0.2s ease;">
+        ⚡ 비서 학습시키기
+      </button>
+      
+      <!-- Training status -->
+      <div id="learning-status-box" style="display:none; text-align:center; padding:12px; margin-top:8px;">
+        <div style="font-size:12px; font-weight:800; color:#B5963E; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <div class="premium-spinner"></div>
+          비서가 생활 패턴을 심층 학습하는 중...
+        </div>
+      </div>
     </div>
   </div>
 
@@ -11363,6 +11591,54 @@ ${outputRules}`;
     function closeVacationModal() {
       const modal = document.getElementById('vacation-modal');
       if (modal) modal.classList.add('hidden');
+    }
+
+    // ── MASTER 전용 비서 학습 설정 기능 ──
+    function openPremiumLearnSettings() {
+      const modal = document.getElementById('premium-learn-overlay');
+      if (modal) {
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function closePremiumLearn(e) {
+      if (e && e.target !== e.currentTarget) return;
+      const modal = document.getElementById('premium-learn-overlay');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function savePremiumLearnSettings() {
+      const btn = document.getElementById('learn-action-btn');
+      const statusBox = document.getElementById('learning-status-box');
+      if (!btn || !statusBox) return;
+
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      statusBox.style.display = 'block';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        statusBox.style.display = 'none';
+        
+        // Close modal
+        closePremiumLearn();
+        
+        // Show success notification/toast
+        const toast = document.createElement('div');
+        toast.className = 'flirt-toast show';
+        toast.style.borderColor = '#E7C978';
+        toast.style.boxShadow = '0 6px 20px rgba(231,201,120,0.2)';
+        toast.innerHTML = '✨ 비서 학습 완료! 대표님의 수면 시간대와 고정 일정을 완벽히 파악했습니다. 🐾';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 400);
+        }, 3500);
+      }, 2000);
     }
 
     function toggleVacationDay(day) {
