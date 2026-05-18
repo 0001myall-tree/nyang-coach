@@ -9538,7 +9538,9 @@ ${MEM_RULES.master}`
         escortMsg += `4. 고정 루틴 시간 피해서 배치\n`;
         escortMsg += `5. 취침 시간 전까지만 배치\n`;
         escortMsg += `6. 각 항목에 권장 시간대 포함\n`;
-        escortMsg += `7. 제안 후 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
+        escortMsg += `7. 먼저 1~2문장으로 오늘 상황 전체 요약 (예: "오늘 오후 3시 기준으로 미완료 항목이 4개 있어요. 집중력이 높은 지금 이 순서로 가보실까요?")\n`;
+        escortMsg += `8. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 시간에 배치했는지 한 줄 이유 설명 (예: "글쓰기는 3일째 미뤄지고 있어서 오전 집중 시간에 먼저 배치했어요.")\n`;
+        escortMsg += `9. 제안 후 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
 
         sendMessage(escortMsg);
 
@@ -9884,17 +9886,20 @@ ${MEM_RULES.master}`
       <div class="suggest-task-card" style="margin-top:10px;padding:11px 12px;background:#F9FAFB;border-radius:12px;border:1.5px solid #E5E7EB;">
         <div style="font-size:10px;font-weight:800;color:${accent};margin-bottom:4px;">📌 할 일로 추가할까요?</div>
         <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:${t.time ? '4px' : '10px'};">${escapeHtml(t.text)}</div>
-        ${t.time ? `<div style="font-size:11px;font-weight:700;color:#7C6BC4;margin-bottom:10px;">🕐 ${fmt12(t.time)}${t.timeEnd ? ' ~ ' + fmt12(t.timeEnd) : ''}</div>` : ''}
+        ${t.time ? `<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <span style="font-size:11px;font-weight:700;color:#7C6BC4;">🕐</span>
+          <input type="time" value="${t.time}" class="escort-time-start" style="font-size:11px;font-weight:700;color:#7C6BC4;border:1px solid #E5E7EB;border-radius:6px;padding:3px 6px;background:#F0EEFF;">
+          ${t.timeEnd ? `<span style="font-size:11px;color:#B5AEDD;">~</span>
+          <input type="time" value="${t.timeEnd}" class="escort-time-end" style="font-size:11px;font-weight:700;color:#7C6BC4;border:1px solid #E5E7EB;border-radius:6px;padding:3px 6px;background:#F0EEFF;">` : ''}</div>` : ''}
         <div style="display:flex;gap:8px;">
-          <button style="flex:1;padding:8px;background:${accent};color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px;" 
-            onclick="confirmSuggestTask(this,'${escapeHtml(t.text).replace(/'/g, "\\'")}','today','${t.time || ''}','${t.timeEnd || ''}')">추가하기 ✓</button>
+          <button style="flex:1;padding:8px;background:${accent};color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px;"
+            onclick="confirmEscortTask(this,'${escapeHtml(t.text).replace(/'/g, "\\'")}','today')">추가하기 ✓</button>
           <button style="flex:1;padding:8px;background:#F3F4F6;color:#6B7280;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:12px;"
             onclick="dismissSuggestTask(this)">괜찮아</button>
         </div>
       </div>`).join('');
         bubbleHtml += shtml;
       }
-
       if (proposedTasks.length > 0) {
         const phtml = proposedTasks.map(t => `<div class="proposed-task" style="margin-top:10px;padding:10px;background:var(--accent-light);border-radius:12px;font-size:13px;color:var(--text);border:1.5px solid var(--accent);"><div style="font-weight:900;margin-bottom:4px;font-size:11px;color:var(--accent);">할 일 추가 제안</div><div style="font-weight:700;margin-bottom:8px;">${escapeHtml(t.text)}</div><button style="width:100%;padding:8px;background:var(--accent);color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px;" onclick="approveTask(this, '${escapeHtml(t.text).replace(/'/g, "\\'")}', '${t.category || 'today'}')">승인하고 추가하기</button></div>`).join('');
         bubbleHtml += phtml;
@@ -9947,7 +9952,27 @@ ${MEM_RULES.master}`
         const timeLabel = time ? (' 🕐 ' + fmt12(time) + (timeEnd ? ' ~ ' + fmt12(timeEnd) : '')) : '';
         card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}" 추가됐어요!${timeLabel}</div>`;
       }
-      // 시간 없이 추가된 경우만 추적
+      if (!time) {
+        _lastAddedTaskId = taskId;
+        _lastAddedTaskText = text;
+      } else {
+        _lastAddedTaskId = null;
+        _lastAddedTaskText = null;
+      }
+    }
+
+    function confirmEscortTask(btn, text, category) {
+      const card = btn.closest('.suggest-task-card');
+      const startInput = card ? card.querySelector('.escort-time-start') : null;
+      const endInput = card ? card.querySelector('.escort-time-end') : null;
+      const time = startInput ? startInput.value : null;
+      const timeEnd = endInput ? endInput.value : null;
+
+      const taskId = addTask(text, category, time || null, timeEnd || null);
+      if (card) {
+        const timeLabel = time ? (' 🕐 ' + fmt12(time) + (timeEnd ? ' ~ ' + fmt12(timeEnd) : '')) : '';
+        card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}" 추가됐어요!${timeLabel}</div>`;
+      }
       if (!time) {
         _lastAddedTaskId = taskId;
         _lastAddedTaskText = text;
