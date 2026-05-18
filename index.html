@@ -9561,32 +9561,55 @@ ${MEM_RULES.master}`
         else if (hour >= 15 && hour < 20) focusNote = '오후는 집중력이 다시 올라오는 시간대예요. 중요한 작업을 배치하기 좋아요.';
         else focusNote = '저녁 시간이에요. 취침 전까지 가능한 것들을 정리해보세요.';
 
+        // 비전/마일스톤 데이터 추출
+        let visionSummary = '';
+        if (visions && visions.length > 0) {
+          visionSummary = visions.map(v => {
+            const milestones = (v.milestones || []).filter(m => !m.done).map(m => m.text).slice(0, 2).join(', ');
+            return `- ${v.text}${milestones ? ` (진행 중 마일스톤: ${milestones})` : ''}`;
+          }).join('\n');
+        }
+
+        // 오늘 전체 할 일 목록
+        const allTasksSummary = incompleteTasks.map(t => {
+          const isCore = coreTasks && coreTasks.some(c => c.text === t.text);
+          return `- ${t.text}${isCore ? ' [핵심]' : ''}${t.time ? ` (설정시간: ${t.time})` : ''}`;
+        }).join('\n');
+
         // 메시지 구성
         let escortMsg = `[일정 에스코트 요청]\n`;
         escortMsg += `현재 시간: ${hour}시\n`;
-        escortMsg += `오늘 미완료 항목: ${incompleteTasks.length}개\n`;
+        escortMsg += `\n[오늘 미완료 전체 목록]\n${allTasksSummary}\n`;
         if (frequentlyDelayed.length > 0) {
-          escortMsg += `자주 미뤄온 항목: ${frequentlyDelayed.map(t => t.text).join(', ')}\n`;
+          escortMsg += `\n자주 미뤄온 항목: ${frequentlyDelayed.map(t => t.text).join(', ')}\n`;
         }
         if (vagueItems.length > 0) {
           escortMsg += `구체적이지 않아 미뤄질 수 있는 항목: ${vagueItems.map(t => t.text).join(', ')}\n`;
         }
-        escortMsg += `집중력 참고: ${focusNote}\n`;
-        escortMsg += `\n위 정보를 바탕으로 오늘 남은 시간에 맞는 최적의 일정을 3~5개 제안해주세요. 다음을 반드시 고려하세요:\n`;
-        escortMsg += `1. 자주 미뤄온 항목은 왜 미뤄졌는지 한 마디 언급하고 현실적인 시간에 배치\n`;
-        escortMsg += `2. 구체적이지 않은 항목은 더 작게 쪼개서 제안 (예: "글쓰기" → "오늘 1단락 초안 쓰기")\n`;
-        escortMsg += `3. 중요도 순서 + 현재 시간대 집중력 고려해서 순서 배치\n`;
-        escortMsg += `4. 고정 루틴 시간 피해서 배치\n`;
-        escortMsg += `5. 취침 시간 전까지만 배치\n`;
-        escortMsg += `6. 각 항목에 권장 시간대 포함\n`;
-        escortMsg += `7. 먼저 1~2문장으로 오늘 상황 전체 요약 (예: "오늘 오후 3시 기준으로 미완료 항목이 4개 있어요. 집중력이 높은 지금 이 순서로 가보실까요?")\n`;
-        escortMsg += `8. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 시간에 배치했는지 한 줄 이유 설명 (예: "글쓰기는 3일째 미뤄지고 있어서 오전 집중 시간에 먼저 배치했어요.")\n`;
-        escortMsg += `9. 제안 후 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
+        if (visionSummary) {
+          escortMsg += `\n[장기 비전/마일스톤]\n${visionSummary}\n`;
+        }
+        escortMsg += `\n집중력 참고: ${focusNote}\n`;
+        escortMsg += `\n위 정보를 바탕으로 오늘 남은 시간에 맞는 최적의 일정을 짜주세요. 다음을 반드시 고려하세요:\n`;
+        escortMsg += `1. [핵심] 표시된 항목은 반드시 포함하고 우선순위 최상위에 배치\n`;
+        escortMsg += `2. 비전/마일스톤과 의미상 연결되는 할 일은 우선순위 높게 배치하고 연결 이유 한 줄 설명\n`;
+        escortMsg += `3. 자주 미뤄온 항목은 왜 미뤄졌는지 한 마디 언급하고 현실적인 시간에 배치\n`;
+        escortMsg += `4. 구체적이지 않은 항목(한 단어 등)은 더 작게 쪼개서 제안 (예: "글쓰기" → "오늘 1단락 초안 쓰기")\n`;
+        escortMsg += `5. 현재 시간대 집중력 고려해서 순서 배치\n`;
+        escortMsg += `6. 고정 루틴 시간 피해서 배치\n`;
+        escortMsg += `7. 취침 시간 전까지만 배치\n`;
+        escortMsg += `8. 오늘 전체 할 일을 다 소화할 수 있도록 짜되, 시간이 부족하면 덜 중요한 것은 솔직하게 "오늘은 빠듯할 수 있어요"라고 언급\n`;
+        escortMsg += `9. 먼저 1~2문장으로 오늘 상황 전체 요약\n`;
+        escortMsg += `10. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 순서/시간에 배치했는지 한 줄 이유 설명\n`;
+        escortMsg += `11. 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
+        escortMsg += `12. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것\n`;
 
         sendEscortCheatkey(escortMsg);
 
       } else if (actionName === '비서의 특급 잔소리') {
         const nagMsg = `[특급 잔소리 요청]\n오늘 할 일 현황과 습관 미완료 현황을 보고, 지금 안 하고 있는 것들을 콕 집어서 따끔하게 한 소리 해주세요. 단, 너무 길지 않게 핵심만 짧고 강하게요.`;
+        // 잔소리도 사용자 말풍선 숨기고 AI한테만 전달
+        addMessage('user', '🔥 비서의 특급 잔소리', true);
         sendMessage(nagMsg);
       }
     }
@@ -10743,7 +10766,11 @@ ${outputRules}`;
           temperature: 0.7
         });
 
-        const replyText = response.data.content || "미안해요, 잠시 생각을 정리하고 있어요. 다시 말해줄래요?";
+        const replyText = (response.data.content || "미안해요, 잠시 생각을 정리하고 있어요. 다시 말해줄래요?")
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/^#{1,6}\s+/gm, '')
+          .replace(/`([^`]+)`/g, '$1');
         const cleaned = parseAndAddTasks(replyText);
 
         chatHistory.push({ role: 'assistant', content: replyText });
