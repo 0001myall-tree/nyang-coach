@@ -9482,12 +9482,70 @@ ${MEM_RULES.master}`
     }
 
     function selectCheatkey(actionName) {
-      // 팝업 메뉴 닫기
       const menu = document.getElementById('cheatkey-menu');
       if (menu) menu.classList.remove('open');
 
-      // [개발용 안내] 이 위치에 나중에 원하시는 클릭 동작 기능을 자유롭게 구현하시면 됩니다.
-      console.log(`치트키 클릭됨: ${actionName}`);
+      if (actionName === '일정 에스코트') {
+        const now = new Date();
+        const hour = now.getHours();
+        const todayTasks = tasks.filter(t => t.category === 'today' || t.category === 'habit');
+        const incompleteTasks = todayTasks.filter(t => !t.done);
+        const completedTasks = todayTasks.filter(t => t.done);
+
+        // 자주 미뤄온 항목 감지
+        const today = getTodayStr();
+        const frequentlyDelayed = incompleteTasks.filter(t => {
+          if (!t.habitId) return false;
+          const logs = habitLogs[String(t.habitId)] || {};
+          let missCount = 0;
+          for (let i = 1; i <= 7; i++) {
+            const d = new Date(now);
+            d.setDate(now.getDate() - i);
+            const ds = d.toISOString().slice(0, 10);
+            if (!logs[ds] || !logs[ds].done) missCount++;
+          }
+          return missCount >= 3;
+        });
+
+        // 구체성 낮은 항목 감지 (한 단어 or 5글자 이하)
+        const vagueItems = incompleteTasks.filter(t => {
+          const text = t.text.trim();
+          return text.length <= 5 || !text.includes(' ');
+        });
+
+        // 시간대별 집중력 판단
+        let focusNote = '';
+        if (hour >= 6 && hour < 12) focusNote = '오전은 집중력이 높은 시간대예요. 어려운 작업을 앞에 배치하세요.';
+        else if (hour >= 12 && hour < 15) focusNote = '점심 이후는 집중력이 낮아지는 시간대예요. 가벼운 작업을 배치하세요.';
+        else if (hour >= 15 && hour < 20) focusNote = '오후는 집중력이 다시 올라오는 시간대예요. 중요한 작업을 배치하기 좋아요.';
+        else focusNote = '저녁 시간이에요. 취침 전까지 가능한 것들을 정리해보세요.';
+
+        // 메시지 구성
+        let escortMsg = `[일정 에스코트 요청]\n`;
+        escortMsg += `현재 시간: ${hour}시\n`;
+        escortMsg += `오늘 미완료 항목: ${incompleteTasks.length}개\n`;
+        if (frequentlyDelayed.length > 0) {
+          escortMsg += `자주 미뤄온 항목: ${frequentlyDelayed.map(t => t.text).join(', ')}\n`;
+        }
+        if (vagueItems.length > 0) {
+          escortMsg += `구체적이지 않아 미뤄질 수 있는 항목: ${vagueItems.map(t => t.text).join(', ')}\n`;
+        }
+        escortMsg += `집중력 참고: ${focusNote}\n`;
+        escortMsg += `\n위 정보를 바탕으로 오늘 남은 시간에 맞는 최적의 일정을 3~5개 제안해주세요. 다음을 반드시 고려하세요:\n`;
+        escortMsg += `1. 자주 미뤄온 항목은 왜 미뤄졌는지 한 마디 언급하고 현실적인 시간에 배치\n`;
+        escortMsg += `2. 구체적이지 않은 항목은 더 작게 쪼개서 제안 (예: "글쓰기" → "오늘 1단락 초안 쓰기")\n`;
+        escortMsg += `3. 중요도 순서 + 현재 시간대 집중력 고려해서 순서 배치\n`;
+        escortMsg += `4. 고정 루틴 시간 피해서 배치\n`;
+        escortMsg += `5. 취침 시간 전까지만 배치\n`;
+        escortMsg += `6. 각 항목에 권장 시간대 포함\n`;
+        escortMsg += `7. 제안 후 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
+
+        sendMessage(escortMsg);
+
+      } else if (actionName === '비서의 특급 잔소리') {
+        const nagMsg = `[특급 잔소리 요청]\n오늘 할 일 현황과 습관 미완료 현황을 보고, 지금 안 하고 있는 것들을 콕 집어서 따끔하게 한 소리 해주세요. 단, 너무 길지 않게 핵심만 짧고 강하게요.`;
+        sendMessage(nagMsg);
+      }
     }
 
     // 문서 클릭 시 치트키 메뉴 닫기 이벤트 리스너
@@ -10390,6 +10448,42 @@ ${profileCtx}
    - 거부하면 응원하고 [HABIT_KEEP:습관명] 태그를 답변 끝에 추가.
    - 하고 싶다는 뉘앙스 → "오늘 언제 하실 것 같으세요?" 하고 물어본다. 사용자가 시간을 말하면 할 일에 시간을 등록해주고 응원한다.
 *절대 처음부터 삭제/내려놓기를 제안하지 말 것.\n`;
+        }
+      }
+
+      // 비서 전용: 취침 시간, 고정 루틴, 현재 시간 context 추가
+      if (tier === 'master') {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const timeOfDay = currentHour < 12 ? '오전' : currentHour < 18 ? '오후' : '저녁';
+        ctx += `\n[현재 시간]\n${timeOfDay} ${currentHour}시 ${currentMinute}분\n`;
+
+        const bedtime = localStorage.getItem('nyang_premium_bedtime');
+        if (bedtime) {
+          const [bh, bm] = bedtime.split(':');
+          const bHour = parseInt(bh);
+          ctx += `\n[취침 예정 시간]\n${bHour >= 12 ? '오후' : '오전'} ${bHour > 12 ? bHour - 12 : bHour}시 ${bm}분 (이 시간 이후로는 일정 배치 금지)\n`;
+        }
+
+        const routinesRaw = localStorage.getItem('nyang_premium_routines');
+        if (routinesRaw) {
+          try {
+            const routines = JSON.parse(routinesRaw);
+            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+            const todayDay = dayNames[now.getDay()];
+            const todayRoutines = routines.filter(r => !r.days || r.days.length === 0 || r.days.includes(todayDay));
+            if (todayRoutines.length > 0) {
+              ctx += `\n[오늘 고정 루틴 (일정 배치 시 이 시간대 피할 것)]\n`;
+              todayRoutines.forEach(r => {
+                const startH = parseInt(r.start.split(':')[0]);
+                const startM = r.start.split(':')[1];
+                const endH = parseInt(r.end.split(':')[0]);
+                const endM = r.end.split(':')[1];
+                ctx += `- ${r.name}: ${startH >= 12 ? '오후' : '오전'} ${startH > 12 ? startH - 12 : startH}:${startM} ~ ${endH >= 12 ? '오후' : '오전'} ${endH > 12 ? endH - 12 : endH}:${endM}\n`;
+              });
+            }
+          } catch(e) {}
         }
       }
 
