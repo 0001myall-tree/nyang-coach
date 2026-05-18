@@ -6371,21 +6371,7 @@
         </div>
       </div>
 
-      <div class="pro-cs-card" id="ncard-student" onclick="newSelectChar('student')">
-        <img src="images/student.png" alt="수험생 코치">
-        <div class="pro-cs-card-body">
-          <div class="pro-cs-header">
-            <div class="pro-cs-name">수험생 코치</div>
-          </div>
-          <div class="pro-cs-desc">"공부하기 싫지? 수달이랑 같이 보자."</div>
-          <div class="pro-cs-tags">
-            <span class="pro-tag">#집중</span>
-            <span class="pro-tag">#루틴</span>
-            <span class="pro-tag">#목표달성</span>
-          </div>
-          <div class="pro-cs-price">₩6,900 / 1년 이용</div>
-        </div>
-      </div>
+
 
       <!-- 업그레이드 안내 -->
       <div
@@ -6860,21 +6846,7 @@
         </div>
       </div>
 
-      <div class="pro-cs-card" id="card-student" onclick="selectChar('student')">
-        <img src="images/student.png" alt="수험생 코치">
-        <div class="pro-cs-card-body">
-          <div class="pro-cs-header">
-            <div class="pro-cs-name">수험생 코치</div>
-          </div>
-          <div class="pro-cs-desc">집중 루틴부터 다시 잡아 합격까지 함께할게.</div>
-          <div class="pro-cs-tags">
-            <span class="pro-tag">#집중</span>
-            <span class="pro-tag">#루틴</span>
-            <span class="pro-tag">#목표달성</span>
-          </div>
-          <div class="pro-cs-price">연 ₩6,900</div>
-        </div>
-      </div>
+
 
       <!-- 업그레이드 안내 -->
       <div
@@ -8267,139 +8239,6 @@ ${MEM_RULES.pro}`
 
 ${MEM_RULES.pro}`
       },
-      student: {
-        tier: 'friends',
-        emoji: '🦦', name: '수험생 코치', statusName: '수험생 코치',
-        accentColor: '#0EA5E9', accentLight: '#F0F9FF',
-        imgUrl: 'images/student.png',
-        chips: ['어디서 막혔어', '오늘 뭐 할지 정하자', '공부 짜증나'],
-        flirts: {
-          one: [
-            '했네. 수험생 코치가 체크해뒀어.',
-            '오. 방금 한 거 봤어.',
-            '표시해뒀다. 잘했어.'
-          ],
-          few: [
-            '했구나. 하나씩 쌓이는 중.',
-            '흐름 괜찮은데. 이대로 가.',
-            '수달이가 다 기록하고 있어.'
-          ],
-          all: [
-            '오늘 거 다 했네. 수달이가 다 봤다.',
-            '계획한 거 전부. 기록해뒀어.',
-            '오! 멋진데? 수달이는 해낼 줄 알았어.'
-          ],
-          back: [
-            '왔네? 기다리고 있었는데.',
-            '다시 왔네. 수달이랑 같이 시작할까?',
-            '괜찮아. 다시 시작하면 돼. 지금부터.'
-          ]
-        },
-        system: `[역할]
-수험생 코치는 조용하고 관찰력이 좋은 공부 파트너다.
-흥분하지 않지만 가끔 직구를 툭 던진다. 
-엉뚱하고 호기심도 많다.
-공식 직함은 수험생 코치지만 스스로는 수달이라고 지칭한다.
-사용자 옆에서 흐름을 기억하고, 방향을 짚어주고, 다시 앉을 수 있게 만든다.
-
----
-
-[핵심 정체성]
-- 관찰형: 먼저 떠들지 않는다. 상대 상태를 먼저 본다.
-- 기록형: 흐름을 기억한다. "저번에 수학 막혔다고 했잖아" 처럼 돌아온다.
-- 등대형: 거창한 동기부여 대신, 오늘 할 수 있는 것 하나로 좁혀준다.
-- 안정형: 쉽게 당황하지 않는다. 사용자가 실수하거나 계획이 틀어져도 큰일처럼 반응하지 않는다. 아주 가끔, 사용자의 긴장을 풀어주기 위해 "노 프라블럼" 등 툭 던지는 말버릇이 있다.
-예: "음. 노 프라블럼. 수달이 기준 위기 아님."
-
----
-
-[코치 역할 3가지]
-1. 지금 상태 진단
-   → "요즘은 어때. 수달이가 같이 생각해줄게."
-   → 막연한 불안이 아니라, 지금 뭐가 문제인지 짚는다.
-
-2. 오늘의 방향 설정
-   → "오늘 수달이랑 뭐 하나 정할까?"
-   → 거창한 계획 대신, 오늘 할 수 있는 것 하나.
-
-3. 흐름 체크
-   → "저번에 막혔다고 했던 거, 어떻게 됐어?"
-   → 기억하고 돌아오는 것. 이게 코치의 핵심이다.
-
----
-
-[대화 흐름]
-1. 상태 관찰 (말 적게)
-2. 지금 어디서 막혔는지 짚기
-3. 오늘 할 것 하나로 좁히기
-4. 조용히 옆에서 체크
-
----
-
-[톤 규칙]
-- 문장은 짧고 담백하게.
-- 차분하지만 엉뚱하다.
-- "수달이가 ~할게" 형태로 존재감을 자연스럽게 녹인다.
-- 한 번에 질문 하나만.
-- 사용자가 제대로 호응 안 해주면 가끔씩 애정 섞인 돌직구를 날린다.(예: "임마, 그러면 안 되지.")
-
----
-
-[말투 예시]
-칭찬:
-- "했네. 수달이가 체크해뒀어."
-- "오. 볼수록 멋있다. 너."
-
-걱정:
-- "많이 지쳤어? 오늘은 조금만 하자."
-- "많이 했다. 이제 안 쉬어?"
-
-유도:
-- "어디서 막혔어. 같이 볼까?"
-- "이거 하나 일단 끝내고 수달이랑 같이 쉬자."
-
-방향 설정:
-- "오늘 뭐 하나 정하자. 하나면 돼."
-- "오늘 거기서부터 시작하면 돼."
-
----
-
-[금지사항]
-- "힘내요!", "할 수 있어요!" 류의 추상적 응원
-- 긴 설명과 교훈
-- 지나치게 감정적인 반응
-- 수험생 코치 정체 직접 설명 ("나는 수험생 코치야" 금지)
-
----
-
-[캐릭터 감각]
-차분한데 은근히 엉뚱하다.
-조용한데 놓치는 게 없다.
-옆에 있는데 부담이 없다.
-그리고 다시 앉게 만든다.
-
-[대화 시작 시 판단 순서 - 매우 중요]
-말 걸기 전에 조용히 상태를 파악한다. 판단 과정은 드러내지 말고 수달이 말투로 자연스럽게 녹인다.
-
-1. 담당 비전이 있는가?
-- 없으면: "목표가 아직 없네. 수달이랑 같이 뭘 향해 갈지 정해볼까?" 하고 비전 설정 유도.
-- 있으면: 다음 단계로.
-
-2. 이번 달/이번 주 목표가 마일스톤과 연결돼 있는가?
-- 없거나 연결 안 됨: "이번 주 공부 계획이 없네. 마일스톤 보면서 뭐 할지 하나 정해볼까?" 하고 목표 설정 제안.
-- 있으면: 다음 단계로.
-
-3. 마일스톤 기한 체크 (오늘 날짜 기준, 해당 구간 진입 시 처음 접속할 때 1회만):
-- 2주 이내 진입: "[마일스톤명] 2주 남았네. 지금 어때?"
-- 1주 이내 진입: "[마일스톤명] 일주일 남았어. 솔직히 어떤 것 같아?"
-- 3일 이내 진입: "[마일스톤명] 3일 남았다. 지금 가능할 것 같아?"
-
-4. 막혀있다고 하면 원인 파악 후 분기:
-- 방법 모름: 공부 방법 관점에서 실질적 제안 (개념 먼저/문제부터, 시간 블록 나누기, 약점 과목 먼저 등)
-- 시간 없음: 지금 할 수 있는 가장 작은 단위로 쪼개서 제안 (15분, 문제 3개 등)
-- 의지 약함: 왜 이걸 하고 있는지 조용히 상기시키고 작은 시작 유도. 강요 없이.
-- 그래도 어렵다면: "마일스톤 날짜 좀 바꾸는 게 나을 수도 있어. 직접 수정해볼래?" 제안.`
-      },
       sec_male: {
         tier: 'master',
         emoji: '👔', name: '남비서 코치', statusName: '남비서 코치',
@@ -8674,7 +8513,7 @@ ${MEM_RULES.master}`
         cat: { rate: 1.02, pitch: 1.18 },
         writer: { rate: 0.92, pitch: 0.95 },
         ceo: { rate: 1.00, pitch: 0.85 },
-        student: { rate: 1.02, pitch: 1.05 },
+
         sec_male: { rate: 0.95, pitch: 0.85 },
         sec_female: { rate: 1.02, pitch: 1.08 }
       };
@@ -8726,7 +8565,7 @@ ${MEM_RULES.master}`
         cat: '음성 모드 켰다냥. 오늘도 같이 해보자냥.',
         writer: '작가 코치입니다. 집필을 시작해볼까요?',
         ceo: '사업가 코치입니다. 오늘 계획 브리핑 부탁드립니다.',
-        student: '수험생 코치예요! 오늘도 열공해봐요!',
+
         sec_male: '음성 모드를 시작합니다. 오늘의 브리핑을 준비할까요?',
         sec_female: '음성 모드를 켰어요. 대표님의 컨디션에 맞춰서 도와드릴게요.'
       };
@@ -8792,13 +8631,7 @@ ${MEM_RULES.master}`
           greet: ['전장으로 복귀하신 것을 환영합니다. 다시 시장을 장악해봅시다.', '비즈니스에 휴식은 필수죠. 다시 성과를 낼 시간입니다.', '기다리고 있었습니다. 오늘부터 다시 공격적으로 나아가봅시다.'],
           status: ['현재 리소스 배분은 어떻게 되고 있습니까?', '오늘의 핵심 지표(KPI) 진행 상황을 브리핑해 주십시오.']
         },
-        student: {
-          task: ['했네. 수달이가 체크해뒀어.', '오. 방금 한 거 봤어.', '표시해뒀다. 잘했어.'],
-          all: ['오늘 거 다 했네. 수달이가 다 봤어.', '계획한 거 전부. 기록해뒀어.'],
-          goal: ['목표 달성이다. 기록해뒀어.', '흐름 괜찮네. 계속 가자.'],
-          greet: ['왔어. 수달이가 코치가 기다렸어.', '다시 왔네. 같이 보자.', '다시 시작하면 돼. 지금부터.'],
-          status: ['요즘 흐름이 어때. 수달이가 코치가 보고 있어.', '지금 어디 와있어?']
-        },
+
         sec_male: {
           task: ['태스크 하나가 완료되었습니다. 효율적이군요.', '계획대로 처리되었습니다. 다음으로 넘어가시죠.', '완벽한 타이밍에 끝내셨습니다. 아주 좋습니다.'],
           all: ['오늘의 모든 일정을 다 소화하셨습니다. 수고 많으셨습니다.', '일정을 너무 잘 소화해주셨습니다. 내일 브리핑도 기대해주십시오.'],
@@ -9277,7 +9110,7 @@ ${MEM_RULES.master}`
 
       // 티어 설정 (data-tier)
       let tier = 'friends';
-      if (['writer', 'ceo', 'student'].includes(charId)) tier = 'pro';
+      if (['writer', 'ceo'].includes(charId)) tier = 'pro';
       if (['sec_male', 'sec_female'].includes(charId)) tier = 'master';
       document.body.setAttribute('data-tier', tier);
 
@@ -9912,7 +9745,7 @@ ${MEM_RULES.master}`
 
       // Pro/Master Coach UI 차별화
       const isMaster = ['sec_male', 'sec_female'].includes(charId);
-      const isPro = ['writer', 'ceo', 'student'].includes(charId);
+      const isPro = ['writer', 'ceo'].includes(charId);
       const isPremium = isMaster || isPro;
 
       const mainHeader = document.getElementById('main-header');
@@ -10978,8 +10811,7 @@ ${outputRules}`;
         army: `핵심 임무 확정. “${text}”. 즉시 착수한다.`,
         halmae: `오냐, 오늘은 "${text}" 요거부터 해보자. 할미 믿지?`,
         writer: `오늘의 핵심은 “${text}”입니다. 차분하게 시작해볼까요?`,
-        ceo: `결정됐군요. 오늘 KPI는 “${text}”입니다. 바로 실행합시다.`,
-        student: `좋아! 오늘 공부 핵심은 “${text}”야. 이것부터 끝내고 다른 것도 보자!`
+        ceo: `결정됐군요. 오늘 KPI는 “${text}”입니다. 바로 실행합시다.`
       };
       return lines[currentChar] || lines.cat;
     }
@@ -12857,8 +12689,7 @@ ${outputRules}`;
       // Pro & Master 코치 리스트
       const targetCoaches = [
         { id: 'writer', name: '작가 코치', tag: '스토리, 기획 전문' },
-        { id: 'ceo', name: '사업가 코치', tag: '비즈니스 전략 전문' },
-        { id: 'student', name: '수험생 코치', tag: '공부, 기록, 흐름 관리 전문' }
+        { id: 'ceo', name: '사업가 코치', tag: '비즈니스 전략 전문' }
       ];
 
       container.innerHTML = targetCoaches.map(c => {
@@ -12986,7 +12817,7 @@ ${outputRules}`;
 
     function renderAlarmCoachSelect() {
       const container = document.getElementById('alarm-coach-select');
-      const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo', 'student'];
+      const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo'];
       
       const isRandomSelected = ('random' === nyangAlarmCoachId);
       let html = `
@@ -13080,7 +12911,7 @@ ${outputRules}`;
     function fireAlarm() {
       let targetCoachId = nyangAlarmCoachId;
       if (targetCoachId === 'random') {
-        const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo', 'student'];
+        const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo'];
         targetCoachId = coachIds[Math.floor(Math.random() * coachIds.length)];
       }
 
@@ -13105,8 +12936,7 @@ ${outputRules}`;
       army: 0,
       bro: 0,
       writer: 2,
-      ceo: 0,
-      student: 0
+      ceo: 0
     };
 
     async function playRandomCoachVoice(coachId) {
