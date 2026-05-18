@@ -9078,12 +9078,20 @@ ${MEM_RULES.master}`
         };
       }
 
-      document.getElementById('habit-input-overlay').classList.remove('hidden');
+      const overlay = document.getElementById('habit-input-overlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => overlay.classList.add('show'));
+      }
     }
 
     function closeHabitInput(e) {
       if (e && e.target !== document.getElementById('habit-input-overlay')) return;
-      document.getElementById('habit-input-overlay').classList.add('hidden');
+      const overlay = document.getElementById('habit-input-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       _habitInputTaskId = null;
       _habitInputHabitId = null;
     }
@@ -9111,7 +9119,11 @@ ${MEM_RULES.master}`
       habitLogs[String(habit.id)][getTodayStr()] = log;
       saveHabitLogs();
 
-      document.getElementById('habit-input-overlay').classList.add('hidden');
+      const overlay = document.getElementById('habit-input-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       completeTask(task);
     }
 
@@ -9123,7 +9135,11 @@ ${MEM_RULES.master}`
         habitLogs[String(_habitInputHabitId)][getTodayStr()] = { done: true, completedAt: new Date().toISOString() };
         saveHabitLogs();
       }
-      document.getElementById('habit-input-overlay').classList.add('hidden');
+      const overlay = document.getElementById('habit-input-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       completeTask(task);
     }
 
@@ -11414,12 +11430,20 @@ ${outputRules}`;
       setHabitTimeType(_habitTimeType);
       updateHabitDayBtns();
       updateHabitTrackingToggle();
-      document.getElementById('habit-modal-overlay').classList.remove('hidden');
+      const overlay = document.getElementById('habit-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => overlay.classList.add('show'));
+      }
     }
 
     function closeHabitModal(e) {
       if (e && e.target !== document.getElementById('habit-modal-overlay')) return;
-      document.getElementById('habit-modal-overlay').classList.add('hidden');
+      const overlay = document.getElementById('habit-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       _habitEditId = null;
     }
 
@@ -11541,7 +11565,11 @@ ${outputRules}`;
       }
 
       saveHabits();
-      document.getElementById('habit-modal-overlay').classList.add('hidden');
+      const overlay = document.getElementById('habit-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       _habitEditId = null;
       renderHabits();
       injectTodayHabits(); // 오늘 탭에 반영
@@ -11828,10 +11856,18 @@ ${outputRules}`;
         document.getElementById('time-input-end').value = '';
         setTimeType('single');
       }
-      document.getElementById('time-modal-overlay').classList.remove('hidden');
+      const overlay = document.getElementById('time-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => overlay.classList.add('show'));
+      }
     }
     function closeTimeModal(e) {
-      document.getElementById('time-modal-overlay').classList.add('hidden');
+      const overlay = document.getElementById('time-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       _timeTargetId = null;
     }
     function setTimeType(type) {
@@ -11870,7 +11906,11 @@ ${outputRules}`;
         t.time = fmt12(start);
       }
       saveTasks(); renderTasks(); renderMobileTasks();
-      document.getElementById('time-modal-overlay').classList.add('hidden');
+      const overlay = document.getElementById('time-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       _timeTargetId = null;
     }
     function clearTaskTime() {
@@ -11878,7 +11918,11 @@ ${outputRules}`;
       const t = tasks.find(t => String(t.id) === String(_timeTargetId));
       if (t) { delete t.time; delete t.timeStart; delete t.timeEnd; }
       saveTasks(); renderTasks(); renderMobileTasks();
-      document.getElementById('time-modal-overlay').classList.add('hidden');
+      const overlay = document.getElementById('time-modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.classList.add('hidden');
+      }
       _timeTargetId = null;
     }
 
