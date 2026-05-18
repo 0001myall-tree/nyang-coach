@@ -9220,28 +9220,13 @@ ${MEM_RULES.master}`
       if (!menu) return;
 
       let html = '';
-      if (currentChar === 'sec_male') {
+      if (currentChar === 'sec_male' || currentChar === 'sec_female') {
         html = `
-          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('실시간 업무 브리핑')">
-            <span class="item-icon">👔</span> 실시간 업무 브리핑
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('일정 에스코트')">
+            <span class="item-icon">🗺️</span> 일정 에스코트
           </button>
           <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('비서의 특급 잔소리')">
             <span class="item-icon">🔥</span> 비서의 특급 잔소리
-          </button>
-          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('5분 집중 챌린지')">
-            <span class="item-icon">⏱</span> 5분 집중 챌린지
-          </button>
-        `;
-      } else if (currentChar === 'sec_female') {
-        html = `
-          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('실시간 컨디션 조율')">
-            <span class="item-icon">🌸</span> 실시간 컨디션 조율
-          </button>
-          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('5분 집중 리프레시')">
-            <span class="item-icon">☕</span> 5분 집중 리프레시
-          </button>
-          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('여비서의 특급 응원')">
-            <span class="item-icon">💖</span> 여비서의 특급 응원
           </button>
         `;
       }
