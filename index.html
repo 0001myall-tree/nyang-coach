@@ -7507,19 +7507,13 @@
       
       <!-- Sleep pattern -->
       <div style="background:#FFFDF8; border:1px solid #E7C978; border-radius:18px; padding:16px; margin-bottom:16px; box-shadow: 0 2px 8px rgba(231,201,120,0.05);">
-        <div style="font-size:13px; font-weight:800; color:#A07C2E; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-          💤 수면 시간대 설정
+        <div style="font-size:13px; font-weight:800; color:#A07C2E; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          💤 희망 수면 시간대
         </div>
-        <div style="display:flex; gap:12px; align-items:center;">
-          <div style="flex:1;">
-            <div style="font-size:10px; color:#A0A0B0; margin-bottom:4px; font-weight:700;">취침 시간</div>
-            <input type="time" id="bedtime-input" value="23:00" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid #EEE9FF; font-family:inherit; font-size:13px; font-weight:600; outline:none; text-align:center;">
-          </div>
-          <div style="font-size:12px; color:#B5AEDD; font-weight:700; margin-top:14px;">~</div>
-          <div style="flex:1;">
-            <div style="font-size:10px; color:#A0A0B0; margin-bottom:4px; font-weight:700;">기상 시간</div>
-            <input type="time" id="waketime-input" value="07:00" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid #EEE9FF; font-family:inherit; font-size:13px; font-weight:600; outline:none; text-align:center;">
-          </div>
+        <div style="font-size:11px; color:#A0A0B0; margin-bottom:12px;">* 입력 필수 아님</div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="font-size:10px; color:#A0A0B0; margin-bottom:4px; font-weight:700;">취침 시간</div>
+          <input type="time" id="bedtime-input" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid #EEE9FF; font-family:inherit; font-size:13px; font-weight:600; outline:none; text-align:center;">
         </div>
       </div>
       
@@ -7528,20 +7522,12 @@
         <div style="font-size:13px; font-weight:800; color:#A07C2E; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
           💼 고정 일정 (루틴)
         </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <div style="display:flex; gap:8px; align-items:center;">
-            <input type="text" id="routine-name-1" value="🏢 회사 업무" style="flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:12px; font-family:inherit; font-weight:600; outline:none;">
-            <input type="time" id="routine-time-1-start" value="09:00" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
-            <span style="font-size:10px; color:#B5AEDD;">~</span>
-            <input type="time" id="routine-time-1-end" value="18:00" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
-          </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <input type="text" id="routine-name-2" value="🏋️ 운동/독서" style="flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:12px; font-family:inherit; font-weight:600; outline:none;">
-            <input type="time" id="routine-time-2-start" value="20:00" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
-            <span style="font-size:10px; color:#B5AEDD;">~</span>
-            <input type="time" id="routine-time-2-end" value="21:30" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
-          </div>
+        <div id="routine-list-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+          <!-- Rows injected dynamically -->
         </div>
+        <button type="button" onclick="addNewRoutineRow()" onmouseover="this.style.background='#FFF9EB'; this.style.borderColor='#B5963E';" onmouseout="this.style.background='#FFFDF8'; this.style.borderColor='#E7C978';" style="width:100%; padding:10px; border-radius:10px; border:1.5px dashed #E7C978; background:#FFFDF8; color:#B5963E; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; transition: all 0.2s; outline:none;">
+          ➕ 고정 일정 추가
+        </button>
       </div>
       
       <!-- Action button -->
@@ -11596,7 +11582,42 @@ ${outputRules}`;
     function openPremiumLearnSettings() {
       const modal = document.getElementById('premium-learn-overlay');
       if (modal) {
+        // Initialize dynamic routine container with at least 1 empty row
+        const container = document.getElementById('routine-list-container');
+        if (container) {
+          container.innerHTML = '';
+          addNewRoutineRow(); // Add one initial empty row
+        }
         modal.classList.remove('hidden');
+      }
+    }
+
+    function addNewRoutineRow(name = "", start = "", end = "") {
+      const container = document.getElementById('routine-list-container');
+      if (!container) return;
+
+      const row = document.createElement('div');
+      row.className = 'routine-row';
+      row.style.display = 'flex';
+      row.style.gap = '6px';
+      row.style.alignItems = 'center';
+      row.innerHTML = `
+        <input type="text" placeholder="예) 회사, 운동" value="${name}" class="routine-name-input" style="flex:1; padding:8px 10px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:12px; font-family:inherit; font-weight:600; outline:none;">
+        <input type="time" value="${start}" class="routine-start-input" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
+        <span style="font-size:10px; color:#B5AEDD;">~</span>
+        <input type="time" value="${end}" class="routine-end-input" style="width:75px; padding:6px; border-radius:8px; border:1.5px solid #EEE9FF; font-size:11px; font-family:inherit; font-weight:600; text-align:center;">
+        <button type="button" onclick="deleteRoutineRow(this)" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';" style="background:none; border:none; color:#FF6B6B; font-size:15px; cursor:pointer; padding:4px 8px; display:flex; align-items:center; justify-content:center; transition: transform 0.2s; outline:none;">✕</button>
+      `;
+      container.appendChild(row);
+    }
+
+    function deleteRoutineRow(button) {
+      const row = button.closest('.routine-row');
+      if (row) {
+        row.style.opacity = '0';
+        row.style.transform = 'scale(0.9)';
+        row.style.transition = 'all 0.2s ease';
+        setTimeout(() => row.remove(), 200);
       }
     }
 
@@ -11630,7 +11651,7 @@ ${outputRules}`;
         toast.className = 'flirt-toast show';
         toast.style.borderColor = '#E7C978';
         toast.style.boxShadow = '0 6px 20px rgba(231,201,120,0.2)';
-        toast.innerHTML = '✨ 비서 학습 완료! 대표님의 수면 시간대와 고정 일정을 완벽히 파악했습니다. 🐾';
+        toast.innerHTML = '✨ 비서 학습 완료! 대표님의 희망 수면 시간대와 고정 일정을 완벽히 파악했습니다. 🐾';
         document.body.appendChild(toast);
         
         setTimeout(() => {
