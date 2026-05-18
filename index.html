@@ -7536,7 +7536,7 @@
       </div>
       
       <!-- Fixed routines -->
-      <div style="background:#fff; border:1px solid #F0EEF8; border-radius:20px; padding:20px; margin-bottom:24px; box-shadow: 0 4px 20px rgba(139, 124, 255, 0.03);">
+      <div style="background:#fff; border:1px solid #F0EEF8; border-radius:20px; padding:16px; margin-bottom:24px; box-shadow: 0 4px 20px rgba(139, 124, 255, 0.03);">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
           <div style="display:flex; align-items:center; gap:10px;">
             <div style="width:36px; height:36px; border-radius:50%; background:#FFFDF7; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 8px rgba(231, 201, 120, 0.1);">
@@ -11614,23 +11614,79 @@ ${outputRules}`;
     }
 
     // ── MASTER 전용 비서 학습 설정 기능 ──
+    // ── MASTER 전용 비서 학습 설정 기능 ──
+    function formatTimeDisplay(timeStr) {
+      if (!timeStr) return '';
+      const parts = timeStr.split(':');
+      if (parts.length < 2) return timeStr;
+      let hour = parseInt(parts[0], 10);
+      const min = parts[1];
+      const ampm = hour >= 12 ? '오후' : '오전';
+      if (hour > 12) hour -= 12;
+      if (hour === 0) hour = 12;
+      return `${ampm} ${hour}:${min}`;
+    }
+
+    function updateTimeDisplay(inputEl) {
+      const displayEl = inputEl.previousElementSibling.previousElementSibling;
+      if (displayEl) {
+        displayEl.value = formatTimeDisplay(inputEl.value);
+      }
+    }
+
     function openPremiumLearnSettings() {
       const modal = document.getElementById('premium-learn-overlay');
       if (modal) {
-        // Initialize dynamic routine container with premium preset cards like the mockup
         const container = document.getElementById('routine-list-container');
         if (container) {
           container.innerHTML = '';
-          // Card 1: 출근 (월~금, 09:00~18:00)
-          addNewRoutineRow("출근", "09:00", "18:00", ["월", "화", "수", "목", "금"]);
-          // Card 2: 운동 (화,목, 19:00~20:00)
-          addNewRoutineRow("운동", "19:00", "20:00", ["화", "목"]);
+          const savedRoutines = localStorage.getItem('nyang_premium_routines');
+          if (savedRoutines) {
+            try {
+              const routines = JSON.parse(savedRoutines);
+              if (routines && routines.length > 0) {
+                routines.forEach(r => {
+                  addNewRoutineRow(r.name, r.start, r.end, r.days);
+                });
+              } else {
+                addNewRoutineRow("출근", "09:00", "18:00", ["월", "화", "수", "목", "금"]);
+                addNewRoutineRow("운동", "19:00", "20:00", ["화", "목"]);
+              }
+            } catch (e) {
+              console.error("Error loading routines:", e);
+              addNewRoutineRow("출근", "09:00", "18:00", ["월", "화", "수", "목", "금"]);
+              addNewRoutineRow("운동", "19:00", "20:00", ["화", "목"]);
+            }
+          } else {
+            addNewRoutineRow("출근", "09:00", "18:00", ["월", "화", "수", "목", "금"]);
+            addNewRoutineRow("운동", "19:00", "20:00", ["화", "목"]);
+          }
         }
+
+        // Load bedtime as well
+        const savedBedtime = localStorage.getItem('nyang_premium_bedtime');
+        const bedtimeInput = document.getElementById('bedtime-input');
+        if (bedtimeInput) {
+          bedtimeInput.value = savedBedtime || "23:00";
+        }
+
         modal.classList.remove('hidden');
       }
     }
 
-    function addNewRoutineRow(name = "", start = "", end = "", activeDays = ["월", "화", "수", "목", "금"]) {
+    function reindexRoutines() {
+      const container = document.getElementById('routine-list-container');
+      if (!container) return;
+      const rows = container.querySelectorAll('.routine-row');
+      rows.forEach((row, idx) => {
+        const titleEl = row.querySelector('.routine-title-text');
+        if (titleEl) {
+          titleEl.textContent = `루틴 ${idx + 1}`;
+        }
+      });
+    }
+
+    function addNewRoutineRow(name = "", start = "09:00", end = "18:00", activeDays = ["월", "화", "수", "목", "금"]) {
       const container = document.getElementById('routine-list-container');
       if (!container) return;
 
@@ -11638,13 +11694,13 @@ ${outputRules}`;
       row.className = 'routine-row';
       row.style.background = '#fff';
       row.style.border = '1px solid #F0EEF8';
-      row.style.borderRadius = '16px';
+      row.style.borderRadius = '20px';
       row.style.padding = '16px';
       row.style.display = 'flex';
       row.style.flexDirection = 'column';
       row.style.gap = '12px';
       row.style.position = 'relative';
-      row.style.boxShadow = '0 4px 12px rgba(139, 124, 255, 0.02)';
+      row.style.boxShadow = '0 4px 20px rgba(139, 124, 255, 0.03)';
       row.style.transition = 'all 0.2s ease';
 
       const days = ["월", "화", "수", "목", "금", "토", "일"];
@@ -11652,52 +11708,70 @@ ${outputRules}`;
         const isActive = activeDays.includes(d);
         const style = isActive 
           ? `background:#8B7CFF; color:#fff; border:none;` 
-          : `background:#fff; color:#7D7A8C; border:1px solid #E9E4F0;`;
+          : `background:#FAF9FF; color:#7D7A8C; border:1px solid #E9E4F0;`;
         const activeClass = isActive ? 'active' : '';
-        return `<button type="button" onclick="toggleRoutineDay(this)" class="day-btn ${activeClass}" data-day="${d}" style="width:32px; height:32px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; outline:none; ${style}">${d}</button>`;
+        return `<button type="button" onclick="toggleRoutineDay(this)" class="day-btn ${activeClass}" data-day="${d}" style="flex:1; max-width:30px; height:30px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; outline:none; box-sizing:border-box; padding:0; ${style}">${d}</button>`;
       }).join('');
 
+      const count = container.querySelectorAll('.routine-row').length;
+      let placeholderText = "예: 출근 / 헬스 / 수업";
+      if (count === 1) {
+        placeholderText = "예: 운동 / 스터디 / 병원";
+      } else if (count >= 2) {
+        placeholderText = "예: 학원 / 모임 / 독서";
+      }
+
       row.innerHTML = `
+        <!-- Top Header: 루틴 번호 + 삭제 버튼 -->
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="routine-title-text" style="font-size:11px; font-weight:800; color:#8B7CFF; background:#FAF9FF; border:1px solid #E9E4F0; padding:3px 8px; border-radius:6px; letter-spacing:-0.2px;">루틴</span>
+          <button type="button" onclick="deleteRoutineRow(this)" onmouseover="this.style.background='#FFF5F5'; this.style.borderColor='#FFC1C1'; this.style.color='#FF4D4D';" onmouseout="this.style.background='#FAF9FF'; this.style.borderColor='#E9E4F0'; this.style.color='#8B7CFF';" style="background:#FAF9FF; border:1px solid #E9E4F0; color:#8B7CFF; width:28px; height:28px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all 0.2s; outline:none; box-sizing:border-box; padding:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </div>
+
         <!-- 반복 요일 -->
         <div>
-          <div style="font-size:10px; color:#8C8A9A; font-weight:700; margin-bottom:6px;">반복 요일</div>
-          <div class="day-buttons-container" style="display:flex; gap:6px;">
+          <div style="font-size:11px; color:#8C8A9A; font-weight:700; margin-bottom:6px;">반복 요일</div>
+          <div class="day-buttons-container" style="display:flex; gap:6px; justify-content:space-between; width:100%;">
             ${dayButtonsHtml}
           </div>
         </div>
 
-        <!-- 일정 이름 + 시간 + 삭제버튼 -->
-        <div style="display:flex; gap:10px; align-items:flex-end;">
-          <!-- 일정 이름 -->
-          <div style="flex:1.2;">
-            <div style="font-size:10px; color:#8C8A9A; font-weight:700; margin-bottom:6px;">일정 이름</div>
-            <div style="position:relative; display:flex; align-items:center;">
-              <span style="position:absolute; left:10px; font-size:12px; pointer-events:none;">✏️</span>
-              <input type="text" placeholder="예: 출근, 운동" value="${name}" class="routine-name-input" style="width:100%; padding:8px 8px 8px 28px; border-radius:10px; border:1px solid #E9E4F0; font-size:12px; font-family:inherit; font-weight:700; outline:none; color:#3D3A4E;">
+        <!-- 일정 이름 -->
+        <div>
+          <div style="font-size:11px; color:#8C8A9A; font-weight:700; margin-bottom:6px;">일정 이름</div>
+          <div style="position:relative; display:flex; align-items:center;">
+            <input type="text" placeholder="${placeholderText}" value="${name}" class="routine-name-input" onfocus="this.style.borderColor='#8B7CFF'; this.style.background='#fff';" onblur="this.style.borderColor='#E9E4F0'; this.style.background='#FAF9FF';" style="width:100%; height:40px; box-sizing:border-box; padding:10px 14px; border-radius:12px; border:1px solid #E9E4F0; font-size:13px; font-family:inherit; font-weight:700; outline:none; color:#3D3A4E; background:#FAF9FF; transition: all 0.2s ease;">
+          </div>
+        </div>
+
+        <!-- 시간 -->
+        <div>
+          <div style="font-size:11px; color:#8C8A9A; font-weight:700; margin-bottom:6px;">시간</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; width:100%;">
+            <!-- 시작 시간 -->
+            <div style="position:relative; display:flex; align-items:center; width:44%;">
+              <span style="position:absolute; left:10px; font-size:12px; pointer-events:none; color:#8B7CFF;">🕒</span>
+              <input type="text" readonly value="${formatTimeDisplay(start)}" class="routine-time-display-input" style="width:100%; height:40px; box-sizing:border-box; padding:10px 10px 10px 28px; border-radius:12px; border:1px solid #E9E4F0; font-size:12px; font-family:inherit; font-weight:700; outline:none; text-align:left; color:#3D3A4E; cursor:pointer; background:#FAF9FF; transition: all 0.2s ease;">
+              <span style="position:absolute; right:10px; font-size:9px; pointer-events:none; color:#8C8A9A;">▼</span>
+              <input type="time" value="${start}" class="routine-start-input" onchange="updateTimeDisplay(this)" onfocus="this.previousElementSibling.previousElementSibling.style.borderColor='#8B7CFF'; this.previousElementSibling.previousElementSibling.style.background='#fff';" onblur="this.previousElementSibling.previousElementSibling.style.borderColor='#E9E4F0'; this.previousElementSibling.previousElementSibling.style.background='#FAF9FF';" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; font-size: 16px;">
+            </div>
+            
+            <span style="font-size:12px; color:#B5AEDD; font-weight:700; width:8%; text-align:center;">~</span>
+            
+            <!-- 종료 시간 -->
+            <div style="position:relative; display:flex; align-items:center; width:44%;">
+              <span style="position:absolute; left:10px; font-size:12px; pointer-events:none; color:#8B7CFF;">🕒</span>
+              <input type="text" readonly value="${formatTimeDisplay(end)}" class="routine-time-display-input" style="width:100%; height:40px; box-sizing:border-box; padding:10px 10px 10px 28px; border-radius:12px; border:1px solid #E9E4F0; font-size:12px; font-family:inherit; font-weight:700; outline:none; text-align:left; color:#3D3A4E; cursor:pointer; background:#FAF9FF; transition: all 0.2s ease;">
+              <span style="position:absolute; right:10px; font-size:9px; pointer-events:none; color:#8C8A9A;">▼</span>
+              <input type="time" value="${end}" class="routine-end-input" onchange="updateTimeDisplay(this)" onfocus="this.previousElementSibling.previousElementSibling.style.borderColor='#8B7CFF'; this.previousElementSibling.previousElementSibling.style.background='#fff';" onblur="this.previousElementSibling.previousElementSibling.style.borderColor='#E9E4F0'; this.previousElementSibling.previousElementSibling.style.background='#FAF9FF';" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; font-size: 16px;">
             </div>
           </div>
-
-          <!-- 시간 -->
-          <div style="flex:1.8;">
-            <div style="font-size:10px; color:#8C8A9A; font-weight:700; margin-bottom:6px;">시간</div>
-            <div style="display:flex; align-items:center; gap:4px;">
-              <div style="position:relative; display:flex; align-items:center; flex:1;">
-                <span style="position:absolute; left:6px; font-size:11px; pointer-events:none;">🕒</span>
-                <input type="time" value="${start}" class="routine-start-input" style="width:100%; padding:8px 4px 8px 20px; border-radius:10px; border:1px solid #E9E4F0; font-size:11px; font-family:inherit; font-weight:700; outline:none; text-align:center; color:#3D3A4E; cursor:pointer;">
-              </div>
-              <span style="font-size:10px; color:#B5AEDD; font-weight:700;">~</span>
-              <div style="position:relative; display:flex; align-items:center; flex:1;">
-                <span style="position:absolute; left:6px; font-size:11px; pointer-events:none;">🕒</span>
-                <input type="time" value="${end}" class="routine-end-input" style="width:100%; padding:8px 4px 8px 20px; border-radius:10px; border:1px solid #E9E4F0; font-size:11px; font-family:inherit; font-weight:700; outline:none; text-align:center; color:#3D3A4E; cursor:pointer;">
-              </div>
-            </div>
-          </div>
-
-          <!-- 삭제 -->
-          <button type="button" onclick="deleteRoutineRow(this)" style="background:#FFF5F5; border:1px solid #FFE3E3; color:#FF6B6B; width:34px; height:34px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all 0.2s; outline:none; font-size:14px; flex-shrink:0;">🗑️</button>
         </div>
       `;
       container.appendChild(row);
+      reindexRoutines();
     }
 
     function deleteRoutineRow(button) {
@@ -11706,7 +11780,10 @@ ${outputRules}`;
         row.style.opacity = '0';
         row.style.transform = 'scale(0.9)';
         row.style.transition = 'all 0.2s ease';
-        setTimeout(() => row.remove(), 200);
+        setTimeout(() => {
+          row.remove();
+          reindexRoutines();
+        }, 200);
       }
     }
 
@@ -11717,7 +11794,7 @@ ${outputRules}`;
         btn.style.color = '#fff';
         btn.style.border = 'none';
       } else {
-        btn.style.background = '#fff';
+        btn.style.background = '#FAF9FF';
         btn.style.color = '#7D7A8C';
         btn.style.border = '1px solid #E9E4F0';
       }
@@ -11736,6 +11813,35 @@ ${outputRules}`;
       const statusBox = document.getElementById('learning-status-box');
       if (!btn || !statusBox) return;
 
+      const container = document.getElementById('routine-list-container');
+      const routines = [];
+      if (container) {
+        const rows = container.querySelectorAll('.routine-row');
+        rows.forEach(row => {
+          const nameInput = row.querySelector('.routine-name-input');
+          const startInput = row.querySelector('.routine-start-input');
+          const endInput = row.querySelector('.routine-end-input');
+          const dayButtons = row.querySelectorAll('.day-btn.active');
+          const days = Array.from(dayButtons).map(b => b.getAttribute('data-day'));
+          
+          if (nameInput) {
+            routines.push({
+              name: nameInput.value.trim() || "루틴",
+              start: startInput ? startInput.value : "09:00",
+              end: endInput ? endInput.value : "18:00",
+              days: days
+            });
+          }
+        });
+      }
+      
+      localStorage.setItem('nyang_premium_routines', JSON.stringify(routines));
+      
+      const bedtimeInput = document.getElementById('bedtime-input');
+      if (bedtimeInput) {
+        localStorage.setItem('nyang_premium_bedtime', bedtimeInput.value);
+      }
+
       btn.disabled = true;
       btn.style.opacity = '0.6';
       statusBox.style.display = 'block';
@@ -11745,10 +11851,8 @@ ${outputRules}`;
         btn.style.opacity = '1';
         statusBox.style.display = 'none';
         
-        // Close modal
         closePremiumLearn();
         
-        // Show success notification/toast
         const toast = document.createElement('div');
         toast.className = 'flirt-toast show';
         toast.style.borderColor = '#E7C978';
