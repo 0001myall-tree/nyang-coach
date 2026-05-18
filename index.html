@@ -2107,6 +2107,112 @@
       gap: 8px;
       align-items: flex-end;
       flex-shrink: 0;
+      position: relative;
+    }
+
+    .quick-chips:empty {
+      display: none !important;
+    }
+
+    /* 비서의 치트키 스타일 */
+    .cheatkey-container {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 16px;
+      z-index: 99;
+    }
+
+    .cheatkey-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      padding: 0 18px;
+      border-radius: 9999px;
+      background-color: #FFFDF8;
+      border: 1px solid #E7C978;
+      box-shadow: 0 4px 14px rgba(231, 201, 120, 0.15);
+      color: #8B7CFF;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      outline: none;
+    }
+
+    .cheatkey-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(231, 201, 120, 0.25);
+      background-color: #FFFDF0;
+    }
+
+    .cheatkey-btn:active {
+      transform: translateY(1px);
+    }
+
+    .cheatkey-icon {
+      color: #8B7CFF;
+      font-size: 15px;
+      margin-right: 6px;
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .cheatkey-menu {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      background: rgba(255, 253, 248, 0.98);
+      border: 1px solid #E7C978;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(231, 201, 120, 0.25);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 190px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateY(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cheatkey-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cheatkey-menu-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: transparent;
+      border: none;
+      color: #5B4E7A;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .cheatkey-menu-item:hover {
+      background: rgba(231, 201, 120, 0.15);
+      color: #8B7CFF;
+    }
+
+    .cheatkey-menu-item .item-icon {
+      margin-right: 8px;
+      font-size: 14px;
     }
 
     .input-box {
@@ -6694,6 +6800,13 @@
         <div class="messages" id="messages"></div>
         <div class="quick-chips" id="quick-chips"></div>
         <div class="input-area">
+          <!-- 비서의 치트키 플로팅 버튼 및 메뉴 -->
+          <div class="cheatkey-container" id="cheatkey-container" style="display: none;">
+            <button type="button" class="cheatkey-btn" id="cheatkey-btn" onclick="toggleCheatkeyMenu(event)">
+              <span class="cheatkey-icon">⚡</span>비서의 치트키
+            </button>
+            <div class="cheatkey-menu" id="cheatkey-menu"></div>
+          </div>
           <button class="mic-btn" id="mic-btn" onclick="toggleMic()">
             <svg class="mic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -9087,6 +9200,74 @@ ${MEM_RULES.master}`
       await sendMessage(text);
     }
 
+    // ── 비서의 치트키 관련 JavaScript 구현 ──
+    function toggleCheatkeyMenu(event) {
+      if (event) event.stopPropagation();
+      const menu = document.getElementById('cheatkey-menu');
+      if (!menu) return;
+
+      const isOpen = menu.classList.contains('open');
+      if (isOpen) {
+        menu.classList.remove('open');
+      } else {
+        renderCheatkeyMenu();
+        menu.classList.add('open');
+      }
+    }
+
+    function renderCheatkeyMenu() {
+      const menu = document.getElementById('cheatkey-menu');
+      if (!menu) return;
+
+      let html = '';
+      if (currentChar === 'sec_male') {
+        html = `
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('실시간 업무 브리핑')">
+            <span class="item-icon">👔</span> 실시간 업무 브리핑
+          </button>
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('비서의 특급 잔소리')">
+            <span class="item-icon">🔥</span> 비서의 특급 잔소리
+          </button>
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('5분 집중 챌린지')">
+            <span class="item-icon">⏱</span> 5분 집중 챌린지
+          </button>
+        `;
+      } else if (currentChar === 'sec_female') {
+        html = `
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('실시간 컨디션 조율')">
+            <span class="item-icon">🌸</span> 실시간 컨디션 조율
+          </button>
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('5분 집중 리프레시')">
+            <span class="item-icon">☕</span> 5분 집중 리프레시
+          </button>
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('여비서의 특급 응원')">
+            <span class="item-icon">💖</span> 여비서의 특급 응원
+          </button>
+        `;
+      }
+      menu.innerHTML = html;
+    }
+
+    function selectCheatkey(actionName) {
+      // 팝업 메뉴 닫기
+      const menu = document.getElementById('cheatkey-menu');
+      if (menu) menu.classList.remove('open');
+
+      // [개발용 안내] 이 위치에 나중에 원하시는 클릭 동작 기능을 자유롭게 구현하시면 됩니다.
+      console.log(`치트키 클릭됨: ${actionName}`);
+    }
+
+    // 문서 클릭 시 치트키 메뉴 닫기 이벤트 리스너
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('cheatkey-menu');
+      const btn = document.getElementById('cheatkey-btn');
+      if (menu && menu.classList.contains('open')) {
+        if (!menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
+          menu.classList.remove('open');
+        }
+      }
+    });
+
     function selectChar(id) {
       selectedChar = id;
       document.querySelectorAll('.char-card, .pro-cs-card, .master-cs-card').forEach(c => c.classList.remove('selected'));
@@ -9197,6 +9378,14 @@ ${MEM_RULES.master}`
       if (proTag) {
         proTag.style.display = isPremium ? 'inline-block' : 'none';
         proTag.textContent = isMaster ? 'MASTER' : 'PRO';
+      }
+
+      // 비서의 치트키 노출 제어
+      const cheatkeyCont = document.getElementById('cheatkey-container');
+      if (cheatkeyCont) {
+        cheatkeyCont.style.display = isMaster ? 'block' : 'none';
+        const menu = document.getElementById('cheatkey-menu');
+        if (menu) menu.classList.remove('open');
       }
 
 
