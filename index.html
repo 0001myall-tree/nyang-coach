@@ -2070,6 +2070,47 @@
       }
     }
 
+    /* ── 일정 에스코트 생각 중인 카드 애니메이션 ── */
+    .thinking-bubble-dots {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: white;
+      padding: 8px 12px;
+      border-radius: 16px;
+      border: 1px solid #7C6BC4;
+      box-shadow: 0 4px 10px rgba(124, 107, 196, 0.12);
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 10;
+    }
+    .thinking-bubble-dot {
+      width: 5px;
+      height: 5px;
+      background: #7C6BC4;
+      border-radius: 50%;
+      animation: bubble-bounce 1.4s infinite ease-in-out both;
+    }
+    .thinking-bubble-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .thinking-bubble-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes bubble-bounce {
+      0%, 80%, 100% { transform: scale(0.3); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+    
+    .escort-status-item {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     .quick-chips {
       display: flex;
       flex-wrap: wrap;
@@ -9542,11 +9583,156 @@ ${MEM_RULES.master}`
         escortMsg += `8. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 시간에 배치했는지 한 줄 이유 설명 (예: "글쓰기는 3일째 미뤄지고 있어서 오전 집중 시간에 먼저 배치했어요.")\n`;
         escortMsg += `9. 제안 후 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
 
-        sendMessage(escortMsg);
+        sendEscortCheatkey(escortMsg);
 
       } else if (actionName === '비서의 특급 잔소리') {
         const nagMsg = `[특급 잔소리 요청]\n오늘 할 일 현황과 습관 미완료 현황을 보고, 지금 안 하고 있는 것들을 콕 집어서 따끔하게 한 소리 해주세요. 단, 너무 길지 않게 핵심만 짧고 강하게요.`;
         sendMessage(nagMsg);
+      }
+    }
+
+    async function sendEscortCheatkey(escortMsg) {
+      if (!API_KEY) return;
+
+      const input = document.getElementById('input');
+      const sendBtn = document.getElementById('send-btn');
+      if (sendBtn) sendBtn.disabled = true;
+      const qc = document.getElementById('quick-chips');
+      if (qc) qc.innerHTML = '';
+
+      // AI 대화창 영역에 "Thinking Card" 추가!
+      const msgs = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'msg ai escort-thinking-msg';
+      div.id = 'escort-thinking-msg';
+
+      const cfg = CHARS[currentChar] || CHARS.cat;
+      const isMale = currentChar === 'sec_male';
+      const secTitle = isMale ? '남비서 코치' : '여비서 코치';
+      const secImg = isMale ? 'images/boyfriend_thinking.jpg' : 'images/girlfriend_thinking.jpg';
+      const avImg = cfg.imgUrl ? `<div class="msg-av"><img src="${cfg.imgUrl}" alt="코치"></div>` : `<div class="msg-av">${cfg.emoji}</div>`;
+
+      div.innerHTML = `
+        ${avImg}
+        <div class="msg-content">
+          <div class="msg-bubble" style="padding:16px; background:#FAF9FF; border:1.5px solid #EAE6FF; border-radius:18px; max-width:320px; box-shadow:0 4px 15px rgba(124,107,196,0.08); position:relative;">
+            <!-- 상단 텍스트 -->
+            <div style="font-size:13px; font-weight:700; color:#4E3F99; line-height:1.5; margin-bottom:12px; display:flex; align-items:flex-start; gap:4px; padding-right:60px;">
+              <span>✨</span>
+              <span>${secTitle}가 일정을 꼼꼼히 점검 중이에요. 잠시만 기다려주세요.</span>
+            </div>
+            
+            <!-- 중간 이미지 및 생각 버블 영역 -->
+            <div style="position:relative; display:flex; justify-content:center; align-items:center; background:#FAF9FF; padding:10px; border-radius:12px; margin-bottom:12px; border:1px dashed #E2DDFF; height:180px; overflow:hidden;">
+              <img src="${secImg}" style="height:100%; border-radius:8px; object-fit:cover;" alt="${secTitle} 생각 중">
+              
+              <!-- 실시간 점 세개 말풍선 (...) -->
+              <div class="thinking-bubble-dots">
+                <div class="thinking-bubble-dot"></div>
+                <div class="thinking-bubble-dot"></div>
+                <div class="thinking-bubble-dot"></div>
+                <!-- 말풍선 꼬리 -->
+                <div style="position:absolute; bottom:-5px; left:12px; width:0; height:0; border-width:5px 5px 0 0; border-style:solid; border-color:white transparent transparent transparent;"></div>
+                <div style="position:absolute; bottom:-7px; left:11px; width:0; height:0; border-width:7px 7px 0 0; border-style:solid; border-color:#7C6BC4 transparent transparent transparent; z-index:-1;"></div>
+              </div>
+            </div>
+            
+            <!-- 하단 진행 상태 -->
+            <div style="background:#FAF9FF; border-top:1.5px solid #F0EEFF; padding-top:12px; display:flex; flex-direction:column; gap:8px;">
+              <div id="escort-status-1" class="escort-status-item" style="font-weight:700; color:#7C6BC4;">
+                <span class="status-icon">📋</span> 미완료 항목 확인 중<span class="status-loading-dots">...</span>
+              </div>
+              <div id="escort-status-2" class="escort-status-item" style="font-weight:500; color:#A099C7; opacity:0.65;">
+                <span class="status-icon">📊</span> 우선순위 분석 중<span class="status-loading-dots" style="display:none;">...</span>
+              </div>
+              <div id="escort-status-3" class="escort-status-item" style="font-weight:500; color:#A099C7; opacity:0.65;">
+                <span class="status-icon">🕒</span> 시간 배분 최적화 중<span class="status-loading-dots" style="display:none;">...</span>
+              </div>
+            </div>
+          </div>
+          <div class="msg-time">${getTime()}</div>
+        </div>
+      `;
+
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      // 3단계 진행 표시 시뮬레이션
+      let statusStep = 1;
+      const statusInterval = setInterval(() => {
+        statusStep++;
+        if (statusStep === 2) {
+          // 1단계 완료
+          const s1 = document.getElementById('escort-status-1');
+          if (s1) {
+            s1.style.color = '#10B981';
+            s1.style.fontWeight = '500';
+            s1.style.opacity = '0.85';
+            s1.querySelector('.status-icon').textContent = '✓';
+            const dots = s1.querySelector('.status-loading-dots');
+            if (dots) dots.style.display = 'none';
+          }
+          // 2단계 활성
+          const s2 = document.getElementById('escort-status-2');
+          if (s2) {
+            s2.style.color = '#7C6BC4';
+            s2.style.fontWeight = '700';
+            s2.style.opacity = '1';
+            const dots = s2.querySelector('.status-loading-dots');
+            if (dots) dots.style.display = 'inline';
+          }
+        } else if (statusStep === 3) {
+          // 2단계 완료
+          const s2 = document.getElementById('escort-status-2');
+          if (s2) {
+            s2.style.color = '#10B981';
+            s2.style.fontWeight = '500';
+            s2.style.opacity = '0.85';
+            s2.querySelector('.status-icon').textContent = '✓';
+            const dots = s2.querySelector('.status-loading-dots');
+            if (dots) dots.style.display = 'none';
+          }
+          // 3단계 활성
+          const s3 = document.getElementById('escort-status-3');
+          if (s3) {
+            s3.style.color = '#7C6BC4';
+            s3.style.fontWeight = '700';
+            s3.style.opacity = '1';
+            const dots = s3.querySelector('.status-loading-dots');
+            if (dots) dots.style.display = 'inline';
+          }
+        } else if (statusStep > 3) {
+          // 3단계 완료
+          const s3 = document.getElementById('escort-status-3');
+          if (s3) {
+            s3.style.color = '#10B981';
+            s3.style.fontWeight = '500';
+            s3.style.opacity = '0.85';
+            s3.querySelector('.status-icon').textContent = '✓';
+            const dots = s3.querySelector('.status-loading-dots');
+            if (dots) dots.style.display = 'none';
+          }
+          clearInterval(statusInterval);
+        }
+      }, 2500);
+
+      try {
+        const reply = await callOpenAI(escortMsg);
+        
+        clearInterval(statusInterval);
+        const card = document.getElementById('escort-thinking-msg');
+        if (card) card.remove();
+        
+        addMessage('ai', reply);
+      } catch (err) {
+        console.error("Escort API Error:", err);
+        clearInterval(statusInterval);
+        const card = document.getElementById('escort-thinking-msg');
+        if (card) card.remove();
+        addMessage('ai', { text: "에러가 발생해서 일정 에스코트를 완료하지 못했어요. 다시 시도해 주세요.", tasks: [], chips: [] });
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        if (input) input.focus();
       }
     }
 
