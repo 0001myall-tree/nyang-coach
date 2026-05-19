@@ -8111,10 +8111,25 @@ ${MEM_RULES.pro}`
 - 포기하고 싶어 할 때: "뭐? 하기 싫다고? 에이구, 우리 강아지 많이 힘들었구나. 할미가 다 안다. 근데 너 이거 해낼 놈인 거 너만 모르고 세상 사람 다 알아! 할미 믿고 딱 5분만 더 붙어보자. 너는 나중에 크게 될 놈이니까 지금 조금만 참아봐, 알았지?"
 - 성공했을 때: "거봐! 할 줄 알았어! 내 새끼가 누군데! 아이고 기특해라, 고생했다 정말. 역시 내 눈은 못 속인다니까. 너 오늘 진짜 멋졌어!"
 
+[밥과 잠 챙기기 - 할매의 최우선 관심사]
+할매는 밥과 잠을 무엇보다 중요하게 여긴다. 현재 시간을 반드시 확인하고 아래 규칙에 따라 자연스럽게 한마디 섞는다.
+
+- 새벽 0~5시: "이 시간에 뭐하냐! 얼른 자라! 안 자면 할미가 가서 재운다!" / 잠을 안 자고 있으면 무조건 먼저 자라고 한 소리 한다.
+- 아침 6~9시: "일어났냐? 아침은 먹었어? 밥 굶고 뭘 한다고!" / 아침밥 챙겼는지 꼭 물어본다.
+- 오전 10~11시: 할 일 코칭에 집중하되, 대화 중 자연스럽게 "점심은 꼭 챙겨 먹어라" 한마디 넣는다.
+- 점심 12~14시: "밥은 먹었냐? 밥도 안 먹고 일하면 쓰러진다!" / 점심을 꼭 먹었는지 확인한다.
+- 오후 15~17시: 할 일 코칭에 집중. 가끔 "저녁은 뭐 먹을 거야?" 물어본다.
+- 저녁 18~20시: "저녁은 먹었어? 밥 굶으면 할미 속상해!" / 저녁밥 챙겼는지 꼭 물어본다.
+- 밤 21~22시: "오늘 고생 많았다. 이제 슬슬 마무리하고 일찍 자야 한다!" / 마무리하고 잘 준비하라고 재촉한다.
+- 밤 23시~: "이 시간까지 뭐하는 거야! 빨리 자! 내일 또 해야지!" / 무조건 자라고 강하게 한 소리 한다.
+
+단, 한 대화에서 밥/잠 언급은 1번만 한다. 매번 똑같이 반복하지 말고 자연스럽게 섞는다.
+
 [금지사항]
 - 진심으로 상처 주는 인신공격 (반드시 애정이 바탕이 되어야 함)
 - 너무 딱딱한 표준어 사용
 - 공감 없이 비판만 하는 것
+- 시간대와 맞지 않는 밥/잠 언급 (새벽에 저녁 먹었냐고 묻거나, 점심시간에 자라고 하는 것 금지)
 
 
 ${MEM_RULES.pro}`
@@ -9629,8 +9644,24 @@ ${MEM_RULES.master}`
       }, 2500);
 
       try {
-        const reply = await callOpenAI(escortMsg);
-        
+        // chatHistory에 오염되지 않도록 chatProxy 직접 호출
+        const cfg = CHARS[currentChar] || CHARS.cat;
+        const memoryContext = buildMemoryContext();
+        const systemPrompt = `${cfg.system}\n\n${memoryContext}\n\n[출력 규칙]\n1. 지정된 캐릭터의 성격, 호칭, 말투 규칙을 철저히 준수하세요.\n2. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것`;
+        const response = await window.chatProxy({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...chatHistory.slice(-6), // 최근 대화 맥락은 유지
+            { role: 'user', content: escortMsg }
+          ],
+          temperature: 0.7
+        });
+        const rawReply = (response.data.content || "에러가 발생해서 일정 에스코트를 완료하지 못했어요. 다시 시도해 주세요.")
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/^#{1,6}\s+/gm, '');
+        const reply = parseAndAddTasks(rawReply);
+
         clearInterval(statusInterval);
         const card = document.getElementById('escort-thinking-msg');
         if (card) card.remove();
@@ -10593,14 +10624,17 @@ ${profileCtx}
         }
       }
 
-      // 비서 전용: 취침 시간, 고정 루틴, 현재 시간 context 추가
+      // 현재 시간 context: 비서(master)와 할매 모두 필요
+      if (tier === 'master' || currentChar === 'halmae') {
+        const _now = new Date();
+        const _h = _now.getHours(), _m = _now.getMinutes();
+        const _tod = _h < 12 ? '오전' : _h < 18 ? '오후' : '저녁';
+        ctx += `\n[현재 시간]\n${_tod} ${_h}시 ${_m}분\n`;
+      }
+
+      // 비서 전용: 취침 시간, 고정 루틴 context 추가
       if (tier === 'master') {
         const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const timeOfDay = currentHour < 12 ? '오전' : currentHour < 18 ? '오후' : '저녁';
-        ctx += `\n[현재 시간]\n${timeOfDay} ${currentHour}시 ${currentMinute}분\n`;
-
         const bedtime = localStorage.getItem('nyang_premium_bedtime');
         if (bedtime) {
           const [bh, bm] = bedtime.split(':');
