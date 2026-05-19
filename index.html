@@ -8789,6 +8789,7 @@ ${MEM_RULES.master}`
       // 어제 대화 요약 생성 (비동기, 백그라운드)
       generateDailySummary(yStr).then(() => {
         chatHistory = []; // 요약 후 대화 초기화
+        saveChatHistory();
       });
     }
     function getLast7Records() {
@@ -9349,10 +9350,15 @@ ${MEM_RULES.master}`
       // 로컬 답변 시도 (비용 절감)
       const localReply = getLocalResponse(msg);
       if (localReply) {
+        chatHistory.push({ role: 'user', content: msg, time: getTime() });
+        saveChatHistory();
         showTyping();
         setTimeout(() => {
           removeTyping();
           addMessage('ai', localReply);
+          const replyText = typeof localReply === 'string' ? localReply : localReply.text;
+          chatHistory.push({ role: 'assistant', content: replyText, time: getTime() });
+          saveChatHistory();
           const btn = document.getElementById('send-btn');
           if (btn) btn.disabled = false;
           if (input) input.focus();
@@ -9814,7 +9820,23 @@ ${MEM_RULES.master}`
       updateChatGoalBar();
       const tabBar = document.getElementById('bottom-tab-bar');
       if (tabBar) tabBar.style.display = '';
-      if (greet) startGreeting();
+      if (chatHistory && chatHistory.length > 0) {
+        restoreChatHistory();
+      } else {
+        if (greet) startGreeting();
+      }
+    }
+
+    function restoreChatHistory() {
+      const msgs = document.getElementById('messages');
+      if (!msgs) return;
+      msgs.innerHTML = '';
+      if (chatHistory && chatHistory.length > 0) {
+        chatHistory.forEach(m => {
+          const role = m.role === 'assistant' ? 'ai' : 'user';
+          addMessage(role, m.content, m.time || null, true);
+        });
+      }
     }
 
 
@@ -9850,6 +9872,9 @@ ${MEM_RULES.master}`
       showTyping();
       const reply = await callOpenAI(prompt);
       removeTyping(); addMessage('ai', reply);
+      const replyText = typeof reply === 'string' ? reply : reply.text;
+      chatHistory.push({ role: 'assistant', content: replyText, time: getTime() });
+      saveChatHistory();
       if (isBack) { const f = CHARS[currentChar]?.flirts?.back; if (f) showFlirt(f[Math.floor(Math.random() * f.length)]); }
     }
 
@@ -9864,7 +9889,7 @@ ${MEM_RULES.master}`
       return `<div class="msg-av">${cfg.emoji}</div>`;
     }
 
-    function addMessage(role, content, time) {
+    function addMessage(role, content, time, skipSpeak = false) {
       let text = typeof content === 'string' ? content : content.text;
       let proposedTasks = typeof content === 'string' ? [] : (content.tasks || []);
       let chips = typeof content === 'string' ? [] : (content.chips || []);
@@ -9999,7 +10024,7 @@ ${MEM_RULES.master}`
 
       div.innerHTML = `${buildMsgAvatar(role)}<div class="msg-content"><div class="msg-bubble">${bubbleHtml}</div><div class="msg-time">${time || getTime()}</div></div>`;
       msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
-      if (role === 'ai') speakCoach(text);
+      if (role === 'ai' && !skipSpeak) speakCoach(text);
     }
 
     function approveTask(btn, text, category, time) {
@@ -10608,7 +10633,7 @@ ${profileCtx}
     }
 
     async function callOpenAI(userMsg) {
-      chatHistory.push({ role: 'user', content: userMsg });
+      chatHistory.push({ role: 'user', content: userMsg, time: getTime() });
       saveChatHistory();
 
       try {
@@ -10656,7 +10681,7 @@ ${outputRules}`;
           .replace(/`([^`]+)`/g, '$1');
         const cleaned = parseAndAddTasks(replyText);
 
-        chatHistory.push({ role: 'assistant', content: replyText });
+        chatHistory.push({ role: 'assistant', content: replyText, time: getTime() });
         saveChatHistory();
 
         // AI 응답에서 할 일 후보 추출 → 사용자 동의 감지용으로 저장
