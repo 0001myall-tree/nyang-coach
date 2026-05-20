@@ -2730,7 +2730,9 @@
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 12px;
-      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -2741,39 +2743,109 @@
       box-shadow: 0 4px 12px rgba(139, 124, 255, 0.08);
     }
 
-    .vision-card-top {
+    .vision-coach-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.5px solid var(--border);
+      background: var(--lavender-soft);
+    }
+
+    .vision-coach-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .vision-card-body {
+      flex: 1;
+      min-width: 0;
       display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vision-card-main-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .vision-card-icon-wrap {
+      flex-shrink: 0;
     }
 
     .vision-card-icon {
-      width: 44px;
-      height: 44px;
+      width: 38px;
+      height: 38px;
       background: var(--lavender-soft);
-      border-radius: 12px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--accent);
-      flex-shrink: 0;
     }
 
-    .vision-card-info {
+    .vision-card-title-area {
       flex: 1;
+      min-width: 0;
     }
 
     .vision-card-name {
       font-size: 15px;
       font-weight: 900;
       color: var(--text);
-      margin-bottom: 2px;
+      line-height: 1.3;
     }
 
     .vision-card-desc {
       font-size: 11px;
       color: var(--muted);
-      margin-bottom: 6px;
+      margin-top: 2px;
+    }
+
+    .vision-card-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .vision-card-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .vision-card-menu-btn {
+      color: #A0A0B0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .vision-card-menu-btn:hover {
+      background: #F5F3FF;
+      color: var(--accent);
+    }
+
+    .vision-card-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 2px;
     }
 
     .vision-card-deadline {
@@ -2788,16 +2860,29 @@
       font-weight: 700;
     }
 
-    .vision-card-status {
-      position: absolute;
-      top: 20px;
-      right: 20px;
+    .vision-card-expand-btn {
+      color: #A0A0B0;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--muted);
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .vision-card-expand-btn:hover {
+      background: #F5F3FF;
+      color: var(--accent);
+    }
+
+    .chevron-icon {
+      transition: transform 0.2s ease;
+    }
+
+    .vision-card.is-expanded .chevron-icon {
+      transform: rotate(180deg);
     }
 
     .vision-status-dot {
@@ -7467,20 +7552,6 @@
               <!-- 장기 비전 카드들이 여기에 렌더링됨 -->
             </div>
 
-            <!-- 코치 코멘트 (장기 비전용) -->
-            <div id="vision-coach-comment"
-              style="margin-top:16px; padding:16px; background:white; border-radius:24px; border:1px dashed var(--accent); display:none; align-items:center; gap:12px;">
-              <div id="vision-coach-av"
-                style="width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--accent-light);">
-                <img src="" style="width:100%; height:100%; object-fit:cover;">
-              </div>
-              <div style="flex:1;">
-                <div id="vision-coach-name"
-                  style="font-size:12px; font-weight:900; color:var(--accent); margin-bottom:2px;">남비서 코멘트</div>
-                <div id="vision-coach-msg" style="font-size:12px; color:var(--text); line-height:1.5;">당신의 비전은 모두 연결되어
-                  있어요. 이번 주 행동이 미래의 큰 변화를 만들 거예요.</div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -10918,6 +10989,20 @@ ${profileCtx}
           });
           ctx += `\n비전과 마일스톤의 진행 상황을 대화 중에 자연스럽게 확인하거나 응원해주세요. 특히 내가 전담하는 비전은 더 책임감 있게 챙겨주세요.\n`;
         }
+
+        // Pro 코치인 경우, 자기 담당 비전 이외의 비전에 대한 참견 방지 및 전담 비전 집중 규칙 주입
+        if (tier === 'pro') {
+          const myName = coach.statusName || coach.name;
+          const otherCoachName = currentChar === 'ceo' ? '작가 코치' : '사업가 코치';
+          ctx += `
+[프로 코치 전담 비전 집중 규칙 (필수 준수)]
+1. 당신(${myName})은 오직 당신에게 전담 배정된 장기 비전(위 '[사용자의 장기 비전 및 마일스톤]'에 제공된 비전)에 대해서만 사용자와 함께 실행 전략을 짜고 피드백을 제공해야 합니다.
+2. 만약 사용자가 다른 코치(${otherCoachName})에게 배정된 비전에 관해 구체적인 전략이나 조언을 구하면, 절대 아는 척하며 답변하거나 전략을 대신 수립해주지 마십시오. 대신 다음과 같이 정중히 거절하고 담당 코치에게 유도하십시오:
+   - "대표님, 그 비전은 ${otherCoachName}의 전담 영역입니다. 제가 개입해서 전략을 짜기에는 적합하지 않으니, ${otherCoachName} 대화창에서 상담을 받아보시는 것이 좋겠습니다."
+3. 만약 사용자가 **담당자가 지정되지 않은(공란인) 비전**에 대해 조언이나 전략 수립을 요청한다면, 직접 전략을 짜지 말고 자신을 담당자로 배정하도록 부드럽게 유도하십시오:
+   - "대표님, 이 목표는 아직 담당 코치가 지정되지 않은 상태입니다. 저와 함께 실행 계획을 짜고 비즈니스/스토리 전략을 다듬고 싶으시다면, 비전 편집에서 저(${myName})를 담당 코치로 지정해 주시겠어요?"
+`;
+        }
       }
 
       // 연속 미완료 습관 데이터 추가 (master 등급 전용)
@@ -12936,7 +13021,8 @@ ${outputRules}`;
         list.innerHTML = `<div style="text-align:center; padding:32px 0; color:var(--muted); font-size:13px; background:white; border-radius:20px; border:1.5px dashed var(--border);">
           아직 설정된 비전이 없어요.<br>나만의 장기 목표를 추가해보세요!
         </div>`;
-        document.getElementById('vision-coach-comment').style.display = 'none';
+        const commentBox = document.getElementById('vision-coach-comment');
+        if (commentBox) commentBox.style.display = 'none';
         return;
       }
 
@@ -12944,11 +13030,9 @@ ${outputRules}`;
         const totalMilestones = (v.milestones || []).length;
         const doneMilestones = (v.milestones || []).filter(m => m.done).length;
         const isAllDone = totalMilestones > 0 && totalMilestones === doneMilestones;
-        const progressPct = totalMilestones > 0 ? Math.round((doneMilestones / totalMilestones) * 100) : 0;
 
         const milestoneHtml = (v.milestones || []).map((m, idx) => {
           let stateClass = m.done ? 'done' : '';
-          // 첫 번째 미완료 마일스톤을 '현재'로 표시
           if (!m.done && (idx === 0 || v.milestones[idx - 1].done)) stateClass = 'current';
 
           const dateHtml = m.date ? `<span class="milestone-date-label">${m.date}</span>` : '';
@@ -12961,20 +13045,47 @@ ${outputRules}`;
           </div>`;
         }).join('');
 
+        const coach = CHARS[v.coachId];
+        const hasCoach = coach && v.coachId !== 'self';
+        const coachAvHtml = hasCoach ? `
+          <div class="vision-coach-avatar">
+            <img src="${coach.imgUrl || 'images/cat.png'}">
+          </div>
+        ` : '';
+
         return `
-          <div class="vision-card" onclick="openVisionDetail('${v.id}')">
-            <div class="vision-card-status">
-              ${isAllDone ? '<span style="color:#10B981;">✓ 완료</span>' : '<div class="vision-status-dot"></div><span style="color:#8B5CF6;">진행 중</span>'}
-            </div>
-            <div class="vision-card-top">
-              <div class="vision-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
+          <div class="vision-card ${hasCoach ? 'has-coach' : ''}" id="vision-card-${v.id}" onclick="openVisionDetail('${v.id}')">
+            ${coachAvHtml}
+            <div class="vision-card-body">
+              <!-- Top Row: Icon, Title, Status, Menu -->
+              <div class="vision-card-main-row">
+                <div class="vision-card-icon-wrap">
+                  <div class="vision-card-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="vision-card-title-area">
+                  <div class="vision-card-name">${escapeHtml(v.name)}</div>
+                  ${v.desc ? `<div class="vision-card-desc">${escapeHtml(v.desc)}</div>` : ''}
+                </div>
+                <div class="vision-card-right-actions">
+                  <div class="vision-card-status">
+                    ${isAllDone ? '<span style="color:#10B981; font-weight:800;">✓ 완료</span>' : '<div class="vision-status-dot"></div><span style="color:#8B5CF6; font-weight:800;">진행 중</span>'}
+                  </div>
+                  <div class="vision-card-menu-btn" onclick="openVisionDetail('${v.id}', event)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="5" r="2"></circle>
+                      <circle cx="12" cy="12" r="2"></circle>
+                      <circle cx="12" cy="19" r="2"></circle>
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div class="vision-card-info">
-                <div class="vision-card-name">${escapeHtml(v.name)}</div>
-                <div class="vision-card-desc">${escapeHtml(v.desc || '')}</div>
+
+              <!-- Bottom Row: Deadline & Expand Arrow -->
+              <div class="vision-card-bottom-row">
                 <div class="vision-card-deadline">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -12984,10 +13095,18 @@ ${outputRules}`;
                   </svg>
                   ${v.deadline.year}년 ${v.deadline.month}월 ${v.deadline.period}까지
                 </div>
+
+                <div class="vision-card-expand-btn" onclick="toggleVisionMilestones('${v.id}', event)">
+                  <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
               </div>
-            </div>
-            <div class="milestone-track">
-              ${milestoneHtml}
+
+              <!-- Collapsible Milestones -->
+              <div class="milestone-track" id="milestones-${v.id}" style="display: none;">
+                ${milestoneHtml}
+              </div>
             </div>
           </div>
         `;
@@ -12997,37 +13116,26 @@ ${outputRules}`;
       updateVisionCoachComment();
     }
 
+    function toggleVisionMilestones(id, event) {
+      if (event) event.stopPropagation();
+      const track = document.getElementById(`milestones-${id}`);
+      const card = document.getElementById(`vision-card-${id}`);
+      if (track && card) {
+        const isHidden = track.style.display === 'none';
+        track.style.display = isHidden ? 'flex' : 'none';
+        card.classList.toggle('is-expanded', isHidden);
+      }
+    }
+
     function updateVisionCoachComment() {
       const commentBox = document.getElementById('vision-coach-comment');
-      const coachAv = document.getElementById('vision-coach-av').querySelector('img');
-      const coachName = document.getElementById('vision-coach-name');
-      const coachMsg = document.getElementById('vision-coach-msg');
-
-      if (visions.length > 0) {
-        // 첫 번째 비전의 코치를 기준으로 표시 (혹은 마스터 비서가 있다면 그 비서로)
-        const v = visions[0];
-        const coach = CHARS[v.coachId] || CHARS[currentChar] || CHARS.cat;
-
-        commentBox.style.display = 'flex';
-        coachAv.src = coach.imgUrl || 'images/cat.png';
-        coachName.textContent = `${coach.statusName} 코멘트`;
-
-        // 코멘트 내용 (간단한 로직)
-        const total = v.milestones.length;
-        const done = v.milestones.filter(m => m.done).length;
-        if (done === total && total > 0) {
-          coachMsg.textContent = `축하해요! '${v.name}' 비전을 향한 모든 단계를 완료하셨네요. 당신은 정말 대단한 사람이에요.`;
-        } else if (done > 0) {
-          coachMsg.textContent = `'${v.name}' 비전의 ${done}번째 마일스톤을 넘으셨군요. 이 기세라면 목표하신 시점까지 충분히 도달할 수 있어요.`;
-        } else {
-          coachMsg.textContent = `당신의 비전 '${v.name}'은(는) 우리 모두의 미래예요. 한 걸음씩 마일스톤을 채워나가봐요. 제가 도울게요.`;
-        }
-      } else {
+      if (commentBox) {
         commentBox.style.display = 'none';
       }
     }
 
-    function openVisionDetail(id = null) {
+    function openVisionDetail(id = null, event = null) {
+      if (event) event.stopPropagation();
       editingVisionId = id;
       const panel = document.getElementById('vision-panel');
       panel.classList.add('open');
