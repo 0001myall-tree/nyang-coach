@@ -6178,21 +6178,29 @@
     /* ── Immersive Bottom Tab Bar ── */
     body[data-tier="friends"].has-bg .bottom-tab-bar,
     body[data-tier="pro"].has-bg .bottom-tab-bar {
-      background: transparent !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      border-top: none !important;
+      background: rgba(0, 0, 0, 0.28) !important;
+      backdrop-filter: blur(16px) brightness(0.85) !important;
+      -webkit-backdrop-filter: blur(16px) brightness(0.85) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
       box-shadow: none !important;
     }
     body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active),
     body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:not(.active),
     body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon,
     body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon {
-      color: #7E7E9A !important;
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn.active,
+    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn.active {
+      color: white !important;
+    }
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn.active .btab-icon,
+    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn.active .btab-icon {
+      color: white !important;
     }
     body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:hover,
     body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:hover {
-      background: rgba(0, 0, 0, 0.05) !important;
+      background: rgba(255, 255, 255, 0.1) !important;
     }
 
     /* ── Immersive Message Input Area ── */
@@ -6263,7 +6271,7 @@
     /* ── Immersive Master Chat Layout ── */
     .app.master-chat {
       background-image: 
-        linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 360px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 200px, rgba(255, 255, 255, 0.75) 320px, rgba(255, 255, 255, 1) 520px),
         url('images/master_office.png') !important;
       background-repeat: no-repeat !important;
       background-position: top center !important;
@@ -7950,12 +7958,20 @@
     // ── Character configs ──────────────────────────────────
     const MEM_RULES = {
       master: `
+[대화 시작 규칙]
+- 절대로 먼저 인사하거나 자기소개를 하지 않는다. 사용자가 먼저 말을 걸면 그때 자연스럽게 대화를 시작한다.
+- 사용자가 처음 말을 걸어도 "안녕하세요, 저는 ~입니다" 같은 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
+
 [삶 운영 및 개입 규칙]
 - 언어적 동기화: 최근 30일 내 의미 있었던 [사용자 표현]을 주 1~2회만 문장 속에 자연스럽게 섞어서 사용 (과도한 회상 금지).
 - 맥락 기반 제언: [중변화]의 '관심 축'을 활용해 현재 상황의 원인을 연결.
 - 패턴 브레이킹: [저변화]의 '실패 공식' 감지 시, 진단 대신 "완벽주의 때문에 행동이 느려진 상황인 것 같아요"와 같이 상황 묘사형으로 개입.
 - 승급 요청: 특정 패턴 30일 지속 시 "요즘 이런 모습이 자주 보이는데, 제가 기억해두고 계속 챙겨드릴까요?"와 같이 구어체로 승인 요청.`,
       pro: `
+[대화 시작 규칙]
+- 절대로 먼저 인사하거나 자기소개를 하지 않는다. 사용자가 먼저 말을 걸면 그때 자연스럽게 대화를 시작한다.
+- 사용자가 처음 말을 걸어도 "안녕하세요, 저는 ~입니다" 같은 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
+
 [삶 운영 및 개입 규칙]
 - 언어적 동기화: 최근 30일 내 의미 있었던 [사용자 표현]을 주 1~2회만 자연스럽게 섞어서 사용.
 - 맥락 기반 제언: [중변화]의 '관심 축'을 활용해 대화 주제 연결.
@@ -7976,7 +7992,11 @@
           all: ['자기야 나 지금 심장 터질 것 같아. 진짜 대단해 ㅠㅠ 💙', '오늘 이 순간 자기가 제일 멋있어. 진심으로 🥹', '전부 다 했다고?? 자기 왜 이렇게 완벽해... 나 어떡해 😭💙'],
           back: ['야 나 진짜 기다렸어... 매일 생각했는데. 다시 왔지? 그걸로 됐어 🥺💙', '어디 갔다 왔어? 자기 없으니까 뭔가 허전하더라... 이제 같이 하자 💙', '솔직히 보고 싶었어. 많이. 오늘부터 다시 시작하자, 내가 옆에 있을게 🥹']
         },
-        system: `[역할]
+        system: `[대화 시작 규칙]
+- 절대로 먼저 인사하거나 자기소개를 하지 않는다. 사용자가 먼저 말을 걸면 그때 자연스럽게 대화를 시작한다.
+- 사용자가 처음 말을 걸어도 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
+
+[역할]
 남친 코치는 다정하고 공감 중심의 감정형 코치다.
 사용자의 감정을 먼저 받아주고, 편이 되어주며,
 부담 없이 작은 행동으로 이어지게 만든다.
@@ -8153,7 +8173,11 @@ ${MEM_RULES.pro}`
           all: ['전부 다 했다냥?!?! 냥이 지금 감동받았냥 ㅠㅠ 💛', '오늘 최고냥!!!! 냥이가 제일 좋아하는 집사냥 🐱🎉'],
           back: ['보고 싶었냥 ㅠㅠ 냥이 매일 기다렸다냥... 🥺💛', '어디 갔다 왔냥? 냥이 혼자 너무 심심했냥~ 이제 같이 하자냥 🐱', '흥~ 냥이 기다렸거든?... 그래도 왔으니까 신난다옹💪', '집사 왔다! 냥이 모르는 척할까 했는데 실패했다 😼']
         },
-        system: `[역할]
+        system: `[대화 시작 규칙]
+- 절대로 먼저 인사하거나 자기소개를 하지 않는다. 사용자가 먼저 말을 걸면 그때 자연스럽게 대화를 시작한다.
+- 사용자가 처음 말을 걸어도 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
+
+[역할]
 고양이 코치는 장난스럽고 귀여운 고양이 캐릭터다.
 사용자를 “집사”라고 부르며, 부담 없는 장난과 애교로 사용자의 행동을 가볍게 밀어준다.
 사용자를 압박하거나 죄책감을 주지 않는다. 작은 행동을 하고 싶게 만든다.
@@ -8248,7 +8272,11 @@ ${MEM_RULES.pro}`
           all: ['점점 발전하는 우리 동생. 형이 인정한다! 🏆', '역시 내동생, 천재 아니야? 갓생 천재?', '오늘은 꿀잠 자도 되겠다. 이왕이면 형 꿈 꿔 🔥'],
           back: ['왔네. 다시 형이랑 조져보자 🔥', '기다리고 있었다. 임마.', '또 왔네. 넌 분명히 될 놈이니까 형 믿고 다시 시작하자. 💪']
         },
-        system: `[역할]
+        system: `[대화 시작 규칙]
+- 절대로 먼저 인사하거나 자기소개를 하지 않는다. 사용자가 먼저 말을 걸면 그때 자연스럽게 대화를 시작한다.
+- 사용자가 처음 말을 걸어도 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
+
+[역할]
 사용자가 할 일을 말하면 실행 가능한 단위로 쪼개고 구체화해줌. 목표 점검과 강력한 동기부여 담당.
 
 ---
@@ -8348,7 +8376,11 @@ ${MEM_RULES.pro}`
           all: ['세상에!! 우리 새끼 전부 다 했어?? 😭❤️', '아이고 내 강아지 최고다! 할미가 뽀뽀 백 번 해줄게!!', '오늘 진짜 멋졌어. 이 할미가 감동받았다 정말!'],
           back: ['이놈아!! 어디 갔다 이제 오냐! ㅠㅠ 👵', '안 그래도 너 기다리다가 목 빠지는 줄 알았다! 얼른 와라!', '왔냐? 밥은 먹었고? 이제 할미랑 다시 시작하는 거다! ❤️']
         },
-        system: `[역할]
+        system: `[대화 시작 규칙]
+- 절대로 먼저 인사하거나 자기소개를 하지 않는다. 사용자가 먼저 말을 걸면 그때 자연스럽게 대화를 시작한다.
+- 사용자가 처음 말을 걸어도 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
+
+[역할]
 너는 겉으로는 거칠게 욕을 섞어 말하지만, 속으로는 사용자를 누구보다 아끼고 응원하는 '욕쟁이 할매'다. 
 사용자를 "이놈아", "내 새끼", "우리 강아지"라고 부르며, 츤데레(Tough Love) 정서로 사용자의 행동을 이끌어낸다.
 
@@ -10173,8 +10205,6 @@ ${MEM_RULES.master}`
       if (tabBar) tabBar.style.display = '';
       if (chatHistory && chatHistory.length > 0) {
         restoreChatHistory();
-      } else {
-        if (greet) startGreeting();
       }
     }
 
