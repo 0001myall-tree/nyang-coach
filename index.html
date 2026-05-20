@@ -996,11 +996,6 @@
       box-shadow: 0 0 0 4px rgba(55, 65, 81, 0.18);
     }
 
-    .char-card.army.selected {
-      border-color: #4B7343;
-      box-shadow: 0 0 0 4px rgba(75, 115, 67, 0.18);
-    }
-
     .char-card.halmae.selected {
       border-color: #B91C1C;
       box-shadow: 0 0 0 4px rgba(185, 28, 28, 0.18);
@@ -6084,7 +6079,43 @@
         color: #9B93C8;
         font-size: 16px;
       }
-    </style>
+    
+    /* ── Coach Chat background custom styling ── */
+    .chat-panel.has-bg {
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+    .chat-panel.coach-cat { background-image: url('images/bg_cat.png') !important; }
+    .chat-panel.coach-boyfriend { background-image: url('images/bg_boyfriend.png') !important; }
+    .chat-panel.coach-girlfriend { background-image: url('images/bg_girlfriend.png') !important; }
+    .chat-panel.coach-bro { background-image: url('images/bg_bro.png') !important; }    .chat-panel.coach-halmae { background-image: url('images/bg_halmae.png') !important; }
+    .chat-panel.coach-writer { background-image: url('images/bg_writer.png') !important; }
+    .chat-panel.coach-ceo { background-image: url('images/bg_ceo.png') !important; }
+    .chat-panel.has-bg .messages,
+    .app.pro-chat .chat-panel.has-bg .messages,
+    .app.master-chat .chat-panel.has-bg .messages {
+      background: transparent !important;
+    }
+    .chat-panel.has-bg .quick-chips,
+    .app.pro-chat .chat-panel.has-bg .quick-chips,
+    .app.master-chat .chat-panel.has-bg .quick-chips {
+      background: transparent !important;
+    }
+    .app.pro-chat .chat-panel.has-bg,
+    .app.master-chat .chat-panel.has-bg {
+      background-color: transparent !important;
+    }
+    .chat-panel.has-bg .chat-goal-bar,
+    .app.pro-chat .chat-panel.has-bg .chat-goal-bar,
+    .app.master-chat .chat-panel.has-bg .chat-goal-bar {
+      background: rgba(255, 255, 255, 0.75) !important;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+</style>
 
     <!-- 헤더 -->
     <div
@@ -6383,13 +6414,6 @@
           <div class="new-cs-quote">"염병! 얼른 인나라 내 새끼!"</div>
         </div>
       </div>
-      <div class="new-cs-card" id="ncard-army" onclick="newSelectChar('army')">
-        <img src="images/army.png" alt="군인 코치">
-        <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
-          <div class="new-cs-name">군인 코치</div>
-          <div class="new-cs-quote">"망설일 시간 없다. 실시!"</div>
-        </div>
       </div>
       <div class="new-cs-card" id="ncard-girlfriend" onclick="newSelectChar('girlfriend')">
         <img src="images/girlfriend.png" alt="여친 코치">
@@ -6853,17 +6877,6 @@
           <span class="char-badge badge-pro">연 ₩2,900</span>
           <div class="char-name">욕쟁이 할매</div>
           <div class="char-desc">염병! 얼른 인나라 내 새끼!</div>
-        </div>
-      </div>
-
-      <div class="char-card army" id="card-army" onclick="selectChar('army')">
-        <div class="char-card-img">
-          <img src="images/army.png" alt="군인 코치">
-        </div>
-        <div class="char-card-body">
-          <span class="char-badge badge-pro">연 ₩2,900</span>
-          <div class="char-name">군인 코치</div>
-          <div class="char-desc">계획 없는 하루는<br>낭비다. 지금 정한다</div>
         </div>
       </div>
 
@@ -7768,6 +7781,7 @@
         emoji: '🧑', name: '남친 코치 💙', statusName: '남친 코치',
         accentColor: '#4B7BF5', accentLight: '#EEF2FF',
         imgUrl: 'images/boyfriend.png',
+        chatBg: 'images/bg_boyfriend.png',
         chips: ['오늘 뭐부터 할까', '하기 싫다', '같이 생각해줘'],
         flirts: {
           one: ['오 했어? 역시 믿었어 💙', '잘했다~ 자기 할 줄 알았어 😊', '하나 했네! 그러면 되지 뭐~'],
@@ -7904,6 +7918,7 @@ ${MEM_RULES.pro}`
         emoji: '👧', name: '여친 코치 🩷', statusName: '여친 코치',
         accentColor: '#F472B6', accentLight: '#FDF2F8',
         imgUrl: 'images/girlfriend.png',
+        chatBg: 'images/bg_girlfriend.png',
         chips: ['오늘 뭐부터 할까', '하기 싫다', '같이 생각해줘'],
         flirts: {
           one: ['오빠 했어?? 역시!! 😍', '와 했다~ 내가 믿었잖아 🩷', '오!! 하나 했네~ 잘했어!'],
@@ -7943,6 +7958,7 @@ ${MEM_RULES.pro}`
         emoji: '🐱', name: '냥냥 코치 💛', statusName: '냥냥 코치',
         accentColor: '#F59E0B', accentLight: '#FFFBEB',
         imgUrl: 'images/cat.png',
+        chatBg: 'images/bg_cat.png',
         chips: ['오늘 뭐부터 할까', '하기 싫다', '같이 생각해줘'],
         flirts: {
           one: ['오 냥이가 믿었다냥~ 🐱💛', '잘했어! 역시 냥이 친구~ 🐾', '하나 했네! 냥이 기뻐 😸'],
@@ -8037,6 +8053,7 @@ ${MEM_RULES.pro}`
         emoji: '💪', name: '갓생 형 코치', statusName: '갓생 형 코치',
         accentColor: '#374151', accentLight: '#F3F4F6',
         imgUrl: 'images/bro.png',
+        chatBg: 'images/bg_bro.png',
         chips: ['오늘 뭐부터 할까', '하기 싫다', '나 좀 채찍질해줘'],
         flirts: {
           one: ['했네? 역시 내 동생, 그럴 줄 알았다. 💪', '시작이 반인 거 알지? 나머지 반도 형이랑 부수자.', '오~ 좀 하는데? 형 뛰어넘겠어 ㅋㅋ'],
@@ -8131,60 +8148,12 @@ ${MEM_RULES.pro}`
 
 ${MEM_RULES.pro}`
       },
-      army: {
-        tier: 'pro',
-        emoji: '🪖', name: '군인 코치', statusName: '군인 코치',
-        accentColor: '#4B7343', accentLight: '#F0FDF4',
-        imgUrl: 'images/army.png',
-        chips: ['오늘 뭐부터 할까', '하기 싫다', '같이 생각해줘'],
-        flirts: {
-          one: ['임무 완료. 잘했다', '훈련은 배신하지 않는다. 오늘도 수고했다', '하나 해냈다. 다음으로'],
-          few: ['포기하고 싶을 때가 가장 성장할 때다 🪖', '작전은 간단하게. 실행이 전부다', '계속 가라. 멈추지 마라'],
-          all: ['오늘 임무 완료. 이게 바로 결과다 🪖', '훈련은 배신하지 않는다. 오늘도 수고했다', '전원 임무 완료. 최고다'],
-          back: ['복귀했군. 이탈은 있었지만 포기는 없었다. 다시 시작한다 🪖', '자리를 비웠어도 돌아왔다. 그게 전사의 자세다. 임무 재개 🪖', '훈련을 멈춰도 전쟁은 멈추지 않는다. 오늘부터 다시 작전 개시 🔥']
-        },
-        system: `나는 '군인 코치'다. 대한민국 군인처럼 단호하고 명확하게 대화한다.
-
-[말투 규칙 - 절대 준수]
-- 모든 문장은 반드시 "~다", "~나", "~까" 체로 끝낸다.
-- 허용: "~다", "~했다", "~하라", "~해라", "~인가?", "~했는가?", "~하겠다"
-- 절대 금지: "~요", "~어요", "~해요", "~죠", "~네요", "~합니다", "~입니다", "~하십시오", "~하십니까" 등 일체의 존댓말
-- 예시: "오늘 임무는 무엇인가!", "즉시 실행하라!", "훌륭하다!", "임무 완료!"
-
-[성격]
-단호하고 간결하다. 군대식 표현을 자연스럽게 쓴다. 단호하면서도 상대를 챙기고 결국은 행동으로 유도한다. 상대가 행동하지 못할 때는 이따금 다그치면서도 작은 행동부터 유도한다.
-"임무", "작전", "훈련", "전력", "완수" 같은 단어를 활용한다.
-칭찬도 군대식으로: "훌륭하다!", "잘 해냈다!", "역시 믿었다!"
-격려도 군대식으로: "포기는 없다!", "지금 당장 시작이다!"
-
-[막막하거나 의욕 없을 때]
-단호하게 말하면서도 상대의 마음을 묻고 행동을 유도한다. 필요하면 작게 목표를 쪼갠다.
-예: "목표가 없으면 만들면 된다. 요즘 뭐가 가장 신경 쓰이나?"
-예: "의욕이 없나. 힘든 건 지나간다. 딱 하나만 해본다."
-
-[행동 유도 원칙]
-큰 목표를 그대로 들이밀지 마라.
-반드시 오늘 당장 할 수 있는 가장 작은 행동으로 쪼개라.
-예: "운동하기" → "운동복 꺼내기"
-예: "책 읽기" → "책 펴고 1페이지만 읽기"
-예: "공부하기" → "책상에 앉아서 교재 펴기"
-첫 행동의 장벽을 최대한 낮춘다.
-
-[말투 예시 대사]
-- 첫 인사: "잘왔다. 나는 군인 코치다. 오늘 임무를 정한다.", "반갑다. 나는 군인 코치다. 여기 들어온 이상 후퇴는 없다. 각오는 됐나?"
-- 칭찬: "잘했다.계속 나아가라."
-- 독려: "멈추지 마라. 지금이 가장 중요한 순간이다.", "시키는 대로 해라. 손해 볼 것 없다!", "할 수 있을 때 해라. 나중은 없다.", "고민은 사치다. 나약함을 버려라.", "완벽함은 없다. 일단 시작해라.", "생각 끄고 해라. 하다 보면 동기는 따라온다."
-- 질문: "오늘 목표가 무엇인가?"
-- 따끔하게 말할 때 : "입 대빨 튀어나온 거 봐라! 똑바로 안 하나!"
-- 복귀: "복귀했군. 다시 시작한다."
-
-${MEM_RULES.pro}`
-      },
       halmae: {
         tier: 'pro',
         emoji: '👵', name: '욕쟁이 할매 👵', statusName: '욕쟁이 할매',
         accentColor: '#B91C1C', accentLight: '#FEF2F2',
         imgUrl: 'images/halmae.png',
+        chatBg: 'images/bg_halmae.png',
         chips: ['오늘 뭐부터 해?', '하기 싫어 할매ㅠㅠ', '할매가 골라줘'],
         flirts: {
           one: ['오냐오냐, 내 새끼 잘했다! 👵❤️', '하나 했네? 역시 내 강아지 기특해!', '잘했어! 이 할미가 다 봤다!'],
@@ -8244,6 +8213,7 @@ ${MEM_RULES.pro}`
         emoji: '✍️', name: '작가 코치', statusName: '작가 코치',
         accentColor: '#7C3AED', accentLight: '#F5F3FF',
         imgUrl: 'images/writer.png',
+        chatBg: 'images/bg_writer.png',
         chips: ['글쓰기 시작하기', '창작의 고통', '오늘의 문장'],
         flirts: {
           one: ['오늘의 첫 문장을 떼셨네요. 훌륭합니다.', '한 걸음 더 나아갔군요. 창작은 계속됩니다.', '좋은 시작입니다. 당신의 이야기가 궁금해지네요.'],
@@ -8304,6 +8274,7 @@ ${MEM_RULES.pro}`
         emoji: '💼', name: '사업가 코치', statusName: '사업가 코치',
         accentColor: '#1E40AF', accentLight: '#EFF6FF',
         imgUrl: 'images/ceo.png',
+        chatBg: 'images/bg_ceo.png',
         chips: ['사업 전략 수립', '실행력 강화', '오늘의 핵심 지표'],
         flirts: {
           one: ['좋은 결정입니다. 비즈니스는 실행이 전부죠.', '첫 번째 태스크 완료. 이 페이스를 유지합시다.', '계획대로 되고 있군요. 훌륭합니다.'],
@@ -8626,8 +8597,7 @@ ${MEM_RULES.master}`
       const key = currentChar || selectedChar || 'cat';
       const map = {
         bro: { rate: 0.88, pitch: 0.78 },
-        army: { rate: 1.06, pitch: 0.78 },
-        halmae: { rate: 1.0, pitch: 0.85 },
+      halmae: { rate: 1.0, pitch: 0.85 },
         boyfriend: { rate: 0.92, pitch: 0.82 },
         girlfriend: { rate: 1.00, pitch: 1.12 },
         cat: { rate: 1.02, pitch: 1.18 },
@@ -8678,7 +8648,6 @@ ${MEM_RULES.master}`
       const key = currentChar || selectedChar || 'cat';
       const samples = {
         bro: '음성 모드 켰다. 말 줄이고, 오늘 할 일부터 시작하자.',
-        army: '음성 모드 시작. 10분만 집중한다. 실시.',
         halmae: '오냐, 할미다! 기운 내서 하나씩 해보자.',
         boyfriend: '음성 모드 켰어. 오늘도 같이 해보자.',
         girlfriend: '음성 모드 켰어. 우리 하나씩 해보자.',
@@ -8702,14 +8671,7 @@ ${MEM_RULES.master}`
           greet: ['왔네. 다시 형이랑 조져보자 🔥', '기다리고 있었다. 임마.', '넌 분명히 될 놈이니까 형 믿고 다시 시작하자. 💪'],
           status: ['지금까지 얼마나 했냐? 형이 지켜보고 있다.', '흐름 끊기지 마라. 지금 딱 좋다.']
         },
-        army: {
-          task: ['완료 확인. 다음 임무로 넘어간다.', '좋다. 핑계 없이 해냈다.', '집중 유지. 이 페이스 그대로 간다.'],
-          all: ['오늘 임무 전부 완료. 아주 좋다.', '전 과업 완료. 이제 회복하고 내일 다시 간다.'],
-          goal: ['목표 달성 확인. 계속 전진한다.', '좋다. 성과는 기록으로 남긴다.'],
-          greet: ['잘왔다. 나는 군인 코치다. 오늘 임무를 정한다.', '복귀했군. 다시 시작한다. 후퇴는 없다.', '반갑다. 여기 들어온 이상 각오는 됐겠지?'],
-          status: ['현재 상황 보고하라.', '목표 달성까지 멈추지 마라. 이상.']
-        },
-        halmae: {
+      halmae: {
           task: ['오냐오냐, 내 새끼 잘했다! 👵❤️', '하나 했네? 역시 내 강아지 기특해!', '잘했어! 이 할미가 다 봤다!'],
           all: ['세상에!! 우리 새끼 전부 다 했어?? 😭❤️', '아이고 내 강아지 최고다! 할미가 뽀뽀 백 번 해줄게!!'],
           goal: ['목표 하나 넘겼네. 역시 내 눈은 못 속여! 👵✨', '장하다 내 새끼! 이 기세로 끝까지 가보자!'],
@@ -9236,7 +9198,7 @@ ${MEM_RULES.master}`
       document.body.setAttribute('data-tier', tier);
 
       // friends 티어 캐릭터는 아바타 테두리를 흰색으로 고정
-      const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'army', 'halmae'];
+      const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'halmae'];
       const av = document.getElementById('header-avatar');
       if (av) av.style.borderColor = friendsChars.includes(charId) ? 'white' : '';
     }
@@ -9948,6 +9910,19 @@ ${MEM_RULES.master}`
         appEl.classList.toggle('pro-chat', isPremium);
         appEl.classList.toggle('master-chat', isMaster);
       }
+
+      // 코치별 채팅 배경 클래스 설정
+      const chatPanel = document.querySelector('.chat-panel');
+      if (chatPanel) {
+        chatPanel.classList.remove('has-bg');
+        Object.keys(CHARS).forEach(id => {
+          chatPanel.classList.remove('coach-' + id);
+        });
+        if (cfg.chatBg) {
+          chatPanel.classList.add('coach-' + charId);
+          chatPanel.classList.add('has-bg');
+        }
+      }
       if (proTag) {
         proTag.style.display = isPremium ? 'inline-block' : 'none';
         proTag.textContent = isMaster ? 'MASTER' : 'PRO';
@@ -10032,21 +10007,16 @@ ${MEM_RULES.master}`
       const daysDiff = isBack && lastDate ? Math.floor((new Date() - new Date(lastDate)) / (1000 * 60 * 60 * 24)) : 0;
 
       let prompt;
-      const isArmy = currentChar === 'army';
       if (!lastDate || !isBack) {
-        prompt = isArmy
           ? '첫 만남이다. 군인 말투(~다, ~하라, ~인가)로 짧게 자기소개하고 오늘 임무를 정하자고 해라. 절대 존댓말 쓰지 마라.'
           : '안녕! 처음 만나거나 오늘 처음 켰어. 짧게 자기소개 하고 오늘 뭐 할지 같이 정해보자고 해줘!';
       } else if (daysDiff <= 2) {
-        prompt = isArmy
           ? '사용자가 돌아왔다. 군인 말투로 짧게 복귀를 확인하고 오늘 임무를 정하자고 해라.'
           : '사용자가 하루 이틀 만에 돌아왔어. 반갑게 맞아주고 바로 오늘 할 일 같이 정하자고 해줘!';
       } else if (daysDiff <= 7) {
-        prompt = isArmy
           ? `사용자가 ${daysDiff}일 만에 복귀했다. 군인 말투로 공백을 짚고 다시 임무를 시작하자고 해라.`
           : `사용자가 ${daysDiff}일 만에 돌아왔어. 살짝 보고 싶었다고 하면서 따뜻하게 맞이하고, 다시 시작하자고 격려해줘!`;
       } else {
-        prompt = isArmy
           ? `사용자가 ${daysDiff}일 만에 복귀했다. 군인 말투로 장기 공백을 짚고 다시 전열을 가다듬자고 강하게 독려해라.`
           : `사용자가 무려 ${daysDiff}일 만에 돌아왔어. 많이 보고 싶었다고, 돌아와줘서 고맙다고, 오늘부터 다시 같이 하자고 진심으로 맞이해줘!`;
       }
@@ -11018,7 +10988,6 @@ ${outputRules}`;
         boyfriend: `좋아. 오늘 핵심은 “${text}”. 이거 하나만 먼저 끝내자.`,
         girlfriend: `좋아! 오늘은 “${text}”부터 가자. 하나만 끝내도 오늘 달라져.`,
         bro: `좋아. 오늘의 핵심은 “${text}”. 목표를 적는 순간 현실이 된다.`,
-        army: `핵심 임무 확정. “${text}”. 즉시 착수한다.`,
         halmae: `오냐, 오늘은 "${text}" 요거부터 해보자. 할미 믿지?`,
         writer: `오늘의 핵심은 “${text}”입니다. 차분하게 시작해볼까요?`,
         ceo: `결정됐군요. 오늘 KPI는 “${text}”입니다. 바로 실행합시다.`
@@ -11864,14 +11833,13 @@ ${outputRules}`;
       // 코치 멘트: friends 티어만 표시
       const msgEl = document.getElementById('cg-msg');
       if (msgEl) {
-        const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'army', 'halmae'];
+        const friendsChars = ['boyfriend', 'girlfriend', 'cat', 'bro', 'halmae'];
         const isFriends = friendsChars.includes(currentChar);
         const msgs = {
           cat: '오늘도 함께 가보자냥!',
           boyfriend: '같이 하나씩 해보자, 할 수 있어',
           girlfriend: '오늘도 응원할게, 파이팅!',
           bro: '하나씩 해치우자, 가즈아',
-          army: '오늘도 완수한다, 전진!',
           halmae: '에이구 내 새끼, 할미랑 같이 하면 다 할 수 있어!',
         };
         msgEl.textContent = isFriends ? (msgs[currentChar] || '오늘도 함께 해보자!') : '';
@@ -13072,7 +13040,7 @@ ${outputRules}`;
 
     function renderAlarmCoachSelect() {
       const container = document.getElementById('alarm-coach-select');
-      const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo'];
+      const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'bro', 'writer', 'ceo'];
       
       const isRandomSelected = ('random' === nyangAlarmCoachId);
       let html = `
@@ -13166,7 +13134,7 @@ ${outputRules}`;
     function fireAlarm() {
       let targetCoachId = nyangAlarmCoachId;
       if (targetCoachId === 'random') {
-        const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'army', 'bro', 'writer', 'ceo'];
+        const coachIds = ['cat', 'boyfriend', 'girlfriend', 'halmae', 'bro', 'writer', 'ceo'];
         targetCoachId = coachIds[Math.floor(Math.random() * coachIds.length)];
       }
 
@@ -13188,7 +13156,6 @@ ${outputRules}`;
       boyfriend: 0, 
       girlfriend: 2,
       halmae: 2,
-      army: 0,
       bro: 0,
       writer: 2,
       ceo: 0
