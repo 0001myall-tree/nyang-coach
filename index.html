@@ -6115,6 +6115,149 @@
       border: 1px solid rgba(255, 255, 255, 0.45);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
+
+    /* ── Immersive Layout for Friends & Pro ── */
+    body[data-tier="friends"].has-bg .app,
+    body[data-tier="pro"].has-bg .app {
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    /* Map background images to .app wrapper */
+    .app.coach-cat { background-image: url('images/bg_cat.png') !important; }
+    .app.coach-boyfriend { background-image: url('images/bg_boyfriend.png') !important; }
+    .app.coach-girlfriend { background-image: url('images/bg_girlfriend.png') !important; }
+    .app.coach-bro { background-image: url('images/bg_bro.png') !important; }
+    .app.coach-halmae { background-image: url('images/bg_halmae.png') !important; }
+    .app.coach-writer { background-image: url('images/bg_writer.png') !important; }
+    .app.coach-ceo { background-image: url('images/bg_ceo.png') !important; }
+
+    /* Make chat-panel transparent to reveal .app background */
+    body[data-tier="friends"].has-bg .chat-panel,
+    body[data-tier="pro"].has-bg .chat-panel {
+      background: transparent !important;
+    }
+
+    /* ── Immersive Top Header ── */
+    body[data-tier="friends"].has-bg .header,
+    body[data-tier="pro"].has-bg .header {
+      background: transparent !important;
+      border-bottom: none !important;
+      color: white !important;
+    }
+    body[data-tier="friends"].has-bg .header .header-name,
+    body[data-tier="pro"].has-bg .header .header-name {
+      color: white !important;
+    }
+    body[data-tier="friends"].has-bg .header .header-status span,
+    body[data-tier="pro"].has-bg .header .header-status span {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    body[data-tier="friends"].has-bg .header .header-status:not(.resting) span,
+    body[data-tier="pro"].has-bg .header .header-status:not(.resting) span {
+      color: #34D399 !important;
+    }
+    body[data-tier="friends"].has-bg .header .header-status:not(.resting) .status-dot,
+    body[data-tier="pro"].has-bg .header .header-status:not(.resting) .status-dot {
+      background: #34D399 !important;
+      box-shadow: 0 0 6px rgba(52, 211, 153, 0.4);
+    }
+    body[data-tier="friends"].has-bg .header .hbtn,
+    body[data-tier="pro"].has-bg .header .hbtn {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(255, 255, 255, 0.18) !important;
+      color: white !important;
+    }
+    body[data-tier="friends"].has-bg .header .hbtn:hover,
+    body[data-tier="pro"].has-bg .header .hbtn:hover {
+      background: rgba(255, 255, 255, 0.22) !important;
+      border-color: rgba(255, 255, 255, 0.35) !important;
+    }
+
+    /* ── Immersive Bottom Tab Bar ── */
+    body[data-tier="friends"].has-bg .bottom-tab-bar,
+    body[data-tier="pro"].has-bg .bottom-tab-bar {
+      background: rgba(15, 15, 25, 0.75) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active),
+    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:not(.active),
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon,
+    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon {
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:hover,
+    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    /* ── Immersive Message Input Area ── */
+    body[data-tier="friends"].has-bg .input-area,
+    body[data-tier="pro"].has-bg .input-area {
+      background: transparent !important;
+      border-top: none !important;
+    }
+    body[data-tier="friends"].has-bg .input-box,
+    body[data-tier="pro"].has-bg .input-box {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      color: white !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    body[data-tier="friends"].has-bg .input-box:focus,
+    body[data-tier="pro"].has-bg .input-box:focus {
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.35) !important;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important;
+    }
+    body[data-tier="friends"].has-bg .input-box::placeholder,
+    body[data-tier="pro"].has-bg .input-box::placeholder {
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
+    body[data-tier="friends"].has-bg .mic-btn,
+    body[data-tier="pro"].has-bg .mic-btn {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      color: white !important;
+    }
+    body[data-tier="friends"].has-bg .mic-btn:hover,
+    body[data-tier="pro"].has-bg .mic-btn:hover {
+      background: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    /* ── Header Back Button ── */
+    .header-back-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      margin-right: -4px;
+    }
+    .header-back-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    @media (max-width: 640px) {
+      .header-back-btn {
+        display: flex;
+        color: var(--text);
+      }
+      body[data-tier="friends"].has-bg .header-back-btn,
+      body[data-tier="pro"].has-bg .header-back-btn {
+        color: white !important;
+      }
+    }
 </style>
 
     <!-- 헤더 -->
@@ -6952,6 +7095,11 @@
   <!-- App -->
   <div class="app" id="app" style="display:none">
     <div class="header" id="main-header">
+      <button class="header-back-btn" onclick="changeChar()" title="코치 바꾸기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
       <div class="avatar-wrap" id="header-avatar" onclick="changeChar()">
       </div>
       <div class="header-info">
@@ -9914,12 +10062,19 @@ ${MEM_RULES.master}`
       const chatPanel = document.querySelector('.chat-panel');
       if (chatPanel) {
         chatPanel.classList.remove('has-bg');
+        document.body.classList.remove('has-bg');
+        if (appEl) appEl.classList.remove('has-bg');
+
         Object.keys(CHARS).forEach(id => {
           chatPanel.classList.remove('coach-' + id);
+          if (appEl) appEl.classList.remove('coach-' + id);
         });
+
         if (cfg.chatBg) {
           chatPanel.classList.add('coach-' + charId);
           chatPanel.classList.add('has-bg');
+          document.body.classList.add('has-bg');
+          if (appEl) appEl.classList.add('coach-' + charId);
         }
       }
       if (proTag) {
