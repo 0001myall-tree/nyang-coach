@@ -2728,10 +2728,10 @@
       background: white;
       border: 1.5px solid var(--border);
       border-radius: 20px;
-      padding: 20px;
+      padding: 16px 20px;
       margin-bottom: 12px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 16px;
       cursor: pointer;
       transition: all 0.2s;
@@ -2763,34 +2763,15 @@
       flex: 1;
       min-width: 0;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .vision-card-info {
+      display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-
-    .vision-card-main-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .vision-card-icon-wrap {
-      flex-shrink: 0;
-    }
-
-    .vision-card-icon {
-      width: 38px;
-      height: 38px;
-      background: var(--lavender-soft);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-    }
-
-    .vision-card-title-area {
-      flex: 1;
+      gap: 6px;
       min-width: 0;
     }
 
@@ -2799,53 +2780,6 @@
       font-weight: 900;
       color: var(--text);
       line-height: 1.3;
-    }
-
-    .vision-card-desc {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .vision-card-right-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .vision-card-status {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--muted);
-    }
-
-    .vision-card-menu-btn {
-      color: #A0A0B0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      transition: background 0.2s;
-    }
-
-    .vision-card-menu-btn:hover {
-      background: #F5F3FF;
-      color: var(--accent);
-    }
-
-    .vision-card-bottom-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      margin-top: 2px;
     }
 
     .vision-card-deadline {
@@ -2858,9 +2792,10 @@
       border-radius: 6px;
       font-size: 10px;
       font-weight: 700;
+      width: fit-content;
     }
 
-    .vision-card-expand-btn {
+    .vision-card-menu-btn {
       color: #A0A0B0;
       cursor: pointer;
       display: flex;
@@ -2869,20 +2804,13 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      transition: all 0.2s;
+      transition: background 0.2s;
+      flex-shrink: 0;
     }
 
-    .vision-card-expand-btn:hover {
+    .vision-card-menu-btn:hover {
       background: #F5F3FF;
       color: var(--accent);
-    }
-
-    .chevron-icon {
-      transition: transform 0.2s ease;
-    }
-
-    .vision-card.is-expanded .chevron-icon {
-      transform: rotate(180deg);
     }
 
     .vision-status-dot {
@@ -2986,32 +2914,56 @@
       color: var(--text);
     }
 
-    /* Vision Detail Panel */
+    /* Vision Detail Panel (Pop-up Modal) */
     .vision-panel {
       position: fixed;
       inset: 0;
-      background: white;
-      z-index: 600;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
       display: flex;
-      flex-direction: column;
-      transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
 
     .vision-panel.open {
-      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .vision-panel-content {
+      background: white;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .vision-panel.open .vision-panel-content {
+      transform: scale(1);
     }
 
     .vision-detail-header {
-      height: 180px;
+      height: 130px;
       background: linear-gradient(135deg, #A78BFA, #8B7CFF);
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 24px;
+      padding: 20px;
       color: white;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .vision-detail-header-bg {
@@ -3023,7 +2975,7 @@
     }
 
     .vision-detail-header h2 {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 900;
       margin-bottom: 4px;
       position: relative;
@@ -3031,7 +2983,7 @@
     }
 
     .vision-detail-header p {
-      font-size: 13px;
+      font-size: 12px;
       opacity: 0.9;
       position: relative;
       z-index: 2;
@@ -3050,27 +3002,31 @@
       justify-content: center;
       border: none;
       color: white;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
       z-index: 3;
+      transition: background 0.2s;
+    }
+
+    .vision-detail-close:hover {
+      background: rgba(0, 0, 0, 0.2);
     }
 
     .vision-detail-body {
       flex: 1;
       overflow-y: auto;
-      padding: 24px;
-      padding-bottom: 100px;
+      padding: 20px;
     }
 
     .detail-section {
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     .detail-label {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--text);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -3096,8 +3052,9 @@
     .milestone-num {
       width: 24px;
       height: 24px;
-      background: #A78BFA;
-      color: white;
+      background: white;
+      color: var(--muted);
+      border: 2px solid var(--border);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -3106,10 +3063,19 @@
       font-weight: 800;
       flex-shrink: 0;
       margin-top: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .milestone-num:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .milestone-num.done {
-      background: #8B5CF6;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
     }
 
     .milestone-content-wrap {
@@ -3212,16 +3178,13 @@
     }
 
     .vision-footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 16px 24px 32px;
+      padding: 16px 20px;
       background: white;
       border-top: 1px solid var(--border);
       display: flex;
       gap: 12px;
       z-index: 10;
+      flex-shrink: 0;
     }
 
     .vision-save-btn {
@@ -5351,17 +5314,7 @@
   background:linear-gradient(180deg, #F5F3FF 0%, #FFFFFF 100%);
   overflow:hidden;
 ">
-    <!-- 로그인 / 가입 버튼 -->
-    <button class="landing-login-btn" onclick="toggleLoginSheet(true)">
-      <span class="login-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </span>
-      로그인 / 가입
-    </button>
+    <!-- Top right login button removed to clean up header space -->
     <style>
       @keyframes characterPop {
         0% {
@@ -5612,18 +5565,35 @@
         <div class="hero-char"><img src="images/cat2.png" alt="냥코치"></div>
       </div>
     </div>
-    <div style="padding:10px 24px calc(env(safe-area-inset-bottom) + 75px); flex-shrink:0;">
+    <div style="padding:10px 24px calc(env(safe-area-inset-bottom) + 50px); flex-shrink:0; display:flex; flex-direction:column; gap:12px;">
+      <button onclick="toggleLoginSheet(true)" style="
+        width:100%;padding:17px;border-radius:18px;border:none;
+        background:linear-gradient(135deg,#8B6FFF 0%,#7048EE 100%);
+        color:white;font-size:17px;font-weight:900;cursor:pointer;
+        font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+        box-shadow: 
+          0 12px 30px rgba(112,72,238,0.35), 
+          0 4px 8px rgba(112,72,238,0.15),
+          inset 0 1px 0 rgba(255,255,255,0.3);
+      ">로그인 / 가입 →</button>
+      
       <button onclick="showCoachSelect()" style="
-      width:100%;padding:17px;border-radius:18px;border:none;
-      background:linear-gradient(135deg,#8B6FFF 0%,#7048EE 100%);
-      color:white;font-size:17px;font-weight:900;cursor:pointer;
-      font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
-      box-shadow: 
-        0 12px 30px rgba(112,72,238,0.35), 
-        0 4px 8px rgba(112,72,238,0.15),
-        inset 0 1px 0 rgba(255,255,255,0.3);
-
-    ">오늘 시작하기 →</button>
+        width:100%;padding:17px;border-radius:18px;
+        border:1.5px solid #DDD6FE;
+        background:#FAF9FF;
+        color:#7C5CFC;font-size:16px;font-weight:900;cursor:pointer;
+        font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(139, 124, 255, 0.04);
+      ">
+        <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 1px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </span>
+        로그인 없이 둘러보기
+      </button>
     </div>
   </div>
 
@@ -5679,7 +5649,7 @@
         </button>
       </div>
 
-      <button class="guest-btn" onclick="toggleLoginSheet(false)">로그인 없이 둘러보기</button>
+      <!-- Removed guest-btn from sheet as it's now on landing screen -->
     </div>
   </div>
 
@@ -7542,7 +7512,7 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="vision-title">장기 비전 <span class="vision-badge">내 인생의 방향</span></div>
+                  <div class="vision-title">장기 비전</div>
                 </div>
               </div>
               <button class="vision-add-btn" onclick="openVisionDetail()">+ 장기 비전 추가</button>
@@ -12862,89 +12832,91 @@ ${outputRules}`;
   </script>
 
   <!-- 장기 비전 상세 패널 -->
-  <div class="vision-panel" id="vision-panel">
-    <div class="vision-detail-header">
-      <div class="vision-detail-header-bg"></div>
-      <button class="vision-detail-close" onclick="closeVisionDetail()">✕</button>
-      <h2 id="vision-detail-title-display">장기 비전 상세</h2>
-      <p id="vision-detail-desc-display">미래의 나를 이끌 비전을 설정하고 관리해요.</p>
-    </div>
-
-    <div class="vision-detail-body">
-      <!-- 기본 정보 -->
-      <div class="detail-section">
-        <div class="detail-label">🎯 비전 목표</div>
-        <input type="text" id="vision-input-name" class="vacation-input"
-          style="width:100%; font-size:16px; font-weight:900;" placeholder="예: 소설 완결 및 출판"
-          oninput="document.getElementById('vision-detail-title-display').textContent = this.value || '장기 비전 상세'">
-        <input type="text" id="vision-input-desc" class="vacation-input"
-          style="width:100%; margin-top:8px; font-size:13px;" placeholder="비전에 대한 짧은 설명을 적어주세요."
-          oninput="document.getElementById('vision-detail-desc-display').textContent = this.value || '미래의 나를 이끌 비전을 설정하고 관리해요.'">
+  <div class="vision-panel" id="vision-panel" onclick="if(event.target===this) closeVisionDetail()">
+    <div class="vision-panel-content">
+      <div class="vision-detail-header">
+        <div class="vision-detail-header-bg"></div>
+        <button class="vision-detail-close" onclick="closeVisionDetail()">✕</button>
+        <h2 id="vision-detail-title-display">장기 비전 상세</h2>
+        <p id="vision-detail-desc-display">미래의 나를 이끌 비전을 설정하고 관리해요.</p>
       </div>
 
-      <!-- 목표 기한 -->
-      <div class="detail-section">
-        <div class="detail-label">📅 목표 기한</div>
-        <div style="display:flex; gap:8px;">
-          <select id="vision-input-year" class="vacation-input" style="flex:1;">
-            <option value="2026">2026년</option>
-            <option value="2027">2027년</option>
-            <option value="2028">2028년</option>
-            <option value="2029">2029년</option>
-            <option value="2030">2030년</option>
-          </select>
-          <select id="vision-input-month" class="vacation-input" style="flex:1;">
-            <option value="1">1월</option>
-            <option value="2">2월</option>
-            <option value="3">3월</option>
-            <option value="4">4월</option>
-            <option value="5">5월</option>
-            <option value="6">6월</option>
-            <option value="7">7월</option>
-            <option value="8">8월</option>
-            <option value="9">9월</option>
-            <option value="10">10월</option>
-            <option value="11">11월</option>
-            <option value="12">12월</option>
-          </select>
-          <select id="vision-input-period" class="vacation-input" style="flex:1;">
-            <option value="초">초까지</option>
-            <option value="중">중순까지</option>
-            <option value="말">말까지</option>
-          </select>
+      <div class="vision-detail-body">
+        <!-- 기본 정보 -->
+        <div class="detail-section">
+          <div class="detail-label">🎯 비전 목표</div>
+          <input type="text" id="vision-input-name" class="vacation-input"
+            style="width:100%; font-size:16px; font-weight:900;" placeholder="예: 소설 완결 및 출판"
+            oninput="document.getElementById('vision-detail-title-display').textContent = this.value || '장기 비전 상세'">
+          <input type="text" id="vision-input-desc" class="vacation-input"
+            style="width:100%; margin-top:8px; font-size:13px;" placeholder="비전에 대한 짧은 설명을 적어주세요."
+            oninput="document.getElementById('vision-detail-desc-display').textContent = this.value || '미래의 나를 이끌 비전을 설정하고 관리해요.'">
+        </div>
+
+        <!-- 목표 기한 -->
+        <div class="detail-section">
+          <div class="detail-label">📅 목표 기한</div>
+          <div style="display:flex; gap:8px;">
+            <select id="vision-input-year" class="vacation-input" style="flex:1;">
+              <option value="2026">2026년</option>
+              <option value="2027">2027년</option>
+              <option value="2028">2028년</option>
+              <option value="2029">2029년</option>
+              <option value="2030">2030년</option>
+            </select>
+            <select id="vision-input-month" class="vacation-input" style="flex:1;">
+              <option value="1">1월</option>
+              <option value="2">2월</option>
+              <option value="3">3월</option>
+              <option value="4">4월</option>
+              <option value="5">5월</option>
+              <option value="6">6월</option>
+              <option value="7">7월</option>
+              <option value="8">8월</option>
+              <option value="9">9월</option>
+              <option value="10">10월</option>
+              <option value="11">11월</option>
+              <option value="12">12월</option>
+            </select>
+            <select id="vision-input-period" class="vacation-input" style="flex:1;">
+              <option value="초">초까지</option>
+              <option value="중">중순까지</option>
+              <option value="말">말까지</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 마일스톤 관리 -->
+        <div class="detail-section">
+          <div class="detail-label" style="justify-content:space-between;">
+            <span>🏁 마일스톤 관리</span>
+            <button onclick="addMilestoneRow()"
+              style="background:none; border:none; color:var(--accent); font-weight:800; font-size:12px; cursor:pointer;">+
+              추가</button>
+          </div>
+          <div id="milestone-edit-list" class="milestone-edit-list">
+            <!-- 마일스톤 입력 행들이 여기에 추가됨 -->
+          </div>
+        </div>
+
+        <!-- 코치 선택 -->
+        <div class="detail-section">
+          <div class="detail-label">👤 비전을 전담할 전문가를 배정할까요?</div>
+          <div class="coach-select-list" id="vision-coach-select">
+            <!-- 코치 리스트 -->
+          </div>
+          <div
+            style="margin-top:12px; padding:12px; background:#F5F3FF; border-radius:12px; font-size:11px; color:#8B5CF6; display:flex; gap:8px;">
+            <span>ℹ️</span>
+            <span>마스터 비서가 기본적으로 모든 비전을 함께 모니터링합니다.</span>
+          </div>
         </div>
       </div>
 
-      <!-- 마일스톤 관리 -->
-      <div class="detail-section">
-        <div class="detail-label" style="justify-content:space-between;">
-          <span>🏁 마일스톤 관리</span>
-          <button onclick="addMilestoneRow()"
-            style="background:none; border:none; color:var(--accent); font-weight:800; font-size:12px; cursor:pointer;">+
-            추가</button>
-        </div>
-        <div id="milestone-edit-list" class="milestone-edit-list">
-          <!-- 마일스톤 입력 행들이 여기에 추가됨 -->
-        </div>
+      <div class="vision-footer">
+        <button class="vision-delete-btn" id="vision-delete-btn" onclick="deleteVision()">삭제</button>
+        <button class="vision-save-btn" onclick="saveVision()">저장</button>
       </div>
-
-      <!-- 코치 선택 -->
-      <div class="detail-section">
-        <div class="detail-label">👤 비전을 전담할 전문가를 배정할까요?</div>
-        <div class="coach-select-list" id="vision-coach-select">
-          <!-- 코치 리스트 -->
-        </div>
-        <div
-          style="margin-top:12px; padding:12px; background:#F5F3FF; border-radius:12px; font-size:11px; color:#8B5CF6; display:flex; gap:8px;">
-          <span>ℹ️</span>
-          <span>마스터 비서가 기본적으로 모든 비전을 함께 모니터링합니다.</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="vision-footer">
-      <button class="vision-delete-btn" id="vision-delete-btn" onclick="deleteVision()">삭제</button>
-      <button class="vision-save-btn" onclick="saveVision()">저장</button>
     </div>
   </div>
 
@@ -13027,65 +12999,21 @@ ${outputRules}`;
       }
 
       list.innerHTML = visions.map(v => {
-        const totalMilestones = (v.milestones || []).length;
-        const doneMilestones = (v.milestones || []).filter(m => m.done).length;
-        const isAllDone = totalMilestones > 0 && totalMilestones === doneMilestones;
-
-        const milestoneHtml = (v.milestones || []).map((m, idx) => {
-          let stateClass = m.done ? 'done' : '';
-          if (!m.done && (idx === 0 || v.milestones[idx - 1].done)) stateClass = 'current';
-
-          const dateHtml = m.date ? `<span class="milestone-date-label">${m.date}</span>` : '';
-          return `<div class="milestone-node ${stateClass}">
-            <div class="milestone-dot">${m.done ? '✓' : ''}</div>
-            <div class="milestone-label">
-              <span>${escapeHtml(m.text)}</span>
-              ${dateHtml}
-            </div>
-          </div>`;
-        }).join('');
-
         const coach = CHARS[v.coachId];
         const hasCoach = coach && v.coachId !== 'self';
-        const coachAvHtml = hasCoach ? `
+        const avatarSrc = hasCoach ? (coach.imgUrl || 'images/cat.png') : 'images/coach_add.png';
+        const coachAvHtml = `
           <div class="vision-coach-avatar">
-            <img src="${coach.imgUrl || 'images/cat.png'}">
+            <img src="${avatarSrc}">
           </div>
-        ` : '';
+        `;
 
         return `
-          <div class="vision-card ${hasCoach ? 'has-coach' : ''}" id="vision-card-${v.id}" onclick="openVisionDetail('${v.id}')">
+          <div class="vision-card" onclick="openVisionDetail('${v.id}')">
             ${coachAvHtml}
             <div class="vision-card-body">
-              <!-- Top Row: Icon, Title, Status, Menu -->
-              <div class="vision-card-main-row">
-                <div class="vision-card-icon-wrap">
-                  <div class="vision-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="vision-card-title-area">
-                  <div class="vision-card-name">${escapeHtml(v.name)}</div>
-                  ${v.desc ? `<div class="vision-card-desc">${escapeHtml(v.desc)}</div>` : ''}
-                </div>
-                <div class="vision-card-right-actions">
-                  <div class="vision-card-status">
-                    ${isAllDone ? '<span style="color:#10B981; font-weight:800;">✓ 완료</span>' : '<div class="vision-status-dot"></div><span style="color:#8B5CF6; font-weight:800;">진행 중</span>'}
-                  </div>
-                  <div class="vision-card-menu-btn" onclick="openVisionDetail('${v.id}', event)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="5" r="2"></circle>
-                      <circle cx="12" cy="12" r="2"></circle>
-                      <circle cx="12" cy="19" r="2"></circle>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Bottom Row: Deadline & Expand Arrow -->
-              <div class="vision-card-bottom-row">
+              <div class="vision-card-info">
+                <div class="vision-card-name">${escapeHtml(v.name)}</div>
                 <div class="vision-card-deadline">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -13095,17 +13023,13 @@ ${outputRules}`;
                   </svg>
                   ${v.deadline.year}년 ${v.deadline.month}월 ${v.deadline.period}까지
                 </div>
-
-                <div class="vision-card-expand-btn" onclick="toggleVisionMilestones('${v.id}', event)">
-                  <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
               </div>
-
-              <!-- Collapsible Milestones -->
-              <div class="milestone-track" id="milestones-${v.id}" style="display: none;">
-                ${milestoneHtml}
+              <div class="vision-card-menu-btn" onclick="openVisionDetail('${v.id}', event)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="5" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="19" r="2"></circle>
+                </svg>
               </div>
             </div>
           </div>
@@ -13114,17 +13038,6 @@ ${outputRules}`;
 
       // 코치 코멘트 업데이트
       updateVisionCoachComment();
-    }
-
-    function toggleVisionMilestones(id, event) {
-      if (event) event.stopPropagation();
-      const track = document.getElementById(`milestones-${id}`);
-      const card = document.getElementById(`vision-card-${id}`);
-      if (track && card) {
-        const isHidden = track.style.display === 'none';
-        track.style.display = isHidden ? 'flex' : 'none';
-        card.classList.toggle('is-expanded', isHidden);
-      }
     }
 
     function updateVisionCoachComment() {
