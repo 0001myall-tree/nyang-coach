@@ -5871,6 +5871,14 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
         position: relative;
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      .master-cs-card.show {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .master-cs-card.selected {
@@ -6576,10 +6584,6 @@
         <div class="tier-title">프렌즈 코치</div>
         <div class="tier-subtitle">균형 잡힌 하루</div>
       </div>
-      <div class="tier-title">프로 코치</div>
-        <div class="tier-subtitle">꿈을 향한 전략</div>
-      </div>
-
       <div class="tier-card master" id="ncs-card-master" onclick="ncsTab('master')">
         <div class="tier-icon-wrap master">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -6750,6 +6754,13 @@
       document.getElementById('new-coach-scroll').style.display = tab === 'friends' ? 'flex' : 'none';
       // pro cards removed
       document.getElementById('ncs-master-cards').style.display = tab === 'master' ? 'flex' : 'none';
+
+      // 탭 전환 시 해당 카드에 .show 붙이기
+      if (tab === 'master') {
+        document.querySelectorAll('#ncs-master-cards .master-cs-card').forEach((card, idx) => {
+          setTimeout(() => card.classList.add('show'), 80 + idx * 60);
+        });
+      }
     }
 
     function openMasterDetail(id, e) {
@@ -6840,6 +6851,7 @@
 
     function showCoachSelect() {
       const screen = document.getElementById('coach-select-screen');
+      screen.style.display = 'flex';
       screen.classList.add('active');
 
       // 카드들 순차적 애니메이션 (Stagger)
@@ -6860,6 +6872,7 @@
       // 나갈 때는 일괄 초기화
       setTimeout(() => {
         screen.querySelectorAll('.new-cs-card, .pro-cs-card, .master-cs-card').forEach(c => c.classList.remove('show'));
+        screen.style.display = 'none';
       }, 400);
     }
     function newSelectChar(id) {
@@ -6969,10 +6982,6 @@
         <div class="tier-title">프렌즈 코치</div>
         <div class="tier-subtitle">균형 잡힌 하루</div>
       </div>
-      <div class="tier-title">프로 코치</div>
-        <div class="tier-subtitle">꿈을 향한 전략</div>
-      </div>
-
       <div class="tier-card master" id="tab-card-master" onclick="switchCoachTab('master')">
         <div class="tier-icon-wrap master">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -9796,15 +9805,11 @@ ${MEM_RULES.master}`
       launchApp(selectedChar, true);
     }
     function changeChar() {
-      chatHistory = [];
       saveChatHistory();
       document.getElementById('app').style.display = 'none';
       document.getElementById('messages').innerHTML = '';
       document.getElementById('landing-screen').style.display = 'flex';
-      document.getElementById('coach-select-screen').style.display = 'flex';
-      document.getElementById('coach-select-screen').style.transform = 'translateX(0)';
-      const tabBar = document.getElementById('bottom-tab-bar');
-      if (tabBar) tabBar.style.display = 'none';
+      showCoachSelect();
     }
 
     function buildAvatarHtml(cfg) {
@@ -9949,7 +9954,7 @@ ${MEM_RULES.master}`
       document.getElementById('char-screen').classList.add('hidden');
       document.getElementById('landing-screen').style.display = 'none';
       const coachSelect = document.getElementById('coach-select-screen');
-      if (coachSelect) coachSelect.style.display = 'none';
+      if (coachSelect) { coachSelect.classList.remove('active'); coachSelect.style.display = 'none'; }
 
       document.getElementById('app').style.display = 'flex';
       updateVoiceButton();
