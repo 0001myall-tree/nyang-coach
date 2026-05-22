@@ -4189,112 +4189,6 @@
       color: #5A5770;
       line-height: 1.6;
     }
-
-    /* Plan time card */
-    .plan-time-card {
-      background: #F9FAFB;
-      border: 1.5px solid #EDE9FF;
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 14px;
-    }
-
-    .plan-time-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .plan-time-icon {
-      display: flex;
-      align-items: center;
-    }
-
-    .plan-time-title {
-      font-size: 13px;
-      font-weight: 900;
-      color: #3D3A4E;
-    }
-
-    .plan-time-info {
-      font-size: 12px;
-      color: #B5AEDD;
-      cursor: pointer;
-      margin-left: auto;
-    }
-
-    .plan-time-body {}
-
-    .plan-time-stats {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 12px;
-    }
-
-    .plan-time-stat {}
-
-    .plan-time-stat-label {
-      font-size: 10px;
-      color: #A0A0B0;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-
-    .plan-time-stat-val {
-      font-size: 14px;
-      font-weight: 900;
-      color: #3D3A4E;
-    }
-
-    .plan-time-bar {
-      position: relative;
-      padding-top: 18px;
-      margin-bottom: 4px;
-    }
-
-    .plan-time-track {
-      height: 6px;
-      background: linear-gradient(90deg, #EDE9FF, #D4C8F0, #B5AEDD);
-      border-radius: 6px;
-    }
-
-    .plan-time-indicator {
-      position: absolute;
-      top: 0;
-      transform: translateX(-50%);
-    }
-
-    .plan-time-bubble {
-      background: #7C6BC4;
-      color: white;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 8px;
-      white-space: nowrap;
-      position: relative;
-    }
-
-    .plan-time-bubble::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 4px solid transparent;
-      border-top-color: #7C6BC4;
-    }
-
-    .plan-time-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 6px;
-      font-size: 9px;
-      color: #A0A0B0;
-      font-weight: 700;
-    }
-
     /* Week record card */
     .week-record-card {
       background: #F9FAFB;
@@ -7525,45 +7419,11 @@
         <!-- 코치의 한마디 -->
         <div class="coach-comment-card">
           <div class="coach-comment-cat">
-            <img src="images/cat.png" width="64" height="64" style="border-radius:50%;object-fit:cover;" alt="냥냥 코치" />
+            <img id="pattern-coach-img" src="images/cat.png" width="64" height="64" style="border-radius:50%;object-fit:cover;" alt="코치" />
           </div>
           <div class="coach-comment-body">
             <div class="coach-comment-title">코치의 한마디</div>
             <div class="coach-comment-text" id="pattern-feedback">기록이 쌓이면 패턴을 보여줄게요.</div>
-          </div>
-        </div>
-
-        <!-- 계획 시작 시간대 -->
-        <div class="plan-time-card">
-          <div class="plan-time-header">
-            <span class="plan-time-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D3A4E"
-                stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
-              </svg></span>
-            <span class="plan-time-title">계획 시작 시간대</span>
-            <span class="plan-time-info">ⓘ</span>
-          </div>
-          <div class="plan-time-body">
-            <div class="plan-time-stats">
-              <div class="plan-time-stat">
-                <div class="plan-time-stat-label">이번 주 평균</div>
-                <div class="plan-time-stat-val" id="plan-time-avg" style="color:#7C6BC4;">오후 8:31</div>
-              </div>
-              <div class="plan-time-stat">
-                <div class="plan-time-stat-label">지난주보다</div>
-                <div class="plan-time-stat-val" id="plan-time-diff">24분 빨라졌어요 ↗</div>
-              </div>
-            </div>
-            <div class="plan-time-bar">
-              <div class="plan-time-indicator" id="plan-time-indicator" style="left:45%;">
-                <div class="plan-time-bubble" id="plan-time-bubble">8:30</div>
-              </div>
-              <div class="plan-time-track"></div>
-              <div class="plan-time-labels">
-                <span>오후 6시</span><span>8시</span><span>10시</span><span>오후 12시</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -7586,6 +7446,7 @@
           <div class="week-record-header">
             <span class="week-record-icon">🌱</span>
             <span class="week-record-title">습관 트래킹</span>
+            <span id="habit-tracking-period" style="font-size:11px;font-weight:700;color:#9090A8;margin-left:auto;">최근 7일</span>
           </div>
           <div id="habit-tracking-list"></div>
         </div>
@@ -8874,7 +8735,12 @@ ${MEM_RULES.master}`
       for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(today.getDate() - i); const ds = normalizeDate(d); arr.push(history.find(h => h.date === ds) || { date: ds, doneCount: 0, totalCount: 0, success: false, tasks: [] }); }
       return arr;
     }
-    function getPatternFeedback(records) {
+
+    function getLast30Records() {
+      const arr = []; const today = new Date();
+      for (let i = 29; i >= 0; i--) { const d = new Date(today); d.setDate(today.getDate() - i); const ds = normalizeDate(d); arr.push(history.find(h => h.date === ds) || { date: ds, doneCount: 0, totalCount: 0, success: false, tasks: [] }); }
+      return arr;
+    }
       const total = records.reduce((s, r) => s + (r.doneCount || 0), 0);
       const successDays = records.filter(r => (r.doneCount || 0) > 0).length;
       if (total === 0) return '아직 기록이 부족해. 오늘 하나만 완료하면 패턴이 시작돼.';
@@ -8884,6 +8750,93 @@ ${MEM_RULES.master}`
       if (zeros >= 3) return `끊긴 날이 조금 보여. 지금은 큰 계획보다 하루 1개 완료를 기준으로 잡는 게 좋아.`;
       return `${getDayLabel(best.date)}요일에 제일 잘했어. 그 시간대나 환경을 다시 써먹으면 좋아.`;
     }
+
+    function getMasterPatternFeedback(records) {
+      const isMale = currentChar === 'sec_male';
+      const now = new Date();
+      const total = records.reduce((s, r) => s + (r.doneCount || 0), 0);
+      const successDays = records.filter(r => (r.doneCount || 0) > 0).length;
+
+      // 기록 없을 때
+      if (total === 0) {
+        return isMale
+          ? '아직 이번 주 기록이 없습니다. 오늘부터 시작하시면 됩니다, 대표님.'
+          : '아직 이번 주 기록이 없어요. 오늘 하나만 시작해보는 건 어떨까요, 대표님?';
+      }
+
+      // 미루는 항목 감지
+      const todayTasks = (tasks || []).filter(t => t.category === 'today' || t.category === 'habit');
+      const incompleteTasks = todayTasks.filter(t => !t.done);
+      const frequentlyDelayed = incompleteTasks.filter(t => {
+        if (!t.habitId) return false;
+        const logs = (habitLogs || {})[String(t.habitId)] || {};
+        let missCount = 0;
+        for (let i = 1; i <= 7; i++) {
+          const d = new Date(now); d.setDate(now.getDate() - i);
+          const ds = d.toISOString().slice(0, 10);
+          if (!logs[ds] || !logs[ds].done) missCount++;
+        }
+        return missCount >= 3;
+      });
+
+      // 비전/목표 이름 추출
+      const visionName = visions && visions.length > 0 ? visions[0].name : null;
+      const weekGoalName = weekGoals && weekGoals.filter(g => !g.done).length > 0 ? weekGoals.find(g => !g.done).text : null;
+      const monthGoalName = monthGoals && monthGoals.filter(g => !g.done).length > 0 ? monthGoals.find(g => !g.done).text : null;
+      const goalName = visionName || weekGoalName || monthGoalName;
+
+      // 할 일 개수 (과부하 감지)
+      const totalTaskCount = records.reduce((s, r) => s + (r.totalCount || 0), 0);
+      const isOverloaded = totalTaskCount >= 35; // 주 5일 기준 하루 7개 이상
+
+      let parts = [];
+
+      // 1. 비전/목표 연결 언급 (구체적으로)
+      if (goalName) {
+        if (successDays >= 5) {
+          parts.push(isMale
+            ? `이번 주 '${goalName}'을 향해 성실하게 달리신 한 주였습니다.`
+            : `이번 주 '${goalName}'을 향해 열심히 달리신 한 주였어요, 대표님.`);
+        } else if (successDays >= 3) {
+          parts.push(isMale
+            ? `이번 주 '${goalName}'을 향해 꾸준히 나아가고 계십니다.`
+            : `이번 주 '${goalName}'을 향해 꾸준히 움직이셨어요.`);
+        } else {
+          parts.push(isMale
+            ? `'${goalName}'을 향한 여정, 이번 주는 조금 힘드셨던 것 같습니다.`
+            : `'${goalName}'을 향한 여정, 이번 주는 조금 쉬어가는 주였던 것 같아요.`);
+        }
+      } else {
+        // 비전/목표 없을 때
+        if (successDays >= 5) {
+          parts.push(isMale
+            ? '이번 주도 성실하게 움직이신 한 주였습니다.'
+            : '이번 주도 열심히 달리신 한 주였어요, 대표님!');
+        } else {
+          parts.push(isMale
+            ? '장기 목표를 설정해두시면 더 의미 있게 연결해드릴 수 있습니다.'
+            : '장기 목표를 설정해두시면 더 잘 챙겨드릴 수 있어요!');
+        }
+      }
+
+      // 2. 미뤄진 항목 짚기
+      if (frequentlyDelayed.length > 0) {
+        const name = frequentlyDelayed[0].text;
+        parts.push(isMale
+          ? `다만 '${name}'이 며칠째 밀리고 있네요. 다음 주엔 먼저 챙겨주시면 좋겠습니다.`
+          : `다만 '${name}'이 며칠째 밀리고 있어요. 다음 주엔 먼저 챙겨주시면 어떨까요?`);
+      }
+
+      // 3. 할 일 많을 때 체력 관리 언급
+      if (isOverloaded && successDays >= 4) {
+        parts.push(isMale
+          ? '이번 주 할 일이 꽤 많으셨는데 잘 버텨내셨습니다. 다음 주엔 체력 관리도 함께 챙겨주세요.'
+          : '이번 주 할 일이 많으셨는데도 잘 해내셨어요. 다음 주엔 체력 관리도 함께 챙겨주세요.');
+      }
+
+      return parts.join(' ');
+    }
+
     function renderPattern() {
       const box = document.getElementById('pattern-days'); if (!box) return;
       saveTodayRecord();
@@ -8923,7 +8876,24 @@ ${MEM_RULES.master}`
       const restSub = document.getElementById('ps4-rest-dates'); if (restSub) restSub.textContent = restDates || '-';
 
       // coach feedback
-      const fb = document.getElementById('pattern-feedback'); if (fb) fb.textContent = getPatternFeedback(records);
+      // 코치 이미지 업데이트
+      const coachImg = document.getElementById('pattern-coach-img');
+      if (coachImg) {
+        const cfg = CHARS[currentChar];
+        if (cfg && cfg.imgUrl) {
+          coachImg.src = cfg.imgUrl;
+          coachImg.alt = cfg.name || '코치';
+        } else {
+          coachImg.src = 'images/cat.png';
+          coachImg.alt = '냥냥 코치';
+        }
+      }
+      // 피드백 텍스트
+      const fb = document.getElementById('pattern-feedback');
+      if (fb) {
+        const isMaster = ['sec_male', 'sec_female'].includes(currentChar);
+        fb.textContent = isMaster ? getMasterPatternFeedback(records) : getPatternFeedback(records);
+      }
 
       // 이번 주 기록 → 달성률 바 그래프
       box.innerHTML = records.map(r => {
@@ -8943,7 +8913,9 @@ ${MEM_RULES.master}`
       }).join('');
 
       // 습관 트래킹
-      renderHabitTracking(records);
+      const isMasterCoach = ['sec_male', 'sec_female'].includes(currentChar);
+      const habitRecords = isMasterCoach ? getLast30Records() : records;
+      renderHabitTracking(habitRecords);
     }
 
     // ── 습관 달성 입력 모달 ───────────────────────────────
@@ -9067,7 +9039,10 @@ ${MEM_RULES.master}`
 
       const weekDates = records.map(r => r.date);
 
-      list.innerHTML = trackingHabits.map(h => {
+      const isMaster = ['sec_male', 'sec_female'].includes(currentChar);
+      const periodEl = document.getElementById('habit-tracking-period');
+      if (periodEl) periodEl.textContent = isMaster ? '최근 30일' : '최근 7일';
+
         const targetDates = weekDates.filter(date => {
           if (h.freq === 'daily') return true;
           const dow = new Date(date + 'T00:00:00').getDay();
@@ -10457,7 +10432,12 @@ ${outputRules}`;
       if (chatHistory && chatHistory.length > 0) {
         chatHistory.forEach(m => {
           const role = m.role === 'assistant' ? 'ai' : 'user';
-          addMessage(role, m.content, m.time || null, true);
+          // 복원 시 TIMER_START 태그 제거
+          const cleanContent = typeof m.content === 'string'
+            ? m.content.replace(/\[TIMER_START:\d+\]/g, '').trim()
+            : m.content;
+          if (!cleanContent || cleanContent === '') return;
+          addMessage(role, cleanContent, m.time || null, true);
         });
       }
     }
@@ -11277,6 +11257,8 @@ ${profileCtx}
         tasks.forEach(t => {
           ctx += `- [${t.done ? 'V' : ' '}] ${t.text}${t.time ? ' (' + t.time + ')' : ''}\n`;
         });
+        ctx += `*[V] 표시된 항목은 완료됨. 완료 항목은 절대 다시 실행 유도하지 말 것.\n`;
+        ctx += `*[V] 표시된 항목은 완료됨. 완료 항목은 절대 다시 실행 유도하지 말 것.\n`;
       }
 
       // 오늘의 핵심 데이터 추가 (master 등급 전용)
@@ -11289,6 +11271,8 @@ ${profileCtx}
           ctx += `${idx + 1}위: [${isDone ? '완료' : '미완료'}] ${c.text}\n`;
         });
         ctx += `*위 핵심 할 일들은 사용자가 오늘 가장 중요하게 생각하는 우선순위입니다. 비서로서 우선순위에 집중할 수 있도록 가이드해주세요.\n`;
+        ctx += `*[V] 표시된 항목은 이미 완료됨. 완료 항목은 절대 다시 하라고 언급하거나 실행 유도하지 말 것.\n`;
+        ctx += `*[V] 표시된 항목은 이미 완료된 것입니다. 완료된 항목은 절대 다시 하라고 언급하거나 실행을 유도하지 마세요.\n`;
       }
 
       // 주간/월간 목표 데이터 추가 (pro, master 등급)
@@ -11328,6 +11312,8 @@ ${profileCtx}
             });
           });
           ctx += `\n비전과 마일스톤의 진행 상황을 대화 중에 자연스럽게 확인하거나 응원해주세요. 특히 내가 전담하는 비전은 더 책임감 있게 챙겨주세요.\n`;
+          ctx += `*[V] 표시된 마일스톤은 이미 완료됨. 완료된 마일스톤을 하라고 언급하거나 실행 유도하지 말 것. 미완료([ ]) 항목만 언급할 것.\n`;
+          ctx += `*[V] 표시된 마일스톤은 이미 완료된 것입니다. 완료된 마일스톤을 지금 하라고 언급하거나 실행 유도하지 마세요. 미완료([  ]) 항목만 언급하세요.\n`;
         }
 
 
