@@ -12065,7 +12065,33 @@ ${outputRules}`;
       if (allDone) updateStreak(true);
       const dtEl = document.getElementById('today-done-text');
       if (dtEl) dtEl.textContent = allDone ? '🎉 오늘 완료!' : `${done}/${total}`;
-      setTimeout(() => addMessage('ai', localCoachLine('task', t.text, allDone)), 350);
+
+      // 비서 코치 전용: 완료한 할 일과 비전/목표 키워드 매칭 시 비전 연결 멘트
+      const isMasterCoach = ['sec_male', 'sec_female'].includes(currentChar);
+      let visionMatchMsg = null;
+      if (isMasterCoach && !allDone) {
+        const taskWords = t.text.replace(/[^\uAC00-\uD7A3a-zA-Z0-9\s]/g, '').split(/\s+/).filter(w => w.length >= 2);
+        const allGoals = [
+          ...(visions || []).map(v => ({ name: v.text, type: 'vision' })),
+          ...(weekGoals || []).filter(g => !g.done).map(g => ({ name: g.text, type: 'week' })),
+          ...(monthGoals || []).filter(g => !g.done).map(g => ({ name: g.text, type: 'month' }))
+        ];
+        for (const goal of allGoals) {
+          if (!goal.name) continue;
+          const goalWords = goal.name.replace(/[^\uAC00-\uD7A3a-zA-Z0-9\s]/g, '').split(/\s+/).filter(w => w.length >= 2);
+          const hasOverlap = taskWords.some(tw => goalWords.some(gw => tw.includes(gw) || gw.includes(tw)));
+          if (hasOverlap) {
+            const isMale = currentChar === 'sec_male';
+            const typeLabel = goal.type === 'vision' ? '비전' : goal.type === 'week' ? '이번 주 목표' : '이번 달 목표';
+            visionMatchMsg = isMale
+              ? `'${t.text}' 완료. ${typeLabel}인 '${goal.name}'에 직결되는 활동이었습니다.`
+              : `'${t.text}' 완료했어요. ${typeLabel}인 '${goal.name}'에 한 걸음 더 가까워지셨네요!`;
+            break;
+          }
+        }
+      }
+
+      setTimeout(() => addMessage('ai', visionMatchMsg || localCoachLine('task', t.text, allDone)), 350);
     }
     function deleteTask(id, e) { e.stopPropagation(); tasks = tasks.filter(t => String(t.id) !== String(id)); saveTasks(); renderTasks(); renderMobileTasks(); renderPattern(); }
     function saveTasks() { localStorage.setItem('nyang_tasks', JSON.stringify(tasks)); saveTodayRecord(); }
