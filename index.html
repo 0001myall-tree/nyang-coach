@@ -6680,6 +6680,14 @@
     }
 
     function confirmMoveTask(taskId, targetDate, btn) {
+      // 과거 날짜 체크
+      if (targetDate <= getTodayStr()) {
+        btn.textContent = '❌ 오늘 이후 날짜로만 이동할 수 있어요';
+        btn.style.background = '#FEE2E2';
+        btn.style.borderColor = '#FCA5A5';
+        btn.style.color = '#DC2626';
+        return;
+      }
       // 버튼 비활성화
       btn.disabled = true;
       btn.style.opacity = '0.5';
@@ -7165,7 +7173,7 @@
             </svg>
           </button>
           <textarea class="input-box" id="input" placeholder="메시지를 입력하세요..." rows="1" onkeydown="handleKey(event)"
-            oninput="autoResize(this)"></textarea>
+            oninput="autoResize(this)" onclick="this.focus()" ontouchstart="this.focus()"></textarea>
           <button class="send-btn" id="send-btn" onclick="sendMessage()">
             <svg class="send-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
               stroke-linecap="round" stroke-linejoin="round">
@@ -9443,7 +9451,7 @@ ${MEM_RULES.master}`
 
       document.getElementById('send-btn').disabled = true;
       const qc = document.getElementById('quick-chips');
-      if (qc) qc.innerHTML = '';
+      if (qc) { qc.innerHTML = ''; qc.style.display = 'none'; }
 
       addMessage('user', msg);
 
@@ -9640,7 +9648,7 @@ ${MEM_RULES.master}`
         escortMsg += `11. [TASK_SUGGEST]는 오늘 할 일 목록에 없는 새 항목을 추가 제안할 때만 사용. 위 [오늘 미완료 전체 목록]에 이미 있는 항목은 절대 [TASK_SUGGEST]로 다시 제안하지 말 것. 이미 있는 항목은 순서 배치 설명만 하면 됨.\n`;
         escortMsg += `12. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것\n`;
         escortMsg += `13. 말투 매우 중요: "배치하였습니다" "배치했습니다" "진행하시면 됩니다" 같은 확정·서술형 절대 금지. 반드시 "추천드립니다" "권장드립니다" "~하시면 어떨까요?" "~하시는 게 좋을 것 같아요" 같은 제안·추천 표현만 사용할 것.\n`;
-        escortMsg += `14. 시간은 절대 "몇시~몇시" 형식으로 쓰지 말 것. 대신 "오전 시간대에", "점심 먹고 나서", "저녁 식사 후에", "앱 개발 끝나면 이어서" 같이 맥락과 흐름으로 표현할 것.\n`;
+        escortMsg += `14. 현재 몇 시인지는 첫 문장에서 자연스럽게 언급해도 됨. 단, 각 일정을 언제 할지 배치할 때는 "몇시~몇시" 형식 대신, "점심 먹기 전에", "저녁 식사 후에", "운동 끝나고 이어서" 같이 식사/앞 일정 기준으로 표현할 것.\n`;
         escortMsg += `\n[미루기 제안 - 조건부]\n`;
         escortMsg += `오늘 남은 시간 안에 소화하기 어려운 할 일이 있을 때만, 핵심이 아닌 항목에 한해 다른 날로 미루도록 한 줄 제안할 수 있다.\n`;
         escortMsg += `제안할 경우 답변 안에 [MOVE_TASK:id:YYYY-MM-DD] 형식의 태그를 삽입한다. id는 할 일 목록의 [id:숫자] 값을 사용한다.\n`;
@@ -9893,7 +9901,7 @@ ${MEM_RULES.master}`
       const sendBtn = document.getElementById('send-btn');
       if (sendBtn) sendBtn.disabled = true;
       const qc = document.getElementById('quick-chips');
-      if (qc) qc.innerHTML = '';
+      if (qc) { qc.innerHTML = ''; qc.style.display = 'none'; }
 
       // AI 대화창 영역에 "Thinking Card" 추가!
       const msgs = document.getElementById('messages');
@@ -10054,7 +10062,7 @@ ${MEM_RULES.master}`
       const sendBtn = document.getElementById('send-btn');
       if (sendBtn) sendBtn.disabled = true;
       const qc = document.getElementById('quick-chips');
-      if (qc) qc.innerHTML = '';
+      if (qc) { qc.innerHTML = ''; qc.style.display = 'none'; }
 
       // UI 및 대화 내역에는 깔끔하게 제목만 추가
       addMessage('user', '🔥 비서의 특급 잔소리');
@@ -10638,71 +10646,13 @@ ${outputRules}`;
         const qc = document.getElementById('quick-chips');
         if (chips && chips.length > 0) {
           qc.innerHTML = chips.map(c => `<button class="chip" onclick="sendChip('${c}')">${escapeHtml(c)}</button>`).join('');
+          qc.style.display = 'flex';
         } else {
           qc.innerHTML = '';
+          qc.style.display = 'none';
         }
       }
 
-      // ── 할 일 날짜 이동 버튼 (마스터 비서 전용) ──
-      if (moveTaskActions && moveTaskActions.length > 0 && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
-        moveTaskActions.forEach(action => {
-          const btnDiv = document.createElement('div');
-          btnDiv.style.cssText = 'margin:8px 0 4px 48px;';
-          const dateLabel = action.targetDate; // YYYY-MM-DD
-          const [y, m, d] = dateLabel.split('-');
-          const displayDate = `${parseInt(m)}월 ${parseInt(d)}일`;
-          btnDiv.innerHTML = `
-            <button onclick="confirmMoveTask('${action.taskId}','${action.targetDate}', this)"
-              style="background:#F0EEFF;border:1.5px solid #C4B5FD;color:#6D28D9;
-              font-size:13px;font-weight:800;padding:8px 18px;border-radius:14px;
-              cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;">
-              📅 "${escapeHtml(action.taskText)}" ${displayDate}로 이동
-            </button>`;
-          msgs.appendChild(btnDiv);
-        });
-      }
-
-      // ── 할 일 날짜 이동 버튼 (마스터 비서 전용) ──
-      if (moveTaskActions && moveTaskActions.length > 0 && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
-        moveTaskActions.forEach(action => {
-          const btnDiv = document.createElement('div');
-          btnDiv.style.cssText = 'margin:8px 0 4px 48px;display:flex;flex-direction:column;gap:6px;';
-          const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-          const tomorrowStr = tomorrow.toISOString().slice(0,10);
-          const uid = 'movetask-' + action.taskId + '-' + Date.now();
-          btnDiv.innerHTML = `
-            <div style="font-size:12px;color:#6B7280;font-weight:700;margin-bottom:2px;">
-              "${escapeHtml(action.taskText)}" 언제로 옮길까요?
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button onclick="confirmMoveTask('${action.taskId}','${tomorrowStr}', this)"
-                style="background:#F0EEFF;border:1.5px solid #C4B5FD;color:#6D28D9;
-                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
-                cursor:pointer;font-family:inherit;">
-                📅 내일로 이동
-              </button>
-              <button onclick="openDatePickerForTask('${action.taskId}', '${escapeHtml(action.taskText)}', '${uid}')"
-                style="background:white;border:1.5px solid #C4B5FD;color:#6D28D9;
-                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
-                cursor:pointer;font-family:inherit;">
-                📆 날짜 선택
-              </button>
-            </div>
-            <div id="${uid}" style="display:none;margin-top:4px;">
-              <input type="date" id="${uid}-input"
-                min="${tomorrowStr}"
-                style="border:1.5px solid #C4B5FD;border-radius:12px;padding:8px 12px;
-                font-size:13px;font-family:inherit;color:#6D28D9;background:#F9F7FF;outline:none;">
-              <button onclick="confirmMoveTaskFromPicker('${action.taskId}', '${uid}')"
-                style="background:#7C3AED;border:none;color:white;
-                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
-                cursor:pointer;font-family:inherit;margin-left:6px;">
-                이동
-              </button>
-            </div>`;
-          msgs.appendChild(btnDiv);
-        });
-      }
 
       // ── 고급 집중 타이머 카드 (마스터 비서 전용) ──
       if (timerMinutes && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
@@ -10821,6 +10771,47 @@ ${outputRules}`;
 
       div.innerHTML = `${buildMsgAvatar(role)}<div class="msg-content"><div class="msg-bubble">${bubbleHtml}</div><div class="msg-time">${time || getTime()}</div></div>`;
       msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
+      // ── 할 일 날짜 이동 버튼 (마스터 비서 전용) ──
+      if (moveTaskActions && moveTaskActions.length > 0 && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
+        moveTaskActions.forEach(action => {
+          const btnDiv = document.createElement('div');
+          btnDiv.style.cssText = 'margin:8px 0 4px 48px;display:flex;flex-direction:column;gap:6px;';
+          const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+          const tomorrowStr = tomorrow.toISOString().slice(0,10);
+          const uid = 'movetask-' + action.taskId + '-' + Date.now();
+          btnDiv.innerHTML = `
+            <div style="font-size:12px;color:#6B7280;font-weight:700;margin-bottom:2px;">
+              "${escapeHtml(action.taskText)}" 언제로 옮길까요?
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="confirmMoveTask('${action.taskId}','${tomorrowStr}', this)"
+                style="background:#F0EEFF;border:1.5px solid #C4B5FD;color:#6D28D9;
+                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
+                cursor:pointer;font-family:inherit;">
+                📅 내일로 이동
+              </button>
+              <button onclick="openDatePickerForTask('${action.taskId}', '${escapeHtml(action.taskText)}', '${uid}')"
+                style="background:white;border:1.5px solid #C4B5FD;color:#6D28D9;
+                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
+                cursor:pointer;font-family:inherit;">
+                📆 날짜 선택
+              </button>
+            </div>
+            <div id="${uid}" style="display:none;margin-top:4px;">
+              <input type="date" id="${uid}-input"
+                min="${tomorrowStr}"
+                style="border:1.5px solid #C4B5FD;border-radius:12px;padding:8px 12px;
+                font-size:13px;font-family:inherit;color:#6D28D9;background:#F9F7FF;outline:none;">
+              <button onclick="confirmMoveTaskFromPicker('${action.taskId}', '${uid}')"
+                style="background:#7C3AED;border:none;color:white;
+                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
+                cursor:pointer;font-family:inherit;margin-left:6px;">
+                이동
+              </button>
+            </div>`;
+          msgs.appendChild(btnDiv);
+        });
+      }
       if (role === 'ai' && !skipSpeak) speakCoach(text);
     }
 
@@ -11786,7 +11777,7 @@ ${outputRules}`;
         const taskId = match[1];
         const targetDate = match[2];
         const task = tasks.find(t => String(t.id) === String(taskId));
-        if (task && targetDate) {
+        if (task && targetDate && targetDate > getTodayStr()) {
           moveTaskActions.push({ taskId, targetDate, taskText: task.text });
         }
         clean = clean.replace(match[0], '').trim();
@@ -11797,7 +11788,7 @@ ${outputRules}`;
         const taskId = match[1];
         const targetDate = match[2];
         const task = tasks.find(t => String(t.id) === String(taskId));
-        if (task && targetDate) {
+        if (task && targetDate && targetDate > getTodayStr()) {
           moveTaskActions.push({ taskId, targetDate, taskText: task.text });
         }
         clean = clean.replace(match[0], '').trim();
