@@ -9481,6 +9481,9 @@ ${MEM_RULES.master}`
       let html = '';
       if (currentChar === 'sec_male' || currentChar === 'sec_female') {
         html = `
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('오늘 핵심 추천')">
+            <span class="item-icon">🎯</span> 오늘 핵심 추천
+          </button>
           <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('일정 에스코트')">
             <span class="item-icon">🗺️</span> 일정 에스코트
           </button>
@@ -9497,6 +9500,18 @@ ${MEM_RULES.master}`
       if (menu) menu.classList.remove('open');
 
       if (actionName === '일정 에스코트') {
+        // 핵심 없으면 핵심 추천 먼저
+        if (!coreTasks || coreTasks.length === 0) {
+          const menu = document.getElementById('cheatkey-menu');
+          if (menu) menu.classList.remove('open');
+          const isMale = currentChar === 'sec_male';
+          const bridgeMsg = isMale
+            ? '핵심이 아직 설정되지 않았습니다. 에스코트 전에 핵심부터 잡아드릴게요.'
+            : '핵심이 아직 없네요. 에스코트 전에 핵심부터 같이 잡아드릴게요.';
+          addMessage('ai', bridgeMsg);
+          setTimeout(() => runCoreRecommend(), 800);
+          return;
+        }
         const now = new Date();
         const hour = now.getHours();
         const todayTasks = tasks.filter(t => t.category === 'today' || t.category === 'habit');
@@ -9584,12 +9599,241 @@ ${MEM_RULES.master}`
 
         sendEscortCheatkey(escortMsg);
 
+      } else if (actionName === '오늘 핵심 추천') {
+        runCoreRecommend();
+
       } else if (actionName === '비서의 특급 잔소리') {
-        const nagMsg = `[특급 잔소리 요청]\n오늘 할 일 현황과 습관 미완료 현황을 보고, 지금 안 하고 있는 것들을 콕 집어서 따끔하게 한 소리 해주세요. 단, 너무 길지 않게 핵심만 짧고 강하게요.`;
-        // 잔소리도 사용자 말풍선 숨기고 AI한테만 전달
+        const now = new Date();
+        const hour = now.getHours();
+        const isMale = currentChar === 'sec_male';
+
+        // 오늘 미완료 할 일
+        const todayTasks = tasks.filter(t => t.category === 'today' || t.category === 'habit');
+        const incompleteTasks = todayTasks.filter(t => !t.done);
+        const completedTasks = todayTasks.filter(t => t.done);
+
+        // 핵심 미완료
+        const incompleteCore = (coreTasks || []).filter(c => !c.done);
+
+        // 며칠째 미룬 항목
+        const frequentlyDelayed = incompleteTasks.filter(t => {
+          if (!t.habitId) return false;
+          const logs = habitLogs[String(t.habitId)] || {};
+          let missCount = 0;
+          for (let i = 1; i <= 7; i++) {
+            const d = new Date(now);
+            d.setDate(now.getDate() - i);
+            const ds = d.toISOString().slice(0, 10);
+            if (!logs[ds] || !logs[ds].done) missCount++;
+          }
+          return missCount >= 3;
+        });
+
+        let nagMsg = `[특급 잔소리 요청]\n`;
+        nagMsg += `현재 시간: ${hour}시\n`;
+        nagMsg += `오늘 할 일 ${todayTasks.length}개 중 ${completedTasks.length}개 완료, ${incompleteTasks.length}개 미완료\n`;
+
+        if (incompleteCore.length > 0) {
+          nagMsg += `\n핵심인데 아직 안 한 것: ${incompleteCore.map(c => c.text).join(', ')}\n`;
+        }
+        if (frequentlyDelayed.length > 0) {
+          nagMsg += `며칠째 계속 미루는 것: ${frequentlyDelayed.map(t => t.text).join(', ')}\n`;
+        }
+        if (incompleteTasks.length > 0) {
+          nagMsg += `오늘 아직 안 한 것: ${incompleteTasks.map(t => t.text).join(', ')}\n`;
+        }
+
+        nagMsg += `\n위 데이터를 보고 지금 안 하고 있는 것들을 콕 집어서 따끔하게 잔소리해라.`;
+        nagMsg += `\n핵심 미완료가 있으면 그걸 제일 먼저 강하게 짚어라.`;
+        nagMsg += `\n며칠째 미루는 것 있으면 직접적으로 찌러라.`;
+        nagMsg += `\n3~4문장 이내로 짧고 강하게. 위로나 격려 없이 팩트만. 마크다운 쓰지 말 것.`;
+        nagMsg += `\n말투는 자연스러운 한국어 존댓말로. 딱딱한 명령형 쓰지 말 것.`;
+
         addMessage('user', '🔥 비서의 특급 잔소리', true);
         sendMessage(nagMsg);
       }
+    }
+
+    async function runCoreRecommend() {
+      const isMale = currentChar === 'sec_male';
+      const hasTasks = tasks.filter(t => t.category === 'today' || t.category === 'habit').length > 0;
+
+      if (!hasTasks) {
+        const msg = isMale
+          ? '오늘 할 일이 없습니다. 먼저 할 일을 추가해주세요.'
+          : '오늘 할 일이 없어요. 먼저 할 일을 추가해주세요.';
+        addMessage('ai', msg);
+        return;
+      }
+
+      // 컨텍스트 구성
+      const todayTasks = tasks.filter(t => (t.category === 'today' || t.category === 'habit') && !t.done);
+      const hasVisions = visions && visions.length > 0;
+      const hasWeekGoals = weekGoals && weekGoals.filter(g => !g.done).length > 0;
+      const hasMonthGoals = monthGoals && monthGoals.filter(g => !g.done).length > 0;
+      const hasGoals = hasVisions || hasWeekGoals || hasMonthGoals;
+
+      let coreMsg = `[오늘 핵심 추천 요청]
+`;
+      coreMsg += `오늘 미완료 할 일:
+`;
+      todayTasks.forEach(t => { coreMsg += `- [id:${t.id}] ${t.text}
+`; });
+
+      if (hasWeekGoals) {
+        coreMsg += `
+[이번 주 목표]
+`;
+        weekGoals.filter(g => !g.done).forEach(g => { coreMsg += `- ${g.text}
+`; });
+      }
+      if (hasMonthGoals) {
+        coreMsg += `
+[이번 달 목표]
+`;
+        monthGoals.filter(g => !g.done).forEach(g => { coreMsg += `- ${g.text}
+`; });
+      }
+      if (hasVisions) {
+        coreMsg += `
+[장기 비전]
+`;
+        visions.forEach(v => {
+          const milestones = (v.milestones || []).filter(m => !m.done).map(m => m.text).slice(0, 2).join(', ');
+          coreMsg += `- ${v.name}${milestones ? ` (진행 중: ${milestones})` : ''}
+`;
+        });
+      }
+
+      coreMsg += `
+위 정보를 바탕으로 오늘 핵심으로 잡을 할 일 1~3개를 우선순위 순서로 추천해라.`;
+      coreMsg += `
+각 항목마다 왜 이걸 핵심으로 잡아야 하는지 이유를 한 줄씩 써라.`;
+      coreMsg += `
+반드시 아래 형식으로만 답해라 (마크다운 쓰지 말 것):
+`;
+      coreMsg += `[CORE_REC:{"rank":1,"id":"할일id","text":"할일내용","reason":"이유"}]
+`;
+      coreMsg += `[CORE_REC:{"rank":2,"id":"할일id","text":"할일내용","reason":"이유"}]
+`;
+      coreMsg += `[CORE_REC:{"rank":3,"id":"할일id","text":"할일내용","reason":"이유"}]
+`;
+      coreMsg += `추천이 3개 미만이어도 괜찮다. 형식 외 다른 말은 앞에 한 줄만 붙여라.`;
+
+      // 안내 메시지 먼저 표시
+      const guideMsg = isMale
+        ? '장기 비전과 목표가 설정돼 있을수록 더 정확하게 추천해드릴 수 있습니다.'
+        : '장기 비전과 목표가 설정돼 있을수록 더 정확하게 추천해드릴 수 있어요.';
+      addMessage('ai', guideMsg);
+
+      showTyping();
+      const reply = await callOpenAI(coreMsg);
+      removeTyping();
+
+      const replyText = typeof reply === 'string' ? reply : reply.text;
+
+      // CORE_REC 태그 파싱
+      const coreRecRegex = /\[CORE_REC:(\{[^}]+\})\]/g;
+      let match;
+      const recs = [];
+      let cleanText = replyText;
+      while ((match = coreRecRegex.exec(replyText)) !== null) {
+        try {
+          const d = JSON.parse(match[1]);
+          if (d.rank && d.text) recs.push(d);
+          cleanText = cleanText.replace(match[0], '').trim();
+        } catch(e) {}
+      }
+
+      // 안내 텍스트 출력
+      if (cleanText) addMessage('ai', cleanText);
+
+      // 추천 카드 렌더링
+      if (recs.length > 0) {
+        const msgs = document.getElementById('messages');
+        const cardDiv = document.createElement('div');
+        cardDiv.style.cssText = 'margin:8px 0 4px 48px;display:flex;flex-direction:column;gap:8px;';
+
+        recs.forEach(rec => {
+          const rankColors = { 1: '#7C3AED', 2: '#2563EB', 3: '#059669' };
+          const rankLabels = { 1: '1순위', 2: '2순위', 3: '3순위' };
+          const color = rankColors[rec.rank] || '#7C3AED';
+          const label = rankLabels[rec.rank] || `${rec.rank}순위`;
+          const recId = 'core-rec-' + rec.rank + '-' + Date.now();
+
+          const item = document.createElement('div');
+          item.style.cssText = `background:white;border:1.5px solid ${color}22;border-radius:16px;padding:12px 14px;`;
+          item.innerHTML = `
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <span style="background:${color};color:white;font-size:10px;font-weight:800;
+                padding:2px 8px;border-radius:8px;">${label}</span>
+              <span style="font-size:14px;font-weight:900;color:#1A1A2E;">${rec.text}</span>
+            </div>
+            <div style="font-size:12px;color:#6B7280;margin-bottom:10px;">${rec.reason || ''}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;" id="${recId}-btns">
+              ${[1,2,3].filter(r => r !== rec.rank).map(r =>
+                `<button onclick="changeCoreRecRank(${JSON.stringify(rec).replace(/"/g,"'")}, ${r}, '${recId}')"
+                  style="background:#F3F4F6;border:1px solid #E5E7EB;color:#374151;
+                  font-size:11px;font-weight:700;padding:5px 10px;border-radius:8px;cursor:pointer;font-family:inherit;">
+                  ${r}순위로 변경
+                </button>`
+              ).join('')}
+              <button onclick="setCoreFromRec('${rec.id}','${rec.text}','${recId}')"
+                style="background:${color};border:none;color:white;
+                font-size:11px;font-weight:800;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;margin-left:auto;">
+                핵심으로 설정
+              </button>
+            </div>`;
+          cardDiv.appendChild(item);
+        });
+
+        msgs.appendChild(cardDiv);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+
+      chatHistory.push({ role: 'assistant', content: replyText, time: getTime() });
+      saveChatHistory();
+    }
+
+    function changeCoreRecRank(rec, newRank, recId) {
+      // 순위 변경은 시각적으로만 표시 (버튼 텍스트 업데이트)
+      const btnsEl = document.getElementById(recId + '-btns');
+      if (!btnsEl) return;
+      const rankLabels = { 1: '1순위', 2: '2순위', 3: '3순위' };
+      const rankColors = { 1: '#7C3AED', 2: '#2563EB', 3: '#059669' };
+      const color = rankColors[newRank] || '#7C3AED';
+      // 부모 카드에서 순위 뱃지 업데이트
+      const badge = btnsEl.closest('div[style*="border-radius:16px"]')?.querySelector('span[style*="background"]');
+      if (badge) {
+        badge.textContent = rankLabels[newRank];
+        badge.style.background = color;
+      }
+      // 설정 버튼 색상 업데이트
+      const setBtn = btnsEl.querySelector('button:last-child');
+      if (setBtn) setBtn.style.background = color;
+    }
+
+    function setCoreFromRec(taskId, taskText, recId) {
+      // 이미 핵심에 있으면 스킵
+      if (coreTasks.some(c => c.text === taskText)) {
+        const btnsEl = document.getElementById(recId + '-btns');
+        if (btnsEl) btnsEl.innerHTML = '<span style="font-size:12px;color:#059669;font-weight:700;">✅ 이미 핵심에 있어요</span>';
+        return;
+      }
+      coreTasks.push({ id: Date.now() + Math.floor(Math.random() * 1000), text: taskText, category: 'direct' });
+      saveCoreTasks();
+      renderCoreTasks();
+
+      const btnsEl = document.getElementById(recId + '-btns');
+      if (btnsEl) btnsEl.innerHTML = '<span style="font-size:12px;color:#059669;font-weight:700;">✅ 핵심으로 설정했어요</span>';
+
+      const isMale = currentChar === 'sec_male';
+      const confirmMsg = isMale
+        ? `'${taskText}'를 핵심으로 설정했습니다.`
+        : `'${taskText}'를 핵심으로 설정했어요.`;
+      addMessage('ai', confirmMsg);
+      chatHistory.push({ role: 'assistant', content: confirmMsg, time: getTime() });
+      saveChatHistory();
     }
 
     async function sendEscortCheatkey(escortMsg) {
