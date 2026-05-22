@@ -9649,8 +9649,7 @@ ${MEM_RULES.master}`
         nagMsg += `\n3~4문장 이내로 짧고 강하게. 위로나 격려 없이 팩트만. 마크다운 쓰지 말 것.`;
         nagMsg += `\n말투는 자연스러운 한국어 존댓말로. 딱딱한 명령형 쓰지 말 것.`;
 
-        addMessage('user', '🔥 비서의 특급 잔소리', true);
-        sendMessage(nagMsg);
+        sendNagCheatkey(nagMsg);
       }
     }
 
@@ -9991,6 +9990,78 @@ ${MEM_RULES.master}`
         const card = document.getElementById('escort-thinking-msg');
         if (card) card.remove();
         addMessage('ai', { text: "에러가 발생해서 일정 에스코트를 완료하지 못했어요. 다시 시도해 주세요.", tasks: [], chips: [] });
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        if (input) input.focus();
+      }
+    }
+
+    async function sendNagCheatkey(nagMsg) {
+      if (!API_KEY) return;
+
+      const input = document.getElementById('input');
+      const sendBtn = document.getElementById('send-btn');
+      if (sendBtn) sendBtn.disabled = true;
+      const qc = document.getElementById('quick-chips');
+      if (qc) qc.innerHTML = '';
+
+      // UI 및 대화 내역에는 깔끔하게 제목만 추가
+      addMessage('user', '🔥 비서의 특급 잔소리');
+      chatHistory.push({ role: 'user', content: '🔥 비서의 특급 잔소리', time: getTime() });
+      saveChatHistory();
+
+      showTyping();
+
+      try {
+        const cfg = CHARS[currentChar] || CHARS.cat;
+        const memoryContext = buildMemoryContext();
+        
+        let outputRules = `[출력 규칙]
+1. 지정된 캐릭터의 성격, 호칭, 말투(존댓말) 규칙을 철저히 준수하여 대화하세요.
+2. 답변은 3~4문장 내외로 간결하게 유지하세요.
+3. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것`;
+
+        const systemPrompt = `
+${cfg.system}
+
+${memoryContext}
+
+${outputRules}`;
+
+        const contextMessages = chatHistory.slice(-10).map(c => ({ role: c.role, content: c.content }));
+        // API 요청에만 마지막 메시지 내용을 실제 긴 잔소리 프롬프트(nagMsg)로 대체
+        if (contextMessages.length > 0 && contextMessages[contextMessages.length - 1].content === '🔥 비서의 특급 잔소리') {
+          contextMessages[contextMessages.length - 1].content = nagMsg;
+        }
+
+        const response = await window.chatProxy({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...contextMessages
+          ],
+          temperature: 0.7
+        });
+
+        const replyText = (response.data.content || "미안해요, 잠시 생각을 정리하고 있어요. 다시 말해줄래요?")
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/^#{1,6}\s+/gm, '')
+          .replace(/`([^`]+)`/g, '$1');
+
+        const cleaned = parseAndAddTasks(replyText);
+
+        removeTyping();
+        addMessage('ai', cleaned);
+
+        chatHistory.push({ role: 'assistant', content: replyText, time: getTime() });
+        saveChatHistory();
+      } catch (err) {
+        console.error("Nag API Error:", err);
+        removeTyping();
+        const failText = "죄송합니다. 오류가 발생하여 잔소리를 출력할 수 없습니다.";
+        addMessage('ai', failText);
+        chatHistory.push({ role: 'assistant', content: failText, time: getTime() });
+        saveChatHistory();
       } finally {
         if (sendBtn) sendBtn.disabled = false;
         if (input) input.focus();
