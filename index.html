@@ -8827,15 +8827,18 @@ ${MEM_RULES.master}`
       saveTodayRecord();
       renderTasks(); renderMobileTasks(); updateChatGoalBar();
       setTimeout(() => injectTodayHabits(), 100);
-      // 어제 대화 요약 생성 (비동기, 백그라운드)
-      generateDailySummary(yStr).then(() => {
-        // 날짜 바뀔 때 모든 코치 대화 초기화
-        ['cat','boyfriend','girlfriend','halmae','bro','sec_male','sec_female'].forEach(id => {
-          localStorage.removeItem('nyang_chat_history_' + id);
-        });
-        chatHistory = [];
-        saveChatHistory();
+      // 어제 대화 요약용 복사본 저장
+      const oldChatHistory = [...chatHistory];
+
+      // 날짜가 바뀌었으므로 즉시 모든 코치 대화 내역 초기화 (동기식)
+      ['cat','boyfriend','girlfriend','halmae','bro','sec_male','sec_female'].forEach(id => {
+        localStorage.removeItem('nyang_chat_history_' + id);
       });
+      chatHistory = [];
+      saveChatHistory();
+
+      // 어제 대화 요약 생성 (비동기, 백그라운드)
+      generateDailySummary(yStr, oldChatHistory);
     }
     function getLast7Records() {
       const arr = []; const today = new Date();
@@ -9604,22 +9607,19 @@ ${MEM_RULES.master}`
         escortMsg += `\n위 정보를 바탕으로 오늘 남은 시간에 맞는 최적의 일정을 짜주세요. 다음을 반드시 고려하세요:\n`;
         escortMsg += `1. [핵심] 표시된 항목은 반드시 포함하고 우선순위 최상위에 배치\n`;
         escortMsg += `2. 비전/마일스톤과 의미상 연결되는 할 일은 우선순위 높게 배치하고 연결 이유 한 줄 설명\n`;
-        escortMsg += `3. 자주 미뤄온 항목은 왜 미뤄졌는지 한 마디 언급하고 현실적인 시간에 배치\n`;
+        escortMsg += `3. 자주 미뤄온 항목은 본문에서 이미 언급했으면 마지막에 다시 별도로 언급하지 말 것. 한 번만 자연스럽게 녹여서 배치하면 됨.\n`;
         escortMsg += `4. 구체적이지 않은 항목(한 단어 등)은 더 작게 쪼개서 제안 (예: "글쓰기" → "오늘 1단락 초안 쓰기")\n`;
         escortMsg += `5. 현재 시간대 집중력 고려해서 순서 배치\n`;
-        escortMsg += `5-1. (소요시간: N시간) 표기가 있는 항목은 반드시 그 시간만큼 블록을 잡아서 배치. 소요시간 없는 항목은 적당히 추정\n`;
-        escortMsg += `6. 고정 루틴 시간 피해서 배치\n`;
-        escortMsg += `7. 취침 시간 전까지만 배치\n`;
-        escortMsg += `8. 오늘 전체 할 일을 다 소화할 수 있도록 짜되, 시간이 부족하면 덜 중요한 것은 솔직하게 "오늘은 빠듯할 수 있어요"라고 언급\n`;
+        escortMsg += `5-1. 소요시간 표기 있으면 참고해서 순서 배치. 단, 정확한 몇시~몇시 시간 블록은 쓰지 말 것.\n`;
+        escortMsg += `6. 식사 시간(아침 7~8시, 점심 12~13시, 저녁 18~19시)에는 절대 일정 배치하지 말 것. 식사 시간대를 피해서 순서를 잡아야 함.\n`;
+        escortMsg += `7. 취침 전까지 가능한 것만 배치\n`;
+        escortMsg += `8. 오늘 전체 할 일을 다 소화할 수 있도록 짜되, 시간이 부족하면 솔직하게 "오늘은 빠듯할 수 있어요"라고 언급\n`;
         escortMsg += `9. 먼저 1~2문장으로 오늘 상황 전체 요약\n`;
-        escortMsg += `10. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 순서/시간에 배치했는지 한 줄 이유 설명\n`;
-        escortMsg += `11. 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
-        escortMsg += `11-1. [TASK_SUGGEST]는 오늘 할 일 목록에 없는 새 항목을 추가 제안할 때만 사용. 위 [오늘 미완료 전체 목록]에 이미 있는 항목은 절대 [TASK_SUGGEST]로 다시 제안하지 말 것. 이미 있는 항목은 순서/시간 배치 설명만 하면 됨.\n`;
-        escortMsg += `11-1. [TASK_SUGGEST]는 오늘 할 일 목록에 없는 새 항목을 추가 제안할 때만 사용. 위 [오늘 미완료 전체 목록]에 이미 있는 항목은 절대 [TASK_SUGGEST]로 다시 제안하지 말 것. 이미 있는 항목은 순서/시간 배치 설명만 해주면 됨.\n`;
+        escortMsg += `10. 각 항목 앞에 왜 이 순서에 배치했는지 한 줄 이유 설명\n`;
+        escortMsg += `11. [TASK_SUGGEST]는 오늘 할 일 목록에 없는 새 항목을 추가 제안할 때만 사용. 위 [오늘 미완료 전체 목록]에 이미 있는 항목은 절대 [TASK_SUGGEST]로 다시 제안하지 말 것. 이미 있는 항목은 순서 배치 설명만 하면 됨.\n`;
         escortMsg += `12. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것\n`;
-        escortMsg += `13. 말투는 자연스러운 추천 톤으로. "~에 배치하였습니다" "~마무리합니다" 같은 딱딱한 서술형 절대 쓰지 말 것. 대신 "~하시면 좋을 것 같습니다" "~추천드려요" "~어떠세요?" 같이 제안하는 말투로.\n`;
-        escortMsg += `14. 자주 미뤄온 항목은 "자주 미뤄오셨던 항목인데, 오늘 저녁 7시 이후에 30분만 시간 내시면 어떨까요?" 같이 구체적 시간대와 함께 부드럽게 권해주세요.\n`;
-        escortMsg += `15. 식사 시간은 일정에 포함하지 말고, 식사 전후로 자연스럽게 일정을 나눠서 제안하세요.\n`;
+        escortMsg += `13. 말투 매우 중요: "배치하였습니다" "배치했습니다" "진행하시면 됩니다" 같은 확정·서술형 절대 금지. 반드시 "추천드립니다" "권장드립니다" "~하시면 어떨까요?" "~하시는 게 좋을 것 같아요" 같은 제안·추천 표현만 사용할 것.\n`;
+        escortMsg += `14. 시간은 절대 "몇시~몇시" 형식으로 쓰지 말 것. 대신 "오전 시간대에", "점심 먹고 나서", "저녁 식사 후에", "앱 개발 끝나면 이어서" 같이 맥락과 흐름으로 표현할 것.\n`;
         escortMsg += `\n[미루기 제안 - 조건부]\n`;
         escortMsg += `오늘 남은 시간 안에 소화하기 어려운 할 일이 있을 때만, 핵심이 아닌 항목에 한해 다른 날로 미루도록 한 줄 제안할 수 있다.\n`;
         escortMsg += `제안할 경우 답변 안에 [MOVE_TASK:id:YYYY-MM-DD] 형식의 태그를 삽입한다. id는 할 일 목록의 [id:숫자] 값을 사용한다.\n`;
@@ -10297,6 +10297,7 @@ ${outputRules}`;
     }
 
     function launchApp(charId, greet) {
+      checkNewDay();
       currentChar = charId; localStorage.setItem('nyang_char', charId);
       const cfg = CHARS[charId];
       applyAccent(charId);
@@ -11028,9 +11029,9 @@ ${outputRules}`;
 
     // ── OpenAI API ────────────────────────────────────────
     // ── 일별 대화 요약 생성 ───────────────────────────────
-    async function generateDailySummary(date) {
-      if (chatHistory.length < 2) return;
-      const convText = chatHistory.map(m => `${m.role === 'user' ? '나' : '코치'}: ${m.content}`).join('\n');
+    async function generateDailySummary(date, historyArray = chatHistory) {
+      if (!historyArray || historyArray.length < 2) return;
+      const convText = historyArray.map(m => `${m.role === 'user' ? '나' : '코치'}: ${m.content}`).join('\n');
       const prompt = `다음은 오늘(${date}) 사용자와 코치의 대화야. 아래 5가지 항목으로 각각 한 줄씩 요약해줘. JSON 형식으로만 답해. 다른 말은 하지 마.
 
 대화:
@@ -12035,8 +12036,9 @@ ${outputRules}`;
       document.getElementById('habit-time-start').value = '';
       document.getElementById('habit-time-end').value = '';
 
+      let h = null;
       if (editId !== null) {
-        const h = habits.find(h => String(h.id) === String(editId));
+        h = habits.find(x => String(x.id) === String(editId));
         if (h) {
           document.getElementById('habit-modal-title').textContent = '습관 수정';
           document.getElementById('habit-name-input').value = h.name;
