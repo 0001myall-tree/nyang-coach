@@ -6652,6 +6652,61 @@
       }
     }
 
+    function openDatePickerForTask(taskId, taskText, uid) {
+      const picker = document.getElementById(uid);
+      if (picker) picker.style.display = 'flex';
+      const input = document.getElementById(uid + '-input');
+      if (input) input.focus();
+    }
+
+    function confirmMoveTaskFromPicker(taskId, uid) {
+      const input = document.getElementById(uid + '-input');
+      if (!input || !input.value) return;
+      const targetDate = input.value;
+      const btn = document.getElementById(uid);
+      confirmMoveTask(taskId, targetDate, btn);
+    }
+
+    function confirmMoveTask(taskId, targetDate, btn) {
+      // 버튼 비활성화
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+
+      // tasks에서 해당 항목 찾기
+      const task = tasks.find(t => String(t.id) === String(taskId));
+      if (!task) {
+        btn.textContent = '❌ 할 일을 찾을 수 없어요';
+        return;
+      }
+
+      // schedules에 추가
+      if (!schedules[targetDate]) schedules[targetDate] = [];
+      schedules[targetDate].push({
+        id: Date.now(),
+        text: task.text,
+        done: false,
+        createdAt: new Date().toISOString(),
+        movedFrom: 'today'
+      });
+      localStorage.setItem('nyang_schedules', JSON.stringify(schedules));
+
+      // tasks에서 제거
+      tasks = tasks.filter(t => String(t.id) !== String(taskId));
+      saveTasks();
+      renderTasks();
+      if (typeof renderMobileTasks === 'function') renderMobileTasks();
+      if (typeof renderCalendar === 'function') renderCalendar();
+
+      // 버튼 완료 표시
+      const [y, m, d] = targetDate.split('-');
+      const parentDiv = btn.closest('div[style*="flex-direction:column"]') || btn.parentElement;
+      if (parentDiv) {
+        parentDiv.innerHTML = `<div style="font-size:13px;font-weight:800;color:#065F46;background:#D1FAE5;
+          border:1.5px solid #6EE7B7;border-radius:14px;padding:8px 16px;display:inline-block;">
+          ✅ ${parseInt(m)}월 ${parseInt(d)}일로 이동했어요</div>`;
+      }
+    }
+
     function openMasterDetail(id, e) {
       if (e) e.stopPropagation();
       const modal = document.getElementById('master-detail-modal');
@@ -8298,6 +8353,16 @@ ${MEM_RULES.pro}`
 예시: "...지금 안 하시면 제가 더 귀찮게 굴 겁니다. 일단 5분만 시작해봐요.\n[TIMER_START:5]"
 일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
 
+[할 일 날짜 이동 - 매우 중요]
+사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
+1. 오늘 날짜 기준으로 날짜를 판단한다. "25일"이면 이번 달 25일, 이미 지났으면 다음 달 25일.
+2. 어떤 할 일을 옮기는지 task_id를 확인한다 (할 일 목록에서 id 참조).
+3. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
+[MOVE_TASK:task_id:YYYY-MM-DD]
+예시: "5월 25일로 옮겨드릴게요.\n[MOVE_TASK:1716300000000:2026-05-25]"
+사용자가 확인 버튼을 눌러야 실제로 이동되므로, 태그만 삽입하고 기다린다.
+날짜가 불명확하면 "몇 월 며칠로 옮겨드릴까요?" 하고 먼저 물어본다.
+
 ${MEM_RULES.master}`
       },
       sec_female: {
@@ -8371,6 +8436,16 @@ ${MEM_RULES.master}`
 [TIMER_START:25] → 집중 모드 진입이 가능해 보일 때 (25분)
 예시: "이번 한 번만 제 얼굴 봐서라도 5분만 시작해봐요.\n[TIMER_START:5]"
 일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
+
+[할 일 날짜 이동 - 매우 중요]
+사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
+1. 오늘 날짜 기준으로 날짜를 판단한다. "25일"이면 이번 달 25일, 이미 지났으면 다음 달 25일.
+2. 어떤 할 일을 옮기는지 task_id를 확인한다 (할 일 목록에서 id 참조).
+3. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
+[MOVE_TASK:task_id:YYYY-MM-DD]
+예시: "5월 25일로 옮겨드릴게요.\n[MOVE_TASK:1716300000000:2026-05-25]"
+사용자가 확인 버튼을 눌러야 실제로 이동되므로, 태그만 삽입하고 기다린다.
+날짜가 불명확하면 "몇 월 며칠로 옮겨드릴까요?" 하고 먼저 물어본다.
 
 ${MEM_RULES.master}`
       }
@@ -9469,7 +9544,7 @@ ${MEM_RULES.master}`
         const allTasksSummary = incompleteTasks.map(t => {
           const isCore = coreTasks && coreTasks.some(c => c.text === t.text);
           const timeInfo = t.time ? ` (설정시간: ${t.time})` : (t.duration ? ` (소요시간: ${t.duration})` : '');
-          return `- ${t.text}${isCore ? ' [핵심]' : ''}${timeInfo}`;
+          return `- [id:${t.id}] ${t.text}${isCore ? ' [핵심]' : ''}${timeInfo}`;
         }).join('\n');
 
         // 메시지 구성
@@ -9500,6 +9575,12 @@ ${MEM_RULES.master}`
         escortMsg += `10. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 순서/시간에 배치했는지 한 줄 이유 설명\n`;
         escortMsg += `11. 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
         escortMsg += `12. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것\n`;
+        escortMsg += `\n[미루기 제안 - 조건부]\n`;
+        escortMsg += `오늘 남은 시간 안에 소화하기 어려운 할 일이 있을 때만, 핵심이 아닌 항목에 한해 다른 날로 미루도록 한 줄 제안할 수 있다.\n`;
+        escortMsg += `제안할 경우 답변 안에 [MOVE_TASK:id:YYYY-MM-DD] 형식의 태그를 삽입한다. id는 할 일 목록의 [id:숫자] 값을 사용한다.\n`;
+        escortMsg += `내일로 미룰 경우 내일 날짜, 특정 날짜가 더 적절하면 그 날짜를 사용한다.\n`;
+        escortMsg += `강요하지 말고 "~는 오늘 하기 빠듯할 수 있어요. 내일로 넘기는 건 어떠세요?" 톤으로 부드럽게 한 줄만 언급한다.\n`;
+        escortMsg += `시간이 충분하면 절대 사용하지 않는다.\n`;
 
         sendEscortCheatkey(escortMsg);
 
@@ -9931,6 +10012,7 @@ ${MEM_RULES.master}`
       let chips = typeof content === 'string' ? [] : (content.chips || []);
       let suggestedTasks = typeof content === 'string' ? [] : (content.suggestedTasks || []);
       let timerMinutes = typeof content === 'string' ? null : (content.timerMinutes || null);
+      let moveTaskActions = typeof content === 'string' ? [] : (content.moveTaskActions || []);
 
       const msgs = document.getElementById('messages');
       const div = document.createElement('div'); div.className = `msg ${role}`;
@@ -9943,6 +10025,67 @@ ${MEM_RULES.master}`
         } else {
           qc.innerHTML = '';
         }
+      }
+
+      // ── 할 일 날짜 이동 버튼 (마스터 비서 전용) ──
+      if (moveTaskActions && moveTaskActions.length > 0 && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
+        moveTaskActions.forEach(action => {
+          const btnDiv = document.createElement('div');
+          btnDiv.style.cssText = 'margin:8px 0 4px 48px;';
+          const dateLabel = action.targetDate; // YYYY-MM-DD
+          const [y, m, d] = dateLabel.split('-');
+          const displayDate = `${parseInt(m)}월 ${parseInt(d)}일`;
+          btnDiv.innerHTML = `
+            <button onclick="confirmMoveTask('${action.taskId}','${action.targetDate}', this)"
+              style="background:#F0EEFF;border:1.5px solid #C4B5FD;color:#6D28D9;
+              font-size:13px;font-weight:800;padding:8px 18px;border-radius:14px;
+              cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;">
+              📅 "${escapeHtml(action.taskText)}" ${displayDate}로 이동
+            </button>`;
+          msgs.appendChild(btnDiv);
+        });
+      }
+
+      // ── 할 일 날짜 이동 버튼 (마스터 비서 전용) ──
+      if (moveTaskActions && moveTaskActions.length > 0 && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
+        moveTaskActions.forEach(action => {
+          const btnDiv = document.createElement('div');
+          btnDiv.style.cssText = 'margin:8px 0 4px 48px;display:flex;flex-direction:column;gap:6px;';
+          const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+          const tomorrowStr = tomorrow.toISOString().slice(0,10);
+          const uid = 'movetask-' + action.taskId + '-' + Date.now();
+          btnDiv.innerHTML = `
+            <div style="font-size:12px;color:#6B7280;font-weight:700;margin-bottom:2px;">
+              "${escapeHtml(action.taskText)}" 언제로 옮길까요?
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="confirmMoveTask('${action.taskId}','${tomorrowStr}', this)"
+                style="background:#F0EEFF;border:1.5px solid #C4B5FD;color:#6D28D9;
+                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
+                cursor:pointer;font-family:inherit;">
+                📅 내일로 이동
+              </button>
+              <button onclick="openDatePickerForTask('${action.taskId}', '${escapeHtml(action.taskText)}', '${uid}')"
+                style="background:white;border:1.5px solid #C4B5FD;color:#6D28D9;
+                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
+                cursor:pointer;font-family:inherit;">
+                📆 날짜 선택
+              </button>
+            </div>
+            <div id="${uid}" style="display:none;margin-top:4px;">
+              <input type="date" id="${uid}-input"
+                min="${tomorrowStr}"
+                style="border:1.5px solid #C4B5FD;border-radius:12px;padding:8px 12px;
+                font-size:13px;font-family:inherit;color:#6D28D9;background:#F9F7FF;outline:none;">
+              <button onclick="confirmMoveTaskFromPicker('${action.taskId}', '${uid}')"
+                style="background:#7C3AED;border:none;color:white;
+                font-size:13px;font-weight:800;padding:8px 16px;border-radius:14px;
+                cursor:pointer;font-family:inherit;margin-left:6px;">
+                이동
+              </button>
+            </div>`;
+          msgs.appendChild(btnDiv);
+        });
       }
 
       // ── 고급 집중 타이머 카드 (마스터 비서 전용) ──
@@ -10974,11 +11117,13 @@ ${outputRules}`;
       const chipRegex = /\[CHIPS:\s*(.+?)\]/g;
       const timerRegex = /\[TIMER_START:(\d+)\]/g;
       const habitDismissRegex = /\[HABIT_DISMISS:(.+?)\]/g;
+      const moveTaskRegex = /\[MOVE_TASK:(\d+):([\d-]+)\]/g;
       let match, clean = text;
       let proposedTasks = [];
       let suggestedTasks = [];
       let chips = [];
       let timerMinutes = null;
+      let moveTaskActions = [];
 
       // HABIT_DISMISS 감지 → 해당 습관 삭제 + dismissal 기록
       while ((match = habitDismissRegex.exec(text)) !== null) {
@@ -11014,6 +11159,28 @@ ${outputRules}`;
           info.lastAsked = new Date().toISOString();
           dismissals[String(habit.id)] = info;
           localStorage.setItem('nyang_habit_dismissals', JSON.stringify(dismissals));
+        }
+        clean = clean.replace(match[0], '').trim();
+      }
+
+      // MOVE_TASK 감지
+      while ((match = moveTaskRegex.exec(text)) !== null) {
+        const taskId = match[1];
+        const targetDate = match[2];
+        const task = tasks.find(t => String(t.id) === String(taskId));
+        if (task && targetDate) {
+          moveTaskActions.push({ taskId, targetDate, taskText: task.text });
+        }
+        clean = clean.replace(match[0], '').trim();
+      }
+
+      // MOVE_TASK 감지
+      while ((match = moveTaskRegex.exec(text)) !== null) {
+        const taskId = match[1];
+        const targetDate = match[2];
+        const task = tasks.find(t => String(t.id) === String(taskId));
+        if (task && targetDate) {
+          moveTaskActions.push({ taskId, targetDate, taskText: task.text });
         }
         clean = clean.replace(match[0], '').trim();
       }
@@ -11057,7 +11224,7 @@ ${outputRules}`;
 
       console.log('[parseAndAddTasks] raw:', text);
       console.log('[parseAndAddTasks] suggestedTasks:', suggestedTasks);
-      return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes };
+      return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes, moveTaskActions };
     }
     function addTask(text, category = 'today', time = null, timeEnd = null) {
       const task = { id: Date.now() + Math.floor(Math.random() * 1000), text: text.trim(), category, done: false, createdAt: new Date().toISOString() };
