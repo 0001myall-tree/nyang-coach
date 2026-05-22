@@ -6208,8 +6208,6 @@
     }
     .header.master-header {
       background: rgba(255,255,255,0.15) !important;
-      backdrop-filter: blur(2px) !important;
-      -webkit-backdrop-filter: blur(2px) !important;
       border-bottom: none !important;
       box-shadow: none !important;
     }
@@ -9539,12 +9537,31 @@ ${MEM_RULES.master}`
           return text.length <= 5 || !text.includes(' ');
         });
 
-        // 시간대별 집중력 판단
+        // 시간대별 집중력 + 식사 시간 판단
         let focusNote = '';
-        if (hour >= 6 && hour < 12) focusNote = '오전은 집중력이 높은 시간대예요. 어려운 작업을 앞에 배치하세요.';
-        else if (hour >= 12 && hour < 15) focusNote = '점심 이후는 집중력이 낮아지는 시간대예요. 가벼운 작업을 배치하세요.';
-        else if (hour >= 15 && hour < 20) focusNote = '오후는 집중력이 다시 올라오는 시간대예요. 중요한 작업을 배치하기 좋아요.';
-        else focusNote = '저녁 시간이에요. 취침 전까지 가능한 것들을 정리해보세요.';
+        let mealNote = '';
+        if (hour >= 6 && hour < 9) {
+          focusNote = '오전 이른 시간이에요. 집중력이 올라오는 시간대로, 어려운 작업부터 시작하기 좋아요.';
+          mealNote = '아침 식사 시간(7~8시)을 고려해서 배치해주세요.';
+        } else if (hour >= 9 && hour < 12) {
+          focusNote = '오전 집중력이 가장 높은 시간대예요. 중요하고 어려운 작업을 지금 배치하세요.';
+          mealNote = '점심 식사 시간(12시 전후 1시간)을 고려해서 배치해주세요.';
+        } else if (hour >= 12 && hour < 13) {
+          focusNote = '점심 시간대예요. 식사 후 잠깐 쉬고 오후 일정을 시작하는 게 좋아요.';
+          mealNote = '지금은 점심 시간이니 식사 후 오후 1시 이후부터 일정을 잡아주세요.';
+        } else if (hour >= 13 && hour < 15) {
+          focusNote = '점심 이후라 집중력이 살짝 낮아지는 시간대예요. 가벼운 작업이나 미팅을 배치하세요.';
+          mealNote = '저녁 식사 시간(6~7시)을 고려해서 배치해주세요.';
+        } else if (hour >= 15 && hour < 18) {
+          focusNote = '오후 집중력이 다시 올라오는 시간대예요. 중요한 작업을 지금 배치하기 좋아요.';
+          mealNote = '저녁 식사 시간(6~7시)을 고려해서 배치해주세요.';
+        } else if (hour >= 18 && hour < 20) {
+          focusNote = '저녁 시간대예요. 저녁 식사 후 가벼운 작업이나 마무리 작업을 배치하세요.';
+          mealNote = '지금은 저녁 식사 시간대(6~7시)예요. 식사 후 시간을 활용해주세요.';
+        } else {
+          focusNote = '늦은 저녁이에요. 취침 전까지 가능한 것들만 가볍게 정리해보세요.';
+          mealNote = '';
+        }
 
         // 비전/마일스톤 데이터 추출
         let visionSummary = '';
@@ -9576,6 +9593,7 @@ ${MEM_RULES.master}`
           escortMsg += `\n[장기 비전/마일스톤]\n${visionSummary}\n`;
         }
         escortMsg += `\n집중력 참고: ${focusNote}\n`;
+        if (mealNote) escortMsg += `식사 시간 참고: ${mealNote}\n`;
         escortMsg += `\n위 정보를 바탕으로 오늘 남은 시간에 맞는 최적의 일정을 짜주세요. 다음을 반드시 고려하세요:\n`;
         escortMsg += `1. [핵심] 표시된 항목은 반드시 포함하고 우선순위 최상위에 배치\n`;
         escortMsg += `2. 비전/마일스톤과 의미상 연결되는 할 일은 우선순위 높게 배치하고 연결 이유 한 줄 설명\n`;
@@ -9589,7 +9607,12 @@ ${MEM_RULES.master}`
         escortMsg += `9. 먼저 1~2문장으로 오늘 상황 전체 요약\n`;
         escortMsg += `10. 각 [TASK_SUGGEST] 항목 바로 앞에 왜 이 순서/시간에 배치했는지 한 줄 이유 설명\n`;
         escortMsg += `11. 사용자가 확인/수정/삭제할 수 있도록 [TASK_SUGGEST] 형식으로 제안\n`;
+        escortMsg += `11-1. [TASK_SUGGEST]는 오늘 할 일 목록에 없는 새 항목을 추가 제안할 때만 사용. 위 [오늘 미완료 전체 목록]에 이미 있는 항목은 절대 [TASK_SUGGEST]로 다시 제안하지 말 것. 이미 있는 항목은 순서/시간 배치 설명만 하면 됨.\n`;
+        escortMsg += `11-1. [TASK_SUGGEST]는 오늘 할 일 목록에 없는 새 항목을 추가 제안할 때만 사용. 위 [오늘 미완료 전체 목록]에 이미 있는 항목은 절대 [TASK_SUGGEST]로 다시 제안하지 말 것. 이미 있는 항목은 순서/시간 배치 설명만 해주면 됨.\n`;
         escortMsg += `12. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것\n`;
+        escortMsg += `13. 말투는 자연스러운 추천 톤으로. "~에 배치하였습니다" "~마무리합니다" 같은 딱딱한 서술형 절대 쓰지 말 것. 대신 "~하시면 좋을 것 같습니다" "~추천드려요" "~어떠세요?" 같이 제안하는 말투로.\n`;
+        escortMsg += `14. 자주 미뤄온 항목은 "자주 미뤄오셨던 항목인데, 오늘 저녁 7시 이후에 30분만 시간 내시면 어떨까요?" 같이 구체적 시간대와 함께 부드럽게 권해주세요.\n`;
+        escortMsg += `15. 식사 시간은 일정에 포함하지 말고, 식사 전후로 자연스럽게 일정을 나눠서 제안하세요.\n`;
         escortMsg += `\n[미루기 제안 - 조건부]\n`;
         escortMsg += `오늘 남은 시간 안에 소화하기 어려운 할 일이 있을 때만, 핵심이 아닌 항목에 한해 다른 날로 미루도록 한 줄 제안할 수 있다.\n`;
         escortMsg += `제안할 경우 답변 안에 [MOVE_TASK:id:YYYY-MM-DD] 형식의 태그를 삽입한다. id는 할 일 목록의 [id:숫자] 값을 사용한다.\n`;
@@ -10697,9 +10720,11 @@ ${outputRules}`;
         const doneDate = (t.completedAt || '').slice(0, 10);
         return doneDate === todayStr;
       });
+      // 전체 tasks(오늘 할 일 + 습관 포함)에 이미 있는 항목 제거
+      const allExistingTasks = tasks || [];
       suggestedTasks = suggestedTasks.filter(st => {
         const stNorm = st.text.replace(/\s/g, '').toLowerCase();
-        return !todayTasks.some(tt => {
+        return !allExistingTasks.some(tt => {
           const ttNorm = tt.text.replace(/\s/g, '').toLowerCase();
           return ttNorm === stNorm || ttNorm.includes(stNorm) || stNorm.includes(ttNorm);
         });
