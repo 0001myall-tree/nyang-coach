@@ -8701,6 +8701,8 @@ ${MEM_RULES.master}`
         lastDate = today; localStorage.setItem('nyang_last_date', today); saveTodayRecord(); return;
       }
       if (lastDate === today) { saveTodayRecord(); return; }
+      
+      const chatDate = lastDate; // 요약 대상인 실제 대화일 저장
       upsertDayRecord(currentDayRecord(lastDate));
       const prev = history.find(h => h.date === lastDate);
       const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
@@ -8737,8 +8739,8 @@ ${MEM_RULES.master}`
       chatHistory = [];
       saveChatHistory();
 
-      // 어제 대화 요약 생성 (비동기, 백그라운드)
-      generateDailySummary(yStr, oldChatHistory);
+      // 실제 대화가 일어난 날짜로 대화 요약 생성 (비동기, 백그라운드)
+      generateDailySummary(chatDate, oldChatHistory);
     }
     function getLast7Records() {
       const arr = []; const today = new Date();
@@ -8792,7 +8794,7 @@ ${MEM_RULES.master}`
       });
 
       // 비전/목표 이름 추출
-      const visionName = visions && visions.length > 0 ? visions[0].name : null;
+      const visionName = visions && visions.length > 0 ? visions[0].text : null;
       const weekGoalName = weekGoals && weekGoals.filter(g => !g.done).length > 0 ? weekGoals.find(g => !g.done).text : null;
       const monthGoalName = monthGoals && monthGoals.filter(g => !g.done).length > 0 ? monthGoals.find(g => !g.done).text : null;
       const goalName = visionName || weekGoalName || monthGoalName;
@@ -8847,6 +8849,74 @@ ${MEM_RULES.master}`
       }
 
       return parts.join(' ');
+    }
+
+    function getWeekMondayStr() {
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(now.setDate(diff));
+      return monday.toISOString().slice(0, 10);
+    }
+
+    let isGeneratingWeeklyFeedback = false;
+    async function triggerWeeklyFeedback(weekMonday) {
+      if (isGeneratingWeeklyFeedback) return;
+      isGeneratingWeeklyFeedback = true;
+
+      const records = getLast7Records();
+      const visibleVisions = (visions || []).map(v => v.text).join(', ') || '없음';
+      const weekGoalText = (weekGoals || []).map(g => `[${g.done ? '완료' : '진행중'}] ${g.text}`).join(', ') || '없음';
+      const monthGoalText = (monthGoals || []).map(g => `[${g.done ? '완료' : '진행중'}] ${g.text}`).join(', ') || '없음';
+
+      let recordStr = '';
+      records.forEach(r => {
+        const done = (r.tasks || []).filter(t => t.done).map(t => t.text);
+        const undone = (r.tasks || []).filter(t => !t.done).map(t => t.text);
+        recordStr += `- ${r.date}: 완료한 일[${done.join(', ') || '없음'}], 완료하지 못한 일[${undone.join(', ') || '없음'}]\n`;
+      });
+
+      const isMale = currentChar === 'sec_male';
+      const prompt = `당신은 사용자의 한 주간 성과를 분석하는 수석 비서이자 전문 코치입니다.
+사용자의 지난 7일간의 실제 할 일 완료 내역과 현재 설정된 목표/비전을 바탕으로, 대표님께 드리는 주간 코칭 한마디를 격식 있게 작성해 주세요.
+
+[사용자의 지난 7일간 할 일 완료 현황]
+${recordStr}
+
+[사용자의 현재 목표 및 장기 비전]
+- 주간 목표: ${weekGoalText}
+- 월간 목표: ${monthGoalText}
+- 장기 비전: ${visibleVisions}
+
+[작성 지침]
+1. 어투: ${isMale ? '남비서로서 차분하고 신뢰감 있는 "대표님" 호칭의 격식체 (~했습니다, ~하십시오).' : '여비서로서 지적이고 부드러운 "대표님" 호칭의 격식체 (~했어요, ~어떨까요).'}
+2. 분석 내용 (구체적으로):
+   - 이번 주에 실제로 완료한 일들 중에서 사용자의 주간 목표, 월간 목표 또는 장기 비전과 밀접하게 연결되는 중요한 활동(최소 1~2개)을 콕 집어서 구체적으로 언급하고 칭찬해 주세요. (추상적이거나 일반적인 칭찬은 금지)
+   - 만약 반복적으로 미완료되었거나 밀린 중요한 일(예: 운동, 독서 등)이 있다면, 부드럽게 지적하며 다음 주에 우선적으로 챙길 수 있도록 권유해 주세요.
+3. 분량: 2~3문장 정도로 간결하지만 대화 느낌이 나는 글이어야 합니다. JSON이나 마크다운 없이 순수 텍스트로만 답변해 주세요.`;
+
+      try {
+        if (!window.chatProxy) throw new Error("chatProxy not ready");
+        const response = await window.chatProxy({
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.5
+        });
+        const feedbackText = (response.data.content || '').trim();
+        if (feedbackText) {
+          const data = { weekMonday, text: feedbackText };
+          localStorage.setItem('nyang_coach_weekly_feedback_' + currentChar, JSON.stringify(data));
+          
+          // UI 업데이트
+          const fb = document.getElementById('pattern-feedback');
+          if (fb && ['sec_male', 'sec_female'].includes(currentChar)) {
+            fb.textContent = data.text;
+          }
+        }
+      } catch (e) {
+        console.error('주간 코치 피드백 생성 실패:', e);
+      } finally {
+        isGeneratingWeeklyFeedback = false;
+      }
     }
 
     function renderPattern() {
@@ -8904,7 +8974,25 @@ ${MEM_RULES.master}`
       const fb = document.getElementById('pattern-feedback');
       if (fb) {
         const isMaster = ['sec_male', 'sec_female'].includes(currentChar);
-        fb.textContent = isMaster ? getMasterPatternFeedback(records) : getPatternFeedback(records);
+        if (isMaster) {
+          const weekMonday = getWeekMondayStr();
+          const cachedData = localStorage.getItem('nyang_coach_weekly_feedback_' + currentChar);
+          let cached = null;
+          try {
+            if (cachedData) cached = JSON.parse(cachedData);
+          } catch (e) {}
+
+          if (cached && cached.weekMonday === weekMonday) {
+            fb.textContent = cached.text;
+          } else {
+            fb.textContent = (currentChar === 'sec_male')
+              ? '이번 주 활동과 목표를 분석하여 대표님께 드릴 한마디를 작성하고 있습니다...'
+              : '이번 주 활동과 목표를 분석하여 대표님께 드릴 한마디를 작성하고 있어요...';
+            triggerWeeklyFeedback(weekMonday);
+          }
+        } else {
+          fb.textContent = getPatternFeedback(records);
+        }
       }
 
       // 이번 주 기록 → 달성률 바 그래프
@@ -11081,18 +11169,28 @@ ${outputRules}`;
     // ── 일별 대화 요약 생성 ───────────────────────────────
     async function generateDailySummary(date, historyArray = chatHistory) {
       if (!historyArray || historyArray.length < 2) return;
-      const convText = historyArray.map(m => `${m.role === 'user' ? '나' : '코치'}: ${m.content}`).join('\n');
-      const prompt = `다음은 오늘(${date}) 사용자와 코치의 대화야. 아래 5가지 항목으로 각각 한 줄씩 요약해줘. JSON 형식으로만 답해. 다른 말은 하지 마.
+      
+      // 해당 날짜의 실제 기록 찾기
+      const dayRecord = (typeof history !== 'undefined' && history) ? history.find(h => h.date === date) : null;
+      const doneTasks = dayRecord && dayRecord.tasks ? dayRecord.tasks.filter(t => t.done).map(t => t.text) : [];
+      const undoneTasks = dayRecord && dayRecord.tasks ? dayRecord.tasks.filter(t => !t.done).map(t => t.text) : [];
 
-대화:
+      const convText = historyArray.map(m => `${m.role === 'user' ? '나' : '코치'}: ${m.content}`).join('\n');
+      const prompt = `다음은 오늘(${date}) 사용자와 코치의 대화 및 오늘 실제 할 일 완료 현황이야. 대화 내용과 할 일 완료 현황을 바탕으로 아래 5가지 항목을 각각 구체적인 활동이나 내용이 포함되도록 한 줄씩 요약해줘. JSON 형식으로만 답해. 다른 말은 하지 마.
+
+[실제 할 일 완료 현황]
+- 완료한 할 일: ${doneTasks.join(', ') || '없음'}
+- 완료하지 못한 할 일: ${undoneTasks.join(', ') || '없음'}
+
+대화 내용:
 ${convText.slice(-3000)}
 
 형식:
 {
-  "achieved": "오늘 달성하거나 완료한 것 (없으면 '없음')",
-  "missed": "못 하거나 미룬 것과 이유 (없으면 '없음')",
+  "achieved": "오늘 실제로 달성하거나 완료한 구체적 활동/할 일 (없으면 '없음')",
+  "missed": "못 하거나 미룬 구체적인 할 일과 대화에서 언급된 이유 (없으면 '없음')",
   "condition": "오늘 컨디션이나 에너지 상태",
-  "concern": "언급한 고민이나 걱정 (없으면 '없음')",
+  "concern": "언급한 구체적인 고민이나 걱정 (없으면 '없음')",
   "emotion": "오늘 전반적인 감정이나 기분"
 }`;
 
@@ -11271,6 +11369,18 @@ ${profileCtx}
         ctx += `\n[최근 7일 요약]\n`;
         recent.forEach(s => {
           ctx += `${s.date}: 달성(${s.achieved}) / 못함(${s.missed}) / 컨디션(${s.condition}) / 고민(${s.concern})\n`;
+        });
+      }
+
+      // 최근 7일간 실제 완료한 일 및 진행 상황 추가 (기억 구체화)
+      if (typeof history !== 'undefined' && history && history.length > 0) {
+        ctx += `\n[최근 7일간 실제 완료/미완료 할 일 목록]\n`;
+        const last7DaysRecords = history.slice(-7);
+        last7DaysRecords.forEach(record => {
+          const rTasks = record.tasks || [];
+          const doneTasks = rTasks.filter(t => t.done).map(t => t.text);
+          const undoneTasks = rTasks.filter(t => !t.done).map(t => t.text);
+          ctx += `- ${record.date}: 완료한 일 [${doneTasks.join(', ') || '없음'}], 완료 못한 일 [${undoneTasks.join(', ') || '없음'}]\n`;
         });
       }
 
