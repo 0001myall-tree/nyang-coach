@@ -8419,7 +8419,7 @@ ${MEM_RULES.master}`
     let lastDate = localStorage.getItem('nyang_last_date') || '';
     let history = JSON.parse(localStorage.getItem('nyang_history') || '[]');
     let completedLog = JSON.parse(localStorage.getItem('nyang_completed_log') || '[]');
-    let chatHistory = JSON.parse(localStorage.getItem('nyang_chat_history') || '[]');
+    let chatHistory = JSON.parse(localStorage.getItem('nyang_chat_history_' + (localStorage.getItem('nyang_char') || 'cat')) || '[]');
     let vacationInfo = JSON.parse(localStorage.getItem('nyang_vacation') || 'null');
     let pendingVacationDays = [];
     let pendingRestType = 'quiet';
@@ -8433,8 +8433,12 @@ ${MEM_RULES.master}`
       if (window.syncToFirebase) window.syncToFirebase('dailySummaries', dailySummaries);
     }
     function saveChatHistory() {
-      localStorage.setItem('nyang_chat_history', JSON.stringify(chatHistory.slice(-100)));
-      if (window.syncToFirebase) window.syncToFirebase('chatHistory', chatHistory.slice(-100));
+      const key = 'nyang_chat_history_' + (currentChar || 'cat');
+      localStorage.setItem(key, JSON.stringify(chatHistory.slice(-100)));
+      if (window.syncToFirebase) window.syncToFirebase('chatHistory_' + currentChar, chatHistory.slice(-100));
+    }
+    function loadChatHistory(charId) {
+      return JSON.parse(localStorage.getItem('nyang_chat_history_' + (charId || 'cat')) || '[]');
     }
     function saveLongTermMemory() {
       localStorage.setItem('nyang_long_term', JSON.stringify(longTermMemory));
@@ -8745,7 +8749,11 @@ ${MEM_RULES.master}`
       setTimeout(() => injectTodayHabits(), 100);
       // 어제 대화 요약 생성 (비동기, 백그라운드)
       generateDailySummary(yStr).then(() => {
-        chatHistory = []; // 요약 후 대화 초기화
+        // 날짜 바뀔 때 모든 코치 대화 초기화
+        ['cat','boyfriend','girlfriend','halmae','bro','sec_male','sec_female'].forEach(id => {
+          localStorage.removeItem('nyang_chat_history_' + id);
+        });
+        chatHistory = [];
         saveChatHistory();
       });
     }
@@ -9855,6 +9863,10 @@ ${MEM_RULES.master}`
       updateChatGoalBar();
       const tabBar = document.getElementById('bottom-tab-bar');
       if (tabBar) tabBar.style.display = '';
+      // 코치별 대화 로드 (화면 먼저 초기화)
+      chatHistory = loadChatHistory(charId);
+      const msgsEl = document.getElementById('messages');
+      if (msgsEl) msgsEl.innerHTML = '';
       if (chatHistory && chatHistory.length > 0) {
         restoreChatHistory();
       }
