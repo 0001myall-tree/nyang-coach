@@ -9041,6 +9041,7 @@ ${MEM_RULES.master}`
       const periodEl = document.getElementById('habit-tracking-period');
       if (periodEl) periodEl.textContent = isMaster ? '최근 30일' : '최근 7일';
 
+      list.innerHTML = trackingHabits.map(h => {
         const targetDates = weekDates.filter(date => {
           if (h.freq === 'daily') return true;
           const dow = new Date(date + 'T00:00:00').getDay();
@@ -10299,10 +10300,6 @@ ${outputRules}`;
     }
 
     function launchApp(charId, greet) {
-      if (!window.chatProxy) {
-        setTimeout(() => launchApp(charId, greet), 300);
-        return;
-      }
       checkNewDay();
       currentChar = charId; localStorage.setItem('nyang_char', charId);
       const cfg = CHARS[charId];
