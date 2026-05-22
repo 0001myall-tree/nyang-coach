@@ -5749,115 +5749,6 @@
         line-height: 1.5;
       }
 
-      .pro-cs-card {
-        display: flex;
-        align-items: center;
-        background: white;
-        border-radius: 24px;
-        border: 2.5px solid #E8E4F8;
-        padding: 14px;
-        gap: 16px;
-        cursor: pointer;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
-        width: 100%;
-        text-align: left;
-        position: relative;
-        user-select: none;
-        -webkit-user-select: none;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.2s;
-      }
-
-      .pro-cs-card.show {
-        opacity: 1;
-        transform: translateY(0);
-        transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, background-color 0.2s;
-      }
-
-      .pro-cs-card.selected {
-        border-color: #7C5CFC;
-        box-shadow: 0 0 0 4px rgba(124, 92, 252, 0.18);
-      }
-
-      .pro-cs-card img {
-        width: 110px;
-        height: 110px;
-        border-radius: 20px;
-        object-fit: cover;
-        object-position: center top;
-        flex-shrink: 0;
-      }
-
-      .pro-cs-card-body {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 4px;
-      }
-
-      .pro-cs-header {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 2px;
-      }
-
-      .pro-cs-name {
-        font-size: 16px;
-        font-weight: 900;
-        color: #1A1A2E;
-      }
-
-      .pro-cs-verify {
-        background: #8B7CFF;
-        color: white;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-      }
-
-      .pro-cs-desc {
-        font-size: 12px;
-        color: #9090A8;
-        line-height: 1.4;
-        margin-bottom: 6px;
-      }
-
-      .pro-cs-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 6px;
-      }
-
-      .pro-tag {
-        font-size: 10px;
-        font-weight: 700;
-        color: #8B7CFF;
-        background: #F3F1FF;
-        padding: 3px 10px;
-        border-radius: 8px;
-      }
-
-      .pro-cs-price {
-        display: inline-block;
-        font-size: 10px;
-        font-weight: 800;
-        color: #7C3AED;
-        background: #F3F1FF;
-        padding: 3px 10px;
-        border-radius: 10px;
-        width: fit-content;
-        margin-top: 4px;
-        border: 1px solid rgba(124, 58, 237, 0.1);
-        align-self: flex-end;
-      }
 
       /* 마스터 코치 스타일 */
       .master-cs-card {
@@ -6832,11 +6723,11 @@
 
     function filterCoaches(val) {
       const query = val.toLowerCase().trim();
-      const cards = document.querySelectorAll('.new-cs-card, .pro-cs-card, .master-cs-card');
+      const cards = document.querySelectorAll('.new-cs-card, .master-cs-card');
 
       cards.forEach(card => {
-        const name = card.querySelector('.new-cs-name, .pro-cs-name, .master-cs-name').textContent.toLowerCase();
-        const desc = card.querySelector('.new-cs-desc, .pro-cs-desc, .master-cs-desc').textContent.toLowerCase();
+        const name = card.querySelector('.new-cs-name, .master-cs-name').textContent.toLowerCase();
+        const desc = card.querySelector('.new-cs-desc, .master-cs-desc').textContent.toLowerCase();
         const isMatch = name.includes(query) || desc.includes(query);
         card.style.display = isMatch ? (card.classList.contains('new-cs-card') ? 'flex' : 'flex') : 'none';
 
@@ -6853,7 +6744,7 @@
       screen.classList.add('active');
 
       // 카드들 순차적 애니메이션 (Stagger)
-      const cards = screen.querySelectorAll('.new-cs-card, .pro-cs-card, .master-cs-card');
+      const cards = screen.querySelectorAll('.new-cs-card, .master-cs-card');
       cards.forEach((card, idx) => {
         setTimeout(() => {
           card.classList.add('show');
@@ -6869,13 +6760,13 @@
 
       // 나갈 때는 일괄 초기화
       setTimeout(() => {
-        screen.querySelectorAll('.new-cs-card, .pro-cs-card, .master-cs-card').forEach(c => c.classList.remove('show'));
+        screen.querySelectorAll('.new-cs-card, .master-cs-card').forEach(c => c.classList.remove('show'));
         screen.style.display = 'none';
       }, 400);
     }
     function newSelectChar(id) {
       _newSelectedChar = id;
-      document.querySelectorAll('.new-cs-card, .pro-cs-card, .master-cs-card').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.new-cs-card, .master-cs-card').forEach(el => el.classList.remove('selected'));
       const card = document.getElementById('ncard-' + id);
       if (card) card.classList.add('selected');
       const btn = document.getElementById('new-start-btn');
@@ -9786,7 +9677,7 @@ ${MEM_RULES.master}`
 
     function selectChar(id) {
       selectedChar = id;
-      document.querySelectorAll('.char-card, .pro-cs-card, .master-cs-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.char-card, .master-cs-card').forEach(c => c.classList.remove('selected'));
       const card = document.getElementById('card-' + id);
       if (card) card.classList.add('selected');
       const startBtn = document.getElementById('char-start-btn');
@@ -12818,8 +12709,6 @@ ${outputRules}`;
       });
     }
 
-      if (target) target.classList.add('active');
-    }
 
     function saveVision() {
       try {
