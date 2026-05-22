@@ -6758,13 +6758,9 @@
     }
     function newStartWithChar() {
       if (!_newSelectedChar) return;
-      // 기존 선택 화면 숨기고 새 화면도 숨기기
       document.getElementById('landing-screen').style.display = 'none';
       document.getElementById('coach-select-screen').style.display = 'none';
-      // 탭바 복원은 launchApp에서 처리
-      // 기존 selectChar + startWithChar 로직 호출
-      selectChar(_newSelectedChar);
-      startWithChar();
+      launchApp(_newSelectedChar, true);
     }
   </script>
 
@@ -8741,6 +8737,8 @@ ${MEM_RULES.master}`
       for (let i = 29; i >= 0; i--) { const d = new Date(today); d.setDate(today.getDate() - i); const ds = normalizeDate(d); arr.push(history.find(h => h.date === ds) || { date: ds, doneCount: 0, totalCount: 0, success: false, tasks: [] }); }
       return arr;
     }
+
+    function getPatternFeedback(records) {
       const total = records.reduce((s, r) => s + (r.doneCount || 0), 0);
       const successDays = records.filter(r => (r.doneCount || 0) > 0).length;
       if (total === 0) return '아직 기록이 부족해. 오늘 하나만 완료하면 패턴이 시작돼.';
@@ -13830,8 +13828,9 @@ ${outputRules}`;
         if (document.getElementById('user-display-email')) document.getElementById('user-display-email').innerText = user.email;
 
         // 로그인 성공 시, 이미 선택된 코치가 있다면 자동으로 앱 진입
-        if (currentChar) {
-          launchApp(currentChar, false);
+        const savedChar = localStorage.getItem('nyang_char');
+        if (savedChar) {
+          launchApp(savedChar, false);
         }
       } else {
         if (loggedOutUI) loggedOutUI.style.display = 'block';
