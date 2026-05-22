@@ -8244,15 +8244,22 @@ ${MEM_RULES.pro}`
 예시: "...지금 안 하시면 제가 더 귀찮게 굴 겁니다. 일단 5분만 시작해봐요.\n[TIMER_START:5]"
 일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
 
-[할 일 날짜 이동 - 매우 중요]
-사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
-1. 오늘 날짜 기준으로 날짜를 판단한다. "25일"이면 이번 달 25일, 이미 지났으면 다음 달 25일.
-2. 어떤 할 일을 옮기는지 task_id를 확인한다 (할 일 목록에서 id 참조).
-3. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
-[MOVE_TASK:task_id:YYYY-MM-DD]
-예시: "5월 25일로 옮겨드릴게요.\n[MOVE_TASK:1716300000000:2026-05-25]"
-사용자가 확인 버튼을 눌러야 실제로 이동되므로, 태그만 삽입하고 기다린다.
-날짜가 불명확하면 "몇 월 며칠로 옮겨드릴까요?" 하고 먼저 물어본다.
+[할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
+1. 사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
+   - [현재 날짜 및 시간] 컨텍스트를 기준으로 상대적 날짜(예: "내일", "모레", "다음주 화요일" 등)를 구체적인 실제 날짜(YYYY-MM-DD 및 몇월 며칠)로 정확히 계산한다.
+   - 답변 텍스트 내에서 반드시 구체적인 날짜를 언급하며 확인한다. (예: "5월 23일 말씀이시죠? 이동해 드리겠습니다.")
+   - 어떤 할 일을 옮기는지 오늘 할 일 목록에서 id를 찾는다 (예: [id: 1716300000000]).
+   - 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
+     [MOVE_TASK:task_id:YYYY-MM-DD]
+     (예시: "5월 23일 말씀이시죠? 영화 분석을 이동해 드릴게요.\n[MOVE_TASK:1716300000000:2026-05-23]")
+   - 날짜나 옮길 대상이 불명확하면 "어떤 일정을 몇 월 며칠로 옮겨드릴까요?" 하고 정중히 다시 묻는다.
+
+2. 사용자가 미래의 특정 날짜에 새로운 일정을 등록/추가해 달라고 할 때:
+   - [현재 날짜 및 시간]을 기준으로 정확한 날짜(YYYY-MM-DD)를 계산한다.
+   - 답변 텍스트 내에서 반드시 구체적인 날짜를 언급하며 등록 여부를 확인한다. (예: "5월 23일 말씀이시죠? 일정에 등록해 드리겠습니다.")
+   - 답변 맨 끝에 아래 형식의 태그를 단독으로 삽입한다:
+     [TASK_ADD:{"text": "할 일 내용", "category": "YYYY-MM-DD"}]
+     (예시: "5월 23일에 치과 예약 일정을 등록해 드릴게요.\n[TASK_ADD:{\"text\": \"치과 예약\", \"category\": \"2026-05-23\"}]")
 
 ${MEM_RULES.master}`
       },
@@ -8328,15 +8335,22 @@ ${MEM_RULES.master}`
 예시: "이번 한 번만 제 얼굴 봐서라도 5분만 시작해봐요.\n[TIMER_START:5]"
 일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
 
-[할 일 날짜 이동 - 매우 중요]
-사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
-1. 오늘 날짜 기준으로 날짜를 판단한다. "25일"이면 이번 달 25일, 이미 지났으면 다음 달 25일.
-2. 어떤 할 일을 옮기는지 task_id를 확인한다 (할 일 목록에서 id 참조).
-3. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
-[MOVE_TASK:task_id:YYYY-MM-DD]
-예시: "5월 25일로 옮겨드릴게요.\n[MOVE_TASK:1716300000000:2026-05-25]"
-사용자가 확인 버튼을 눌러야 실제로 이동되므로, 태그만 삽입하고 기다린다.
-날짜가 불명확하면 "몇 월 며칠로 옮겨드릴까요?" 하고 먼저 물어본다.
+[할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
+1. 사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
+   - [현재 날짜 및 시간] 컨텍스트를 기준으로 상대적 날짜(예: "내일", "모레", "다음주 화요일" 등)를 구체적인 실제 날짜(YYYY-MM-DD 및 몇월 며칠)로 정확히 계산한다.
+   - 답변 텍스트 내에서 반드시 구체적인 날짜를 언급하며 확인한다. (예: "5월 23일 말씀이시죠? 이동해 드리겠습니다.")
+   - 어떤 할 일을 옮기는지 오늘 할 일 목록에서 id를 찾는다 (예: [id: 1716300000000]).
+   - 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
+     [MOVE_TASK:task_id:YYYY-MM-DD]
+     (예시: "5월 23일 말씀이시죠? 영화 분석을 이동해 드릴게요.\n[MOVE_TASK:1716300000000:2026-05-23]")
+   - 날짜나 옮길 대상이 불명확하면 "어떤 일정을 몇 월 며칠로 옮겨드릴까요?" 하고 정중히 다시 묻는다.
+
+2. 사용자가 미래의 특정 날짜에 새로운 일정을 등록/추가해 달라고 할 때:
+   - [현재 날짜 및 시간]을 기준으로 정확한 날짜(YYYY-MM-DD)를 계산한다.
+   - 답변 텍스트 내에서 반드시 구체적인 날짜를 언급하며 등록 여부를 확인한다. (예: "5월 23일 말씀이시죠? 일정에 등록해 드리겠습니다.")
+   - 답변 맨 끝에 아래 형식의 태그를 단독으로 삽입한다:
+     [TASK_ADD:{"text": "할 일 내용", "category": "YYYY-MM-DD"}]
+     (예시: "5월 23일에 치과 예약 일정을 등록해 드릴게요.\n[TASK_ADD:{\"text\": \"치과 예약\", \"category\": \"2026-05-23\"}]")
 
 ${MEM_RULES.master}`
       }
@@ -10796,7 +10810,13 @@ ${outputRules}`;
 
     function approveTask(btn, text, category, time) {
       addTask(text, category, time || null);
-      btn.textContent = "추가됨 ✓";
+      const isDate = category && category !== 'today' && category !== 'habit' && /^\d{4}-\d{2}-\d{2}$/.test(category);
+      let dateLabel = "추가됨 ✓";
+      if (isDate) {
+        const [,, d] = category.split('-');
+        dateLabel = `${parseInt(d)}일 일정에 추가됨 ✓`;
+      }
+      btn.textContent = dateLabel;
       btn.disabled = true;
       btn.style.background = "#10B981";
       btn.style.opacity = "0.8";
@@ -10834,7 +10854,9 @@ ${outputRules}`;
       const card = btn.closest('.suggest-task-card');
       if (card) {
         const timeLabel = time ? (' 🕐 ' + fmt12(time) + (timeEnd ? ' ~ ' + fmt12(timeEnd) : '')) : '';
-        card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}" 추가됐어요!${timeLabel}</div>`;
+        const isDate = category && category !== 'today' && category !== 'habit' && /^\d{4}-\d{2}-\d{2}$/.test(category);
+        const targetLabel = isDate ? `${parseInt(category.split('-')[1])}월 ${parseInt(category.split('-')[2])}일 일정에` : '오늘 할 일에';
+        card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}"이(가) ${targetLabel} 추가됐어요!${timeLabel}</div>`;
       }
       if (!time) {
         _lastAddedTaskId = taskId;
@@ -10855,7 +10877,9 @@ ${outputRules}`;
       const taskId = addTask(text, category, time || null, timeEnd || null);
       if (card) {
         const timeLabel = time ? (' 🕐 ' + fmt12(time) + (timeEnd ? ' ~ ' + fmt12(timeEnd) : '')) : '';
-        card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}" 추가됐어요!${timeLabel}</div>`;
+        const isDate = category && category !== 'today' && category !== 'habit' && /^\d{4}-\d{2}-\d{2}$/.test(category);
+        const targetLabel = isDate ? `${parseInt(category.split('-')[1])}월 ${parseInt(category.split('-')[2])}일 일정에` : '오늘 할 일에';
+        card.innerHTML = `<div style="font-size:12px;font-weight:700;color:#10B981;padding:4px 0;">✓ "${text}"이(가) ${targetLabel} 추가됐어요!${timeLabel}</div>`;
       }
       if (!time) {
         _lastAddedTaskId = taskId;
@@ -11254,7 +11278,7 @@ ${profileCtx}
       if (tasks && tasks.length > 0) {
         ctx += `\n[오늘 할 일 현황]\n`;
         tasks.forEach(t => {
-          ctx += `- [${t.done ? 'V' : ' '}] ${t.text}${t.time ? ' (' + t.time + ')' : ''}\n`;
+          ctx += `- [${t.done ? 'V' : ' '}] [id: ${t.id}] ${t.text}${t.time ? ' (' + t.time + ')' : ''}\n`;
         });
         ctx += `*[V] 표시된 항목은 완료됨. 완료 항목은 절대 다시 실행 유도하지 말 것.\n`;
         ctx += `*[V] 표시된 항목은 완료됨. 완료 항목은 절대 다시 실행 유도하지 말 것.\n`;
@@ -11371,9 +11395,14 @@ ${profileCtx}
       // 현재 시간 context: 비서(master)와 할매 모두 필요
       if (tier === 'master' || currentChar === 'halmae') {
         const _now = new Date();
+        const _y = _now.getFullYear();
+        const _mon = _now.getMonth() + 1;
+        const _d = _now.getDate();
+        const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+        const _dayOfWeek = dayNames[_now.getDay()];
         const _h = _now.getHours(), _m = _now.getMinutes();
         const _tod = _h < 12 ? '오전' : _h < 18 ? '오후' : '저녁';
-        ctx += `\n[현재 시간]\n${_tod} ${_h}시 ${_m}분\n`;
+        ctx += `\n[현재 날짜 및 시간]\n${_y}년 ${_mon}월 ${_d}일 (${_dayOfWeek}요일) ${_tod} ${_h}시 ${_m}분\n`;
       }
 
       // 비서 전용: 취침 시간, 고정 루틴 context 추가
@@ -11711,7 +11740,7 @@ ${outputRules}`;
       const chipRegex = /\[CHIPS:\s*(.+?)\]/g;
       const timerRegex = /\[TIMER_START:(\d+)\]/g;
       const habitDismissRegex = /\[HABIT_DISMISS:(.+?)\]/g;
-      const moveTaskRegex = /\[MOVE_TASK:(\d+):([\d-]+)\]/g;
+      const moveTaskRegex = /\[MOVE_TASK:([a-zA-Z0-9_\-]+):([\d\-]+)\]/g;
       let match, clean = text;
       let proposedTasks = [];
       let suggestedTasks = [];
@@ -11753,17 +11782,6 @@ ${outputRules}`;
           info.lastAsked = new Date().toISOString();
           dismissals[String(habit.id)] = info;
           localStorage.setItem('nyang_habit_dismissals', JSON.stringify(dismissals));
-        }
-        clean = clean.replace(match[0], '').trim();
-      }
-
-      // MOVE_TASK 감지
-      while ((match = moveTaskRegex.exec(text)) !== null) {
-        const taskId = match[1];
-        const targetDate = match[2];
-        const task = tasks.find(t => String(t.id) === String(taskId));
-        if (task && targetDate && targetDate > getTodayStr()) {
-          moveTaskActions.push({ taskId, targetDate, taskText: task.text });
         }
         clean = clean.replace(match[0], '').trim();
       }
@@ -11821,19 +11839,44 @@ ${outputRules}`;
       return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes, moveTaskActions };
     }
     function addTask(text, category = 'today', time = null, timeEnd = null) {
-      const task = { id: Date.now() + Math.floor(Math.random() * 1000), text: text.trim(), category, done: false, createdAt: new Date().toISOString() };
-      if (time) {
-        task.timeStart = time;
-        if (timeEnd) {
-          task.timeEnd = timeEnd;
-          task.time = `${fmt12(time)} ~ ${fmt12(timeEnd)}`;
-        } else {
-          task.time = fmt12(time);
+      const targetDate = category.trim();
+      if (targetDate !== 'today' && targetDate !== 'habit' && /^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+        if (!schedules[targetDate]) schedules[targetDate] = [];
+        const entry = {
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          text: text.trim(),
+          done: false,
+          createdAt: new Date().toISOString()
+        };
+        if (time) {
+          entry.timeStart = time;
+          if (timeEnd) {
+            entry.timeEnd = timeEnd;
+            entry.time = `${fmt12(time)} ~ ${fmt12(timeEnd)}`;
+          } else {
+            entry.time = fmt12(time);
+          }
         }
+        schedules[targetDate].push(entry);
+        localStorage.setItem('nyang_schedules', JSON.stringify(schedules));
+        if (typeof renderCalendar === 'function') renderCalendar();
+        if (typeof renderSchedules === 'function') renderSchedules();
+        return entry.id;
+      } else {
+        const task = { id: Date.now() + Math.floor(Math.random() * 1000), text: text.trim(), category, done: false, createdAt: new Date().toISOString() };
+        if (time) {
+          task.timeStart = time;
+          if (timeEnd) {
+            task.timeEnd = timeEnd;
+            task.time = `${fmt12(time)} ~ ${fmt12(timeEnd)}`;
+          } else {
+            task.time = fmt12(time);
+          }
+        }
+        tasks.push(task);
+        saveTasks(); renderTasks(); renderMobileTasks(); renderPattern();
+        return task.id; // id 반환 (시간 후속 설정용)
       }
-      tasks.push(task);
-      saveTasks(); renderTasks(); renderMobileTasks(); renderPattern();
-      return task.id; // id 반환 (시간 후속 설정용)
     }
     function editTask(id, el) {
       if (!el || el.querySelector('input')) return;
