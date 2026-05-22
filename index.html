@@ -10301,6 +10301,10 @@ ${outputRules}`;
     }
 
     function launchApp(charId, greet) {
+      if (!window.chatProxy) {
+        setTimeout(() => launchApp(charId, greet), 300);
+        return;
+      }
       checkNewDay();
       currentChar = charId; localStorage.setItem('nyang_char', charId);
       const cfg = CHARS[charId];
