@@ -5446,7 +5446,7 @@
           inset 0 1px 0 rgba(255,255,255,0.3);
       ">로그인 / 가입 →</button>
       
-      <button onclick="handleGuestEntry()" style="
+      <button onclick="showCoachSelect()" style="
         width:100%;padding:17px;border-radius:18px;
         border:1.5px solid #DDD6FE;
         background:#FAF9FF;
@@ -6719,15 +6719,6 @@
           card.style.flexShrink = isMatch ? '0' : '';
         }
       });
-    }
-
-    function handleGuestEntry() {
-      const savedChar = localStorage.getItem('nyang_char');
-      if (savedChar && typeof launchApp === 'function') {
-        launchApp(savedChar, false);
-      } else {
-        showCoachSelect();
-      }
     }
 
     function showCoachSelect() {
