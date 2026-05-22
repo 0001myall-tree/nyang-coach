@@ -5446,7 +5446,7 @@
           inset 0 1px 0 rgba(255,255,255,0.3);
       ">로그인 / 가입 →</button>
       
-      <button onclick="showCoachSelect()" style="
+      <button onclick="handleGuestEntry()" style="
         width:100%;padding:17px;border-radius:18px;
         border:1.5px solid #DDD6FE;
         background:#FAF9FF;
@@ -6719,6 +6719,15 @@
           card.style.flexShrink = isMatch ? '0' : '';
         }
       });
+    }
+
+    function handleGuestEntry() {
+      const savedChar = localStorage.getItem('nyang_char');
+      if (savedChar && typeof launchApp === 'function') {
+        launchApp(savedChar, false);
+      } else {
+        showCoachSelect();
+      }
     }
 
     function showCoachSelect() {
@@ -13798,7 +13807,14 @@ ${outputRules}`;
         const user = result.user;
         toggleLoginSheet(false);
         alert(`${user.displayName}님, 환영합니다! 🐾`);
-        // 로그인 성공 시 대문 화면 처리 로직 (필요 시 추가)
+        
+        // 로그인 성공 시 즉시 진입 처리
+        const savedChar = localStorage.getItem('nyang_char');
+        if (savedChar) {
+          launchApp(savedChar, false);
+        } else {
+          showCoachSelect();
+        }
       } catch (error) {
         console.error("Login failed:", error);
         alert("로그인에 실패했습니다.");
