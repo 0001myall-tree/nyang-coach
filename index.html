@@ -8694,7 +8694,7 @@ ${MEM_RULES.master}`
     }
 
     // ── Streak ───────────────────────────────────────────
-    function getTodayStr() { return new Date().toISOString().slice(0, 10); }
+    function getTodayStr() { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
     function updateStreak(allDone) {
       const today = getResetBaseDate();
       if (allDone && lastDate !== today) {
@@ -8712,9 +8712,15 @@ ${MEM_RULES.master}`
     }
 
     // ── Daily record / pattern tracking ───────────────────
-    function saveHistory() { localStorage.setItem('nyang_history', JSON.stringify(history.slice(-90))); }
-    function saveCompletedLog() { localStorage.setItem('nyang_completed_log', JSON.stringify(completedLog.slice(-200))); }
-    function normalizeDate(d) { return d.toISOString().slice(0, 10); }
+    function saveHistory() {
+      localStorage.setItem('nyang_history', JSON.stringify(history.slice(-90)));
+      if (window.syncToFirebase) window.syncToFirebase('history', history.slice(-90));
+    }
+    function saveCompletedLog() {
+      localStorage.setItem('nyang_completed_log', JSON.stringify(completedLog.slice(-200)));
+      if (window.syncToFirebase) window.syncToFirebase('completedLog', completedLog.slice(-200));
+    }
+    function normalizeDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function getDayLabel(dateStr) { return ['일', '월', '화', '수', '목', '금', '토'][new Date(dateStr + 'T00:00:00').getDay()]; }
     function upsertDayRecord(record) {
       if (!record || !record.date) return;
@@ -9187,13 +9193,25 @@ ${recordStr}
       }
       if (section) section.style.display = 'block';
 
-      const weekDates = records.map(r => r.date);
-
       const isMaster = ['sec_male', 'sec_female'].includes(currentChar);
       const periodEl = document.getElementById('habit-tracking-period');
       if (periodEl) periodEl.textContent = isMaster ? '최근 30일' : '최근 7일';
+      const periodDays = isMaster ? 30 : 7;
 
       list.innerHTML = trackingHabits.map(h => {
+        // 트래킹 시작일 기준으로 날짜 배열 생성
+        const habitStart = h.createdAt ? normalizeDate(new Date(h.createdAt)) : normalizeDate(new Date());
+        const today = normalizeDate(new Date());
+        const allHabitDates = [];
+        for (let i = 0; i < periodDays; i++) {
+          const d = new Date(habitStart + 'T00:00:00');
+          d.setDate(d.getDate() + i);
+          const ds = normalizeDate(d);
+          if (ds > today) break; // 오늘 이후는 포함하지 않음
+          allHabitDates.push(ds);
+        }
+        const weekDates = allHabitDates;
+
         const targetDates = weekDates.filter(date => {
           if (h.freq === 'daily') return true;
           const dow = new Date(date + 'T00:00:00').getDay();
@@ -9650,6 +9668,9 @@ ${recordStr}
           <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('일정 에스코트')">
             <span class="item-icon">🗺️</span> 일정 에스코트
           </button>
+          <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('비전을 위한 오늘')">
+            <span class="item-icon">🧭</span> 비전을 위한 오늘
+          </button>
           <button type="button" class="cheatkey-menu-item" onclick="selectCheatkey('비서의 특급 잔소리')">
             <span class="item-icon">🔥</span> 비서의 특급 잔소리
           </button>
@@ -9786,6 +9807,132 @@ ${recordStr}
 
       } else if (actionName === '오늘 핵심 추천') {
         runCoreRecommend();
+
+      } else if (actionName === '비전을 위한 오늘') {
+        const isMale = currentChar === 'sec_male';
+
+        // ── 진입 체크: 비전 없으면 팝업 유도 ──
+        if (!visions || visions.length === 0) {
+          const noVisionMsg = isMale
+            ? '비전을 먼저 설정하시면 더 잘 도와드릴 수 있을 것 같습니다!'
+            : '비전을 먼저 설정하시면 더 잘 도와드릴 수 있을 것 같아요!';
+          addMessage('ai', noVisionMsg);
+          setTimeout(() => { openVisionDetail(); }, 1200);
+          return;
+        }
+
+        // ── 데이터 수집 ──
+        const now = new Date();
+        const hour = now.getHours();
+        const thisYear = now.getFullYear();
+        const thisMonth = now.getMonth(); // 0~11
+        const nextMonth = (thisMonth + 1) % 12;
+        const nextMonthYear = thisMonth === 11 ? thisYear + 1 : thisYear;
+
+        // 이번달/다음달 마감 마일스톤 추출
+        const thisMonthMilestones = [];
+        const nextMonthMilestones = [];
+        (visions || []).forEach(v => {
+          (v.milestones || []).filter(m => !m.done && m.date).forEach(m => {
+            const d = new Date(m.date);
+            if (d.getFullYear() === thisYear && d.getMonth() === thisMonth) {
+              thisMonthMilestones.push({ visionText: v.text, milestoneText: m.text, date: m.date });
+            } else if (d.getFullYear() === nextMonthYear && d.getMonth() === nextMonth) {
+              nextMonthMilestones.push({ visionText: v.text, milestoneText: m.text, date: m.date });
+            }
+          });
+        });
+
+        // 월목표 / 주목표
+        const activeMonthGoals = (monthGoals || []).filter(g => !g.done);
+        const activeWeekGoals = (weekGoals || []).filter(g => !g.done);
+
+        // 오늘 할 일
+        const todayTasks = tasks.filter(t => t.category === 'today' || t.category === 'habit');
+        const incompleteTasks = todayTasks.filter(t => !t.done);
+
+        // 고정 일정 (시간 설정된 것)
+        const fixedTasks = incompleteTasks.filter(t => t.time);
+        const fixedTasksSummary = fixedTasks.map(t => `- ${t.text} (${t.time}${t.timeEnd ? '~' + t.timeEnd : ''})`).join('\n');
+
+        // 오늘 전체 할 일 목록
+        const allTasksSummary = incompleteTasks.map(t => {
+          const isCore = coreTasks && coreTasks.some(c => c.text === t.text);
+          const timeInfo = t.time ? ` (고정시간: ${t.time}${t.timeEnd ? '~' + t.timeEnd : ''})` : (t.duration ? ` (소요시간: ${t.duration})` : '');
+          return `- [id:${t.id}] ${t.text}${isCore ? ' [핵심]' : ''}${timeInfo}`;
+        }).join('\n');
+
+        // 비전 전체 요약
+        const visionSummary = (visions || []).map(v => {
+          const milestones = (v.milestones || []).filter(m => !m.done).map(m => `${m.text}${m.date ? ' (마감: ' + m.date + ')' : ''}`).slice(0, 3).join(', ');
+          return `- ${v.text}${milestones ? ` → 진행 중 마일스톤: ${milestones}` : ''}`;
+        }).join('\n');
+
+        // 시간대별 집중력
+        let focusNote = '';
+        if (hour >= 6 && hour < 9) focusNote = '오전 이른 시간, 집중력이 올라오는 시간대입니다.';
+        else if (hour >= 9 && hour < 12) focusNote = '오전 집중력이 가장 높은 황금 시간대입니다.';
+        else if (hour >= 12 && hour < 13) focusNote = '점심 시간대입니다. 식사 후 오후 1시 이후가 집중하기 좋습니다.';
+        else if (hour >= 13 && hour < 15) focusNote = '점심 이후 집중력이 살짝 낮아지는 시간대입니다.';
+        else if (hour >= 15 && hour < 18) focusNote = '오후 집중력이 다시 올라오는 시간대입니다.';
+        else if (hour >= 18 && hour < 20) focusNote = '저녁 시간대입니다. 저녁 식사 후 가벼운 집중이 가능합니다.';
+        else focusNote = '늦은 저녁입니다. 내일을 위한 가벼운 정리 정도가 좋습니다.';
+
+        // ── 프롬프트 구성 ──
+        let visionMsg = `[🧭 비전을 위한 오늘 요청]\n`;
+        visionMsg += `현재 시간: ${hour}시\n`;
+        visionMsg += `\n[장기 비전 & 마일스톤]\n${visionSummary}\n`;
+
+        if (thisMonthMilestones.length > 0) {
+          visionMsg += `\n[이번 달 마감 마일스톤]\n`;
+          thisMonthMilestones.forEach(m => { visionMsg += `- ${m.milestoneText} (비전: ${m.visionText}, 마감: ${m.date})\n`; });
+        }
+        if (nextMonthMilestones.length > 0) {
+          visionMsg += `\n[다음 달 마감 마일스톤]\n`;
+          nextMonthMilestones.forEach(m => { visionMsg += `- ${m.milestoneText} (비전: ${m.visionText}, 마감: ${m.date})\n`; });
+        }
+
+        visionMsg += `\n[월목표]\n${activeMonthGoals.length > 0 ? activeMonthGoals.map(g => `- ${g.text}`).join('\n') : '없음'}\n`;
+        visionMsg += `\n[주목표]\n${activeWeekGoals.length > 0 ? activeWeekGoals.map(g => `- ${g.text}`).join('\n') : '없음'}\n`;
+        visionMsg += `\n[오늘 미완료 할 일 전체]\n${allTasksSummary || '없음'}\n`;
+        if (fixedTasksSummary) visionMsg += `\n[고정 일정 (시간 지정된 것)]\n${fixedTasksSummary}\n`;
+        visionMsg += `\n집중력 참고: ${focusNote}\n`;
+
+        visionMsg += `\n위 정보를 바탕으로 아래 순서대로 짚어주세요:\n`;
+        visionMsg += `\n1. [마일스톤 마감 체크]\n`;
+        visionMsg += `이번 달 마감 마일스톤이 있으면 "이번 달 말 ○○ 마감이 있으시네요. 잘 진행되고 계신가요?" 라고 묻는다.\n`;
+        visionMsg += `다음 달 마감 마일스톤이 있으면 "다음 달 ○○ 마감이 다가오고 있는데, 잘 진행되고 계신가요?" 라고 묻는다.\n`;
+        visionMsg += `둘 다 없으면 이 항목은 생략한다.\n`;
+
+        visionMsg += `\n2. [월목표 ↔ 마일스톤 연결 체크]\n`;
+        visionMsg += `월목표가 없으면: 마일스톤 방향으로 보아 이번 달 집중 방향을 한 줄 제안하고, 월목표가 아직 없음을 짚는다.\n`;
+        visionMsg += `월목표가 있는데 마일스톤과 의미상 연결이 안 되면: 관련이 안 보인다고 부드럽게 짚고 따로 준비 중인지 묻는다.\n`;
+        visionMsg += `잘 연결되면: 이 항목은 생략한다.\n`;
+
+        visionMsg += `\n3. [주목표 ↔ 월목표 연결 체크]\n`;
+        visionMsg += `주목표가 없으면: 월목표 기준으로 이번 주 안에서 하나를 잡아보길 제안한다.\n`;
+        visionMsg += `주목표가 있는데 월목표와 연결이 안 되면: 살짝만 짚는다.\n`;
+        visionMsg += `잘 연결되면: 이 항목은 생략한다.\n`;
+
+        visionMsg += `\n4. [오늘 비전 시간 블록 제안] ← 가장 중요\n`;
+        visionMsg += `오늘 할 일 중 비전/주목표와 의미상 연결된 게 이미 있으면:\n`;
+        visionMsg += `  → 해당 항목을 언급하고, 고정 일정·식사 시간 제외한 집중력 좋은 시간대에 먼저 할 것을 추천한다.\n`;
+        visionMsg += `오늘 할 일 중 비전 관련이 없고 시간 여유가 있으면:\n`;
+        visionMsg += `  → 고정 일정·식사 시간 제외하고 집중력 좋은 빈 시간대를 찾아 비전 관련 30분 블록을 제안한다.\n`;
+        visionMsg += `오늘 할 일 중 비전 관련이 없고 시간이 빠듯하면:\n`;
+        visionMsg += `  → 덜 급한 할 일 하나를 골라 내일로 넘기길 제안하고, 그 시간에 비전 관련 30분을 잡도록 제안한다.\n`;
+        visionMsg += `  → 이 경우에만 [MOVE_TASK:id:YYYY-MM-DD] 태그를 사용한다.\n`;
+
+        visionMsg += `\n[공통 출력 규칙]\n`;
+        visionMsg += `- 위 4가지 중 상황에 해당하는 것만 짚는다. 해당 없으면 생략. 한 번에 너무 많이 짚지 말 것.\n`;
+        visionMsg += `- 심문하듯 여러 개 나열하지 말고 자연스러운 대화 흐름으로 1~2개만 핵심을 짚는다.\n`;
+        visionMsg += `- 확정형("~하세요" "~해야 합니다") 절대 금지. 항상 제안형("~어떨까요?" "~추천드립니다" "~하시는 건 어떠신가요?").\n`;
+        visionMsg += `- 시간 표현은 "몇시~몇시" 형식 대신 "점심 먹기 전에" "저녁 식사 후에" "오전 집중 시간에" 같이 자연스럽게.\n`;
+        visionMsg += `- 식사 시간(아침 7~8시, 점심 12~13시, 저녁 18~19시)과 고정 일정 시간대에는 절대 비전 블록 배치하지 말 것.\n`;
+        visionMsg += `- 마크다운 문법(**,*,# 등) 절대 사용하지 말 것.\n`;
+        visionMsg += `- MOVE_TASK 태그는 시간이 빠듯할 때만, 딱 한 번만 사용한다.\n`;
+
+        sendVisionCheatkey(visionMsg);
 
       } else if (actionName === '비서의 특급 잔소리') {
         const now = new Date();
@@ -10175,6 +10322,135 @@ ${recordStr}
         const card = document.getElementById('escort-thinking-msg');
         if (card) card.remove();
         addMessage('ai', { text: "에러가 발생해서 일정 에스코트를 완료하지 못했어요. 다시 시도해 주세요.", tasks: [], chips: [] });
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        if (input) input.focus();
+      }
+    }
+
+    async function sendVisionCheatkey(visionMsg) {
+      if (!API_KEY) return;
+
+      const input = document.getElementById('input');
+      const sendBtn = document.getElementById('send-btn');
+      if (sendBtn) sendBtn.disabled = true;
+      const qc = document.getElementById('quick-chips');
+      if (qc) { qc.innerHTML = ''; qc.style.display = 'none'; }
+
+      const msgs = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'msg ai escort-thinking-msg';
+      div.id = 'vision-thinking-msg';
+
+      const cfg = CHARS[currentChar] || CHARS.cat;
+      const isMale = currentChar === 'sec_male';
+      const secTitle = isMale ? '남비서 코치' : '여비서 코치';
+      const secImg = isMale ? 'images/sec_male_thinking.png' : 'images/sec_female_thinking.png';
+      const avImg = cfg.imgUrl ? `<div class="msg-av"><img src="${cfg.imgUrl}" alt="코치"></div>` : `<div class="msg-av">${cfg.emoji}</div>`;
+
+      div.innerHTML = `
+        ${avImg}
+        <div class="msg-content">
+          <div class="msg-bubble" style="padding:16px; background:#FAF9FF; border:1.5px solid #EAE6FF; border-radius:18px; max-width:320px; box-shadow:0 4px 15px rgba(124,107,196,0.08); position:relative;">
+            <div style="font-size:13px; font-weight:700; color:#4E3F99; line-height:1.5; margin-bottom:12px; display:flex; align-items:flex-start; gap:4px; padding-right:60px;">
+              <span>🧭</span>
+              <span>${secTitle}가 비전과 오늘을 연결하고 있어요. 잠시만 기다려주세요.</span>
+            </div>
+            <div style="position:relative; display:flex; justify-content:center; align-items:center; background:#FAF9FF; padding:10px; border-radius:12px; margin-bottom:12px; border:1px dashed #E2DDFF; height:180px; overflow:hidden;">
+              <img src="${secImg}" style="height:100%; border-radius:8px; object-fit:cover;" alt="${secTitle} 생각 중">
+              <div class="thinking-bubble-dots">
+                <div class="thinking-bubble-dot"></div>
+                <div class="thinking-bubble-dot"></div>
+                <div class="thinking-bubble-dot"></div>
+                <div style="position:absolute; bottom:-5px; left:12px; width:0; height:0; border-width:5px 5px 0 0; border-style:solid; border-color:white transparent transparent transparent;"></div>
+                <div style="position:absolute; bottom:-7px; left:11px; width:0; height:0; border-width:7px 7px 0 0; border-style:solid; border-color:#7C6BC4 transparent transparent transparent; z-index:-1;"></div>
+              </div>
+            </div>
+            <div style="background:#FAF9FF; border-top:1.5px solid #F0EEFF; padding-top:12px; display:flex; flex-direction:column; gap:8px;">
+              <div id="vision-status-1" class="escort-status-item" style="font-weight:700; color:#7C6BC4;">
+                <span class="status-icon">📋</span> 비전 & 마일스톤 점검 중<span class="status-loading-dots">...</span>
+              </div>
+              <div id="vision-status-2" class="escort-status-item" style="font-weight:500; color:#A099C7; opacity:0.65;">
+                <span class="status-icon">🔗</span> 오늘 일정과 연결 분석 중<span class="status-loading-dots" style="display:none;">...</span>
+              </div>
+              <div id="vision-status-3" class="escort-status-item" style="font-weight:500; color:#A099C7; opacity:0.65;">
+                <span class="status-icon">🧭</span> 비전 시간 블록 구성 중<span class="status-loading-dots" style="display:none;">...</span>
+              </div>
+            </div>
+          </div>
+          <div class="msg-time">${getTime()}</div>
+        </div>
+      `;
+
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      let statusStep = 1;
+      const statusInterval = setInterval(() => {
+        statusStep++;
+        if (statusStep === 2) {
+          const s1 = document.getElementById('vision-status-1');
+          if (s1) {
+            s1.style.color = '#10B981'; s1.style.fontWeight = '500'; s1.style.opacity = '0.85';
+            s1.querySelector('.status-icon').textContent = '✓';
+            const dots = s1.querySelector('.status-loading-dots'); if (dots) dots.style.display = 'none';
+          }
+          const s2 = document.getElementById('vision-status-2');
+          if (s2) {
+            s2.style.color = '#7C6BC4'; s2.style.fontWeight = '700'; s2.style.opacity = '1';
+            const dots = s2.querySelector('.status-loading-dots'); if (dots) dots.style.display = 'inline';
+          }
+        } else if (statusStep === 3) {
+          const s2 = document.getElementById('vision-status-2');
+          if (s2) {
+            s2.style.color = '#10B981'; s2.style.fontWeight = '500'; s2.style.opacity = '0.85';
+            s2.querySelector('.status-icon').textContent = '✓';
+            const dots = s2.querySelector('.status-loading-dots'); if (dots) dots.style.display = 'none';
+          }
+          const s3 = document.getElementById('vision-status-3');
+          if (s3) {
+            s3.style.color = '#7C6BC4'; s3.style.fontWeight = '700'; s3.style.opacity = '1';
+            const dots = s3.querySelector('.status-loading-dots'); if (dots) dots.style.display = 'inline';
+          }
+        } else if (statusStep > 3) {
+          const s3 = document.getElementById('vision-status-3');
+          if (s3) {
+            s3.style.color = '#10B981'; s3.style.fontWeight = '500'; s3.style.opacity = '0.85';
+            s3.querySelector('.status-icon').textContent = '✓';
+            const dots = s3.querySelector('.status-loading-dots'); if (dots) dots.style.display = 'none';
+          }
+          clearInterval(statusInterval);
+        }
+      }, 2500);
+
+      try {
+        const cfg = CHARS[currentChar] || CHARS.cat;
+        const memoryContext = buildMemoryContext();
+        const systemPrompt = `${cfg.system}\n\n${memoryContext}\n\n[출력 규칙]\n1. 지정된 캐릭터의 성격, 호칭, 말투 규칙을 철저히 준수하세요.\n2. 마크다운 문법(**,*,# 등) 절대 사용하지 말 것`;
+        const response = await window.chatProxy({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...chatHistory.slice(-6),
+            { role: 'user', content: visionMsg }
+          ],
+          temperature: 0.7
+        });
+        const rawReply = (response.data.content || "에러가 발생해서 비전 점검을 완료하지 못했어요. 다시 시도해 주세요.")
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/^#{1,6}\s+/gm, '');
+        const reply = parseAndAddTasks(rawReply);
+
+        clearInterval(statusInterval);
+        const card = document.getElementById('vision-thinking-msg');
+        if (card) card.remove();
+        addMessage('ai', reply);
+      } catch (err) {
+        console.error("Vision Cheatkey Error:", err);
+        clearInterval(statusInterval);
+        const card = document.getElementById('vision-thinking-msg');
+        if (card) card.remove();
+        addMessage('ai', { text: "에러가 발생해서 비전 점검을 완료하지 못했어요. 다시 시도해 주세요.", tasks: [], chips: [] });
       } finally {
         if (sendBtn) sendBtn.disabled = false;
         if (input) input.focus();
@@ -11809,7 +12085,7 @@ ${outputRules}`;
       saveCoreTasks();
       renderCoreTasks();
     }
-    function saveCoreTasks() { localStorage.setItem('nyang_core_tasks', JSON.stringify(coreTasks)); saveTodayRecord(); renderPattern(); }
+    function saveCoreTasks() { localStorage.setItem('nyang_core_tasks', JSON.stringify(coreTasks)); if (window.syncToFirebase) window.syncToFirebase('coreTasks', coreTasks); saveTodayRecord(); renderPattern(); }
     function renderCoreTasks() {
       const el = document.getElementById('core-list');
       if (!el) return;
@@ -12144,7 +12420,7 @@ ${outputRules}`;
       setTimeout(() => addMessage('ai', visionMatchMsg || localCoachLine('task', t.text, allDone)), 350);
     }
     function deleteTask(id, e) { e.stopPropagation(); tasks = tasks.filter(t => String(t.id) !== String(id)); saveTasks(); renderTasks(); renderMobileTasks(); renderPattern(); }
-    function saveTasks() { localStorage.setItem('nyang_tasks', JSON.stringify(tasks)); saveTodayRecord(); }
+    function saveTasks() { localStorage.setItem('nyang_tasks', JSON.stringify(tasks)); if (window.syncToFirebase) window.syncToFirebase('tasks', tasks); saveTodayRecord(); }
     function renderTasks() {
       const list = document.getElementById('task-list');
       const done = tasks.filter(t => t.done).length, total = tasks.length;
@@ -12208,8 +12484,13 @@ ${outputRules}`;
       saveGoals(type); renderGoals(type);
     }
     function saveGoals(type) {
-      if (type === 'week') localStorage.setItem('nyang_week_goals', JSON.stringify(weekGoals));
-      else localStorage.setItem('nyang_month_goals', JSON.stringify(monthGoals));
+      if (type === 'week') {
+        localStorage.setItem('nyang_week_goals', JSON.stringify(weekGoals));
+        if (window.syncToFirebase) window.syncToFirebase('weekGoals', weekGoals);
+      } else {
+        localStorage.setItem('nyang_month_goals', JSON.stringify(monthGoals));
+        if (window.syncToFirebase) window.syncToFirebase('monthGoals', monthGoals);
+      }
     }
     function renderGoals(type) {
       const goals = type === 'week' ? weekGoals : monthGoals;
@@ -12271,8 +12552,8 @@ ${outputRules}`;
 
     // ── Bottom Tab Bar ────────────────────────────────────
     // ── Habit System ──────────────────────────────────────
-    function saveHabits() { localStorage.setItem('nyang_habits', JSON.stringify(habits)); }
-    function saveHabitLogs() { localStorage.setItem('nyang_habit_logs', JSON.stringify(habitLogs)); }
+    function saveHabits() { localStorage.setItem('nyang_habits', JSON.stringify(habits)); if (window.syncToFirebase) window.syncToFirebase('habits', habits); }
+    function saveHabitLogs() { localStorage.setItem('nyang_habit_logs', JSON.stringify(habitLogs)); if (window.syncToFirebase) window.syncToFirebase('habitLogs', habitLogs); }
 
     // 모달 상태
     let _habitEditId = null;
@@ -13567,6 +13848,7 @@ ${outputRules}`;
 
     function saveVisions() {
       localStorage.setItem('nyang_visions', JSON.stringify(visions));
+      if (window.syncToFirebase) window.syncToFirebase('visions', visions);
     }
 
     function renderVisions() {
@@ -13959,6 +14241,7 @@ ${outputRules}`;
       localStorage.setItem('nyang_alarm_time', nyangAlarmTime);
       localStorage.setItem('nyang_alarm_coach', nyangAlarmCoachId);
       localStorage.setItem('nyang_alarm_enabled', nyangAlarmEnabled);
+      if (window.syncToFirebase) window.syncToFirebase('alarmSettings', { time: nyangAlarmTime, coachId: nyangAlarmCoachId, enabled: nyangAlarmEnabled });
       
       let coachName = '랜덤 코치';
       if (nyangAlarmCoachId !== 'random' && CHARS[nyangAlarmCoachId]) {
@@ -14119,36 +14402,124 @@ ${outputRules}`;
       }
     };
 
+    // ── Firebase 데이터 불러오기 ──
+    async function loadFromFirebase(user) {
+      if (!user) return;
+      try {
+        const uid = user.uid;
+        // 불러올 키 목록: [Firestore key, localStorage key, 기본값]
+        const keyMap = [
+          ['tasks',          'nyang_tasks',           '[]'],
+          ['coreTasks',      'nyang_core_tasks',      '[]'],
+          ['weekGoals',      'nyang_week_goals',      '[]'],
+          ['monthGoals',     'nyang_month_goals',     '[]'],
+          ['habits',         'nyang_habits',          '[]'],
+          ['habitLogs',      'nyang_habit_logs',      '{}'],
+          ['visions',        'nyang_visions',         '[]'],
+          ['history',        'nyang_history',         '[]'],
+          ['completedLog',   'nyang_completed_log',   '[]'],
+          ['dailySummaries', 'nyang_daily_summaries', '[]'],
+          ['longTermMemory', 'nyang_long_term',       '[]'],
+          ['masterProfile',  'nyang_master_profile',  'null'],
+          ['alarmSettings',  '__alarm__',             'null'],
+        ];
+
+        const promises = keyMap.map(([fsKey]) =>
+          getDoc(doc(db, 'users', uid, 'data', fsKey)).catch(() => null)
+        );
+        const results = await Promise.all(promises);
+
+        keyMap.forEach(([fsKey, lsKey, fallback], i) => {
+          const snap = results[i];
+          if (snap && snap.exists()) {
+            const data = snap.data().content;
+            if (fsKey === 'alarmSettings' && data) {
+              // 알람 설정은 별도 키 3개로 분산 저장
+              localStorage.setItem('nyang_alarm_time',    data.time    || '07:00');
+              localStorage.setItem('nyang_alarm_coach',   data.coachId || 'cat');
+              localStorage.setItem('nyang_alarm_enabled', String(data.enabled !== false));
+            } else {
+              localStorage.setItem(lsKey, JSON.stringify(data));
+            }
+          }
+        });
+
+        // 채팅 히스토리 (코치별)
+        const coachIds = ['cat','boyfriend','girlfriend','halmae','bro','sec_male','sec_female'];
+        const chatPromises = coachIds.map(id =>
+          getDoc(doc(db, 'users', uid, 'data', 'chatHistory_' + id)).catch(() => null)
+        );
+        const chatResults = await Promise.all(chatPromises);
+        coachIds.forEach((id, i) => {
+          const snap = chatResults[i];
+          if (snap && snap.exists()) {
+            localStorage.setItem('nyang_chat_history_' + id, JSON.stringify(snap.data().content));
+          }
+        });
+
+        // 앱 전역 변수 갱신
+        tasks         = JSON.parse(localStorage.getItem('nyang_tasks')           || '[]');
+        coreTasks     = JSON.parse(localStorage.getItem('nyang_core_tasks')      || '[]');
+        weekGoals     = JSON.parse(localStorage.getItem('nyang_week_goals')      || '[]');
+        monthGoals    = JSON.parse(localStorage.getItem('nyang_month_goals')     || '[]');
+        habits        = JSON.parse(localStorage.getItem('nyang_habits')          || '[]');
+        habitLogs     = JSON.parse(localStorage.getItem('nyang_habit_logs')      || '{}');
+        visions       = JSON.parse(localStorage.getItem('nyang_visions')         || '[]');
+        history       = JSON.parse(localStorage.getItem('nyang_history')         || '[]');
+        completedLog  = JSON.parse(localStorage.getItem('nyang_completed_log')   || '[]');
+        dailySummaries= JSON.parse(localStorage.getItem('nyang_daily_summaries') || '[]');
+        longTermMemory= JSON.parse(localStorage.getItem('nyang_long_term')       || '[]');
+        const mp = localStorage.getItem('nyang_master_profile');
+        if (mp && mp !== 'null') masterProfile = JSON.parse(mp);
+        nyangAlarmTime    = localStorage.getItem('nyang_alarm_time')    || '07:00';
+        nyangAlarmCoachId = localStorage.getItem('nyang_alarm_coach')   || 'cat';
+        nyangAlarmEnabled = localStorage.getItem('nyang_alarm_enabled') !== 'false';
+
+        console.log('[Nyang] Firebase 데이터 불러오기 완료');
+      } catch (e) {
+        console.error('[Nyang] Firebase 불러오기 실패:', e);
+      }
+    }
+
     // ── 로그인/로그아웃 함수 ──
     window.loginWithGoogle = async () => {
       try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         toggleLoginSheet(false);
-        alert(`${user.displayName}님, 환영합니다! 🐾`);
-        
-        // 로그인 성공 시 즉시 진입 처리
+
+        // 데이터 불러온 뒤 앱 진입
+        await loadFromFirebase(user);
         const savedChar = localStorage.getItem('nyang_char');
         if (savedChar) {
           launchApp(savedChar, false);
         } else {
           showCoachSelect();
         }
+        if (typeof showFlirt === 'function') showFlirt(`${user.displayName}님, 데이터를 불러왔어요! 🐾`);
       } catch (error) {
-        console.error("Login failed:", error);
-        alert("로그인에 실패했습니다.");
+        console.error('Login failed:', error);
+        alert('로그인에 실패했습니다.');
       }
     };
 
     window.logoutFromGoogle = async () => {
-      if (confirm("로그아웃 하시겠습니까?")) {
+      if (confirm('로그아웃 하시겠습니까?')) {
         await signOut(auth);
+        // 로컬 데이터 초기화 (다른 계정 혼용 방지)
+        [
+          'nyang_tasks','nyang_core_tasks','nyang_week_goals','nyang_month_goals',
+          'nyang_habits','nyang_habit_logs','nyang_visions','nyang_history',
+          'nyang_completed_log','nyang_daily_summaries','nyang_long_term','nyang_master_profile',
+          'nyang_chat_history_cat','nyang_chat_history_boyfriend','nyang_chat_history_girlfriend',
+          'nyang_chat_history_halmae','nyang_chat_history_bro','nyang_chat_history_sec_male','nyang_chat_history_sec_female'
+        ].forEach(k => localStorage.removeItem(k));
         location.reload();
       }
     };
 
     // ── 상태 변화 감지 및 UI 업데이트 ──
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       const loggedOutUI = document.getElementById('auth-logged-out');
       const loggedInUI = document.getElementById('auth-logged-in');
 
@@ -14159,7 +14530,8 @@ ${outputRules}`;
         if (document.getElementById('user-display-name')) document.getElementById('user-display-name').innerText = user.displayName || '사용자';
         if (document.getElementById('user-display-email')) document.getElementById('user-display-email').innerText = user.email;
 
-        // 로그인 성공 시, 이미 선택된 코치가 있다면 자동으로 앱 진입
+        // Firestore에서 데이터 불러온 뒤 앱 진입
+        await loadFromFirebase(user);
         const savedChar = localStorage.getItem('nyang_char');
         if (savedChar) {
           launchApp(savedChar, false);
@@ -14170,7 +14542,7 @@ ${outputRules}`;
       }
     });
 
-    console.log("Firebase 3단계 설정 완료: 로그인 로직 활성화");
+    console.log('Firebase 동기화 완성: 저장 + 불러오기 활성화');
   </script>
 </body>
 
