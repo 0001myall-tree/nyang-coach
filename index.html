@@ -9248,11 +9248,15 @@ ${recordStr}
             const isToday = d === getTodayStr();
             let barHtml = '';
             if ((h.checkType === 'count' || h.checkType === 'both') && h.countGoal) {
+              const isSimpleDone = log.done && log.count === undefined;
               const v = log.count || 0;
-              const barPct = Math.min(Math.round(v / maxCount * 100), 100);
+              const isMet = log.done || v >= h.countGoal;
+              const barPct = isSimpleDone ? 100 : Math.min(Math.round(v / maxCount * 100), 100);
+              const color = isMet ? '#6EBF8B' : 'var(--muted)';
+              const text = isSimpleDone ? '✓ 완료' : `${v}${h.unit || ''}${h.countGoal ? '/' + h.countGoal + (h.unit || '') : ''}${log.done ? ' ✓' : ''}`;
               barHtml += `<div style="margin-bottom:4px;">
               <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:2px;">
-                <span>${h.unit || '수량'}</span><span style="color:${v >= h.countGoal ? '#6EBF8B' : 'var(--muted)'};">${v}${h.unit || ''}${h.countGoal ? '/' + h.countGoal + (h.unit || '') : ''}</span>
+                <span>${h.unit || '수량'}</span><span style="color:${color};font-weight:${isMet ? '800' : 'normal'};">${text}</span>
               </div>
               <div style="height:6px;background:#F0EEF8;border-radius:3px;overflow:hidden;">
                 <div style="height:100%;width:${barPct}%;background:linear-gradient(90deg,#6EBF8B,#A8E6BC);border-radius:3px;"></div>
@@ -9260,11 +9264,15 @@ ${recordStr}
             </div>`;
             }
             if ((h.checkType === 'duration' || h.checkType === 'both') && h.durationGoal) {
+              const isSimpleDone = log.done && log.duration === undefined;
               const v = log.duration || 0;
-              const barPct = Math.min(Math.round(v / maxDur * 100), 100);
+              const isMet = log.done || v >= h.durationGoal;
+              const barPct = isSimpleDone ? 100 : Math.min(Math.round(v / maxDur * 100), 100);
+              const color = isMet ? '#6EBF8B' : 'var(--muted)';
+              const text = isSimpleDone ? '✓ 완료' : `${v}분${h.durationGoal ? '/' + h.durationGoal + '분' : ''}${log.done ? ' ✓' : ''}`;
               barHtml += `<div>
               <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:2px;">
-                <span>시간</span><span style="color:${v >= h.durationGoal ? '#6EBF8B' : 'var(--muted)'};">${v}분${h.durationGoal ? '/' + h.durationGoal + '분' : ''}</span>
+                <span>시간</span><span style="color:${color};font-weight:${isMet ? '800' : 'normal'};">${text}</span>
               </div>
               <div style="height:6px;background:#F0EEF8;border-radius:3px;overflow:hidden;">
                 <div style="height:100%;width:${barPct}%;background:linear-gradient(90deg,#7C6BC4,#B5AEDD);border-radius:3px;"></div>
@@ -12734,7 +12742,10 @@ ${outputRules}`;
         checkType: _habitCheck,
         timeType: _habitTimeType,
         tracking: _habitTracking,
-        createdAt: new Date().toISOString()
+        // 편집 시 기존 createdAt 보존, 신규일 때만 오늘 날짜
+        createdAt: (_habitEditId !== null
+          ? (habits.find(h => String(h.id) === String(_habitEditId))?.createdAt || new Date().toISOString())
+          : new Date().toISOString())
       };
 
       if (_habitCheck === 'count' || _habitCheck === 'both') {
