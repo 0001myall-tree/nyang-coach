@@ -3032,6 +3032,56 @@
       border-radius: 20px;
       border: 1px solid #F3F4F6;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      transition: box-shadow 0.2s, opacity 0.2s;
+      position: relative;
+    }
+
+    .milestone-edit-item.dragging {
+      opacity: 0.4;
+      border: 2px dashed var(--accent);
+      box-shadow: none;
+    }
+
+    .milestone-edit-item.drag-over-top {
+      border-top: 3px solid var(--accent);
+    }
+
+    .milestone-edit-item.drag-over-bottom {
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .milestone-drag-handle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      width: 20px;
+      height: 36px;
+      cursor: grab;
+      flex-shrink: 0;
+      padding: 4px 2px;
+      border-radius: 6px;
+      opacity: 0.35;
+      transition: opacity 0.2s;
+      touch-action: none;
+    }
+
+    .milestone-drag-handle:hover {
+      opacity: 0.7;
+      background: var(--accent-light);
+    }
+
+    .milestone-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .milestone-drag-handle span {
+      display: block;
+      width: 14px;
+      height: 2px;
+      background: var(--muted);
+      border-radius: 2px;
     }
 
     .milestone-num {
@@ -13616,7 +13666,11 @@ ${outputRules}`;
       const idx = list.children.length + 1;
       const div = document.createElement('div');
       div.className = 'milestone-edit-item';
+      div.draggable = true;
       div.innerHTML = `
+        <div class="milestone-drag-handle" title="드래그하여 순서 변경">
+          <span></span><span></span><span></span>
+        </div>
         <div class="milestone-num ${done ? 'done' : ''}" onclick="toggleMilestoneDone(this)">
           ${done ? '✓' : idx}
         </div>
@@ -13630,7 +13684,102 @@ ${outputRules}`;
         </div>
         <button onclick="this.parentElement.remove(); updateMilestoneIndices();" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; align-self:flex-start; margin-top:2px;">×</button>
       `;
+      attachMilestoneDragEvents(div);
       list.appendChild(div);
+    }
+
+    // ── 마일스톤 드래그 앤 드롭 ──
+    let milestoneDragSrc = null;
+
+    function attachMilestoneDragEvents(item) {
+      item.addEventListener('dragstart', (e) => {
+        milestoneDragSrc = item;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', '');
+        setTimeout(() => item.classList.add('dragging'), 0);
+      });
+
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        document.querySelectorAll('.milestone-edit-item').forEach(el => {
+          el.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+        milestoneDragSrc = null;
+        updateMilestoneIndices();
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (!milestoneDragSrc || milestoneDragSrc === item) return;
+        document.querySelectorAll('.milestone-edit-item').forEach(el => {
+          el.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+        const rect = item.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        if (e.clientY < midY) {
+          item.classList.add('drag-over-top');
+        } else {
+          item.classList.add('drag-over-bottom');
+        }
+      });
+
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (!milestoneDragSrc || milestoneDragSrc === item) return;
+        const list = document.getElementById('milestone-edit-list');
+        const rect = item.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        if (e.clientY < midY) {
+          list.insertBefore(milestoneDragSrc, item);
+        } else {
+          list.insertBefore(milestoneDragSrc, item.nextSibling);
+        }
+        item.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+
+      // 터치 기기용 long-press 힌트 (실제 터치 드래그는 pointermove로 처리)
+      const handle = item.querySelector('.milestone-drag-handle');
+      if (handle) {
+        let touchStartY = 0;
+        let touchItem = null;
+        handle.addEventListener('touchstart', (e) => {
+          touchStartY = e.touches[0].clientY;
+          touchItem = item;
+          item.style.transition = 'none';
+        }, { passive: true });
+        handle.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          const list = document.getElementById('milestone-edit-list');
+          const siblings = [...list.querySelectorAll('.milestone-edit-item')].filter(el => el !== item);
+          document.querySelectorAll('.milestone-edit-item').forEach(el => {
+            el.classList.remove('drag-over-top', 'drag-over-bottom');
+          });
+          for (const sib of siblings) {
+            const rect = sib.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            if (touch.clientY < midY) { sib.classList.add('drag-over-top'); break; }
+            else if (touch.clientY < rect.bottom) { sib.classList.add('drag-over-bottom'); break; }
+          }
+        }, { passive: false });
+        handle.addEventListener('touchend', (e) => {
+          const list = document.getElementById('milestone-edit-list');
+          const overTop = list.querySelector('.drag-over-top');
+          const overBot = list.querySelector('.drag-over-bottom');
+          if (overTop) list.insertBefore(item, overTop);
+          else if (overBot) list.insertBefore(item, overBot.nextSibling);
+          document.querySelectorAll('.milestone-edit-item').forEach(el => {
+            el.classList.remove('drag-over-top', 'drag-over-bottom');
+          });
+          item.style.transition = '';
+          updateMilestoneIndices();
+        }, { passive: true });
+      }
     }
 
     function toggleMilestoneDone(el) {
