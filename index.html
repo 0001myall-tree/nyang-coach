@@ -8479,6 +8479,7 @@ ${MEM_RULES.master}`
       if (window.syncToFirebase) window.syncToFirebase('masterProfile', masterProfile);
     }
     let resetHour = parseInt(localStorage.getItem('nyang_reset_hour') || '3');
+    let needsPostFirebaseReset = false; // checkNewDay()가 리셋을 했는데 Firebase 로드가 나중에 덮어쓸 경우 대비
     let isRecording = false;
     let recognition = null;
     let selectedChar = '';
@@ -8777,6 +8778,7 @@ ${MEM_RULES.master}`
         else streak = 0;
       }
       tasks = []; coreTasks = [];
+      needsPostFirebaseReset = true; // Firebase 로드가 이 리셋을 덮어쓸 수 있으므로 플래그 저장
       lastDate = today;
       localStorage.setItem('nyang_tasks', JSON.stringify(tasks));
       localStorage.setItem('nyang_core_tasks', JSON.stringify(coreTasks));
@@ -14568,8 +14570,15 @@ ${outputRules}`;
         nyangAlarmCoachId = localStorage.getItem('nyang_alarm_coach')   || 'cat';
         nyangAlarmEnabled = localStorage.getItem('nyang_alarm_enabled') !== 'false';
 
-        // Firebase에서 불러온 데이터가 어제 것일 수 있으므로 날짜 변경 리셋 재실행
-        checkNewDay();
+        // checkNewDay()가 이미 리셋을 했는데 Firebase 로드가 어제 데이터로 덮어쓴 경우 다시 비워줌
+        if (needsPostFirebaseReset) {
+          tasks = [];
+          coreTasks = [];
+          localStorage.setItem('nyang_tasks', '[]');
+          localStorage.setItem('nyang_core_tasks', '[]');
+          needsPostFirebaseReset = false;
+          renderCoreTasks();
+        }
 
         console.log('[Nyang] Firebase 데이터 불러오기 완료');
       } catch (e) {
