@@ -8287,11 +8287,16 @@ ${MEM_RULES.pro}`
 연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
 [집중 타이머 - 매우 중요]
-사용자가 미루거나, 하기 싫다고 하거나, 시작을 못 하고 있을 때는 설득 멘트 직후 반드시 아래 태그를 답변 맨 끝에 단독으로 삽입한다:
-[TIMER_START:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
-[TIMER_START:15] → 어느 정도 의지가 있어 보일 때 (15분)
-[TIMER_START:25] → 집중 모드 진입이 가능해 보일 때 (25분)
-예시: "...지금 안 하시면 제가 더 귀찮게 굴 겁니다. 일단 5분만 시작해봐요.\n[TIMER_START:5]"
+사용자가 같은 일을 2회 이상 반복해서 미루고 있거나, 명확하게 "하기 싫다", "못 하겠다"고 표현할 때만 아래 흐름을 따른다.
+단순 질문("운동 해야 하나", "해야 할까" 등)이나 처음 언급하는 경우에는 절대 타이머를 띄우지 않는다.
+
+타이머 제안 흐름:
+1. 먼저 공감 멘트 + "지금 시간 괜찮으시면 10분만 해보실래요?" 라고 물어본다.
+2. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
+[TIMER_CONFIRM:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
+[TIMER_CONFIRM:15] → 어느 정도 의지가 있어 보일 때 (15분)
+[TIMER_CONFIRM:25] → 집중 모드 진입이 가능해 보일 때 (25분)
+예시: "자꾸 미루고 계시는 것 같은데, 지금 시간 괜찮으시면 10분만 해보실래요?\n[TIMER_CONFIRM:10]"
 일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
 
 [할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
@@ -8378,11 +8383,16 @@ ${MEM_RULES.master}`
 연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
 [집중 타이머 - 매우 중요]
-사용자가 미루거나, 하기 싫다고 하거나, 시작을 못 하고 있을 때는 설득 멘트 직후 반드시 아래 태그를 답변 맨 끝에 단독으로 삽입한다:
-[TIMER_START:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
-[TIMER_START:15] → 어느 정도 의지가 있어 보일 때 (15분)
-[TIMER_START:25] → 집중 모드 진입이 가능해 보일 때 (25분)
-예시: "이번 한 번만 제 얼굴 봐서라도 5분만 시작해봐요.\n[TIMER_START:5]"
+사용자가 같은 일을 2회 이상 반복해서 미루고 있거나, 명확하게 "하기 싫다", "못 하겠다"고 표현할 때만 아래 흐름을 따른다.
+단순 질문("운동 해야 하나", "해야 할까" 등)이나 처음 언급하는 경우에는 절대 타이머를 띄우지 않는다.
+
+타이머 제안 흐름:
+1. 먼저 공감 멘트 + "지금 시간 괜찮으시면 10분만 해보실래요?" 라고 물어본다.
+2. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
+[TIMER_CONFIRM:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
+[TIMER_CONFIRM:15] → 어느 정도 의지가 있어 보일 때 (15분)
+[TIMER_CONFIRM:25] → 집중 모드 진입이 가능해 보일 때 (25분)
+예시: "자꾸 미루고 계시는 것 같은데, 지금 시간 괜찮으시면 10분만 해보실래요?\n[TIMER_CONFIRM:10]"
 일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
 
 [할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
@@ -11152,7 +11162,39 @@ ${outputRules}`;
       }
 
 
-      // ── 고급 집중 타이머 카드 (마스터 비서 전용) ──
+      // ── 타이머 확인 버튼 카드 (TIMER_CONFIRM) ──
+      if (timerConfirmMinutes && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
+        const cfg = CHARS[currentChar] || CHARS.cat;
+        const isMale = currentChar === 'sec_male';
+        const accent = cfg.accentColor || '#1A1A2E';
+        const accentLight = cfg.accentLight || '#F0EEFF';
+        const mins = timerConfirmMinutes;
+        const confirmId = 'confirm-' + Date.now();
+
+        bubbleHtml += `
+    <div id="${confirmId}-card" style="margin-top:14px;border-radius:16px;overflow:hidden;border:1.5px solid ${accentLight};box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+      <div style="background:white;padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+        <button onclick="masterTimerConfirmStart('${confirmId}', ${mins})"
+          style="width:100%;padding:12px;border-radius:12px;border:none;
+          background:${accent};color:white;
+          font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">
+          ▶ 지금 잠깐이라도 해볼게
+        </button>
+        <button onclick="masterTimerConfirmLater('${confirmId}')"
+          style="width:100%;padding:12px;border-radius:12px;
+          border:1.5px solid #E5E7EB;background:white;color:#6B7280;
+          font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+          일 끝나고 할게
+        </button>
+        <button onclick="masterTimerConfirmSelf('${confirmId}')"
+          style="width:100%;padding:12px;border-radius:12px;
+          border:1.5px solid #E5E7EB;background:white;color:#6B7280;
+          font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+          내 타이밍에 할게
+        </button>
+      </div>
+    </div>`;
+      }
       if (timerMinutes && role === 'ai' && ['sec_male', 'sec_female'].includes(currentChar)) {
         const cfg = CHARS[currentChar] || CHARS.cat;
         const isMale = currentChar === 'sec_male';
@@ -11482,6 +11524,36 @@ ${outputRules}`;
         25: { start: '25분이에요. 무리하지 말고 대표님 페이스대로 가요.', done: '정말 수고하셨어요. 오늘 집중 시간이 참 뿌듯하네요. 🌸' }
       }
     };
+
+    // ── TIMER_CONFIRM 버튼 핸들러 ──────────────────────────
+    function masterTimerConfirmStart(confirmId, mins) {
+      // 버튼 카드 숨기기
+      const card = document.getElementById(confirmId + '-card');
+      if (card) card.remove();
+      // 타이머 바로 시작 (addMessage로 타이머 카드 렌더)
+      addMessage('ai', '', [], mins, null, []);
+    }
+
+    function masterTimerConfirmLater(confirmId) {
+      const card = document.getElementById(confirmId + '-card');
+      if (card) card.remove();
+      const cfg = CHARS[currentChar] || CHARS.cat;
+      const isMale = currentChar === 'sec_male';
+      const msg = isMale
+        ? '알겠습니다, 대표님. 일 마치시고 편하게 시작하세요. 필요하시면 부르십시오.'
+        : '네, 알겠어요 대표님. 일 끝나시면 그때 같이 해봐요. 제가 여기 있을게요 😊';
+      addMessage('ai', msg, [], null, null, []);
+    }
+
+    function masterTimerConfirmSelf(confirmId) {
+      const card = document.getElementById(confirmId + '-card');
+      if (card) card.remove();
+      const isMale = currentChar === 'sec_male';
+      const msg = isMale
+        ? '대표님의 판단을 존중합니다. 준비되시면 언제든 말씀해 주십시오.'
+        : '물론이죠 대표님, 대표님 페이스대로 하세요. 언제든 준비되시면 알려주세요 😊';
+      addMessage('ai', msg, [], null, null, []);
+    }
 
     function masterTimerSetStage(tid, min) {
       const t = (window._masterTimers || {})[tid];
@@ -12267,6 +12339,8 @@ ${outputRules}`;
       const simpleTaskRegex = /\[TASK:\s*(.+?)\]/g;
       const chipRegex = /\[CHIPS:\s*(.+?)\]/g;
       const timerRegex = /\[TIMER_START:(\d+)\]/g;
+      const timerConfirmRegex = /\[TIMER_CONFIRM:(\d+)\]/g;
+      let timerConfirmMinutes = null;
       const habitDismissRegex = /\[HABIT_DISMISS:(.+?)\]/g;
       const moveTaskRegex = /\[MOVE_TASK:([a-zA-Z0-9_\-]+):([\d\-]+)\]/g;
       let match, clean = text;
@@ -12331,6 +12405,12 @@ ${outputRules}`;
         clean = clean.replace(match[0], '').trim();
       }
 
+      // TIMER_CONFIRM 감지 (버튼 먼저 보여주기)
+      while ((match = timerConfirmRegex.exec(text)) !== null) {
+        timerConfirmMinutes = parseInt(match[1]) || 10;
+        clean = clean.replace(match[0], '').trim();
+      }
+
       while ((match = chipRegex.exec(text)) !== null) {
         try {
           chips = match[1].split('|').map(s => s.trim()).filter(Boolean);
@@ -12364,7 +12444,7 @@ ${outputRules}`;
 
       console.log('[parseAndAddTasks] raw:', text);
       console.log('[parseAndAddTasks] suggestedTasks:', suggestedTasks);
-      return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes, moveTaskActions };
+      return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes, timerConfirmMinutes, moveTaskActions };
     }
     function addTask(text, category = 'today', time = null, timeEnd = null) {
       const targetDate = category.trim();
