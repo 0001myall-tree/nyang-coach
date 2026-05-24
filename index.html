@@ -7678,15 +7678,6 @@
         </div>
       </div>
       
-      <!-- 2. 장기 비전 플레이스홀더 -->
-      <div id="settings-vision-placeholder" style="margin-bottom:20px;"></div>
-      
-      <!-- 3. 월간 목표 플레이스홀더 -->
-      <div id="settings-month-placeholder" style="margin-bottom:20px;"></div>
-      
-      <!-- 4. 주간 목표 플레이스홀더 -->
-      <div id="settings-week-placeholder" style="margin-bottom:20px;"></div>
-      
       <!-- Fixed routines -->
       <div style="background:#fff; border:1px solid #F0EEF8; border-radius:20px; padding:16px; margin-bottom:24px; box-shadow: 0 4px 20px rgba(139, 124, 255, 0.03);">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
@@ -7711,6 +7702,15 @@
           ➕ 루틴 추가
         </button>
       </div>
+
+      <!-- 2. 장기 비전 플레이스홀더 -->
+      <div id="settings-vision-placeholder" style="margin-bottom:20px;"></div>
+      
+      <!-- 3. 월간 목표 플레이스홀더 -->
+      <div id="settings-month-placeholder" style="margin-bottom:20px;"></div>
+      
+      <!-- 4. 주간 목표 플레이스홀더 -->
+      <div id="settings-week-placeholder" style="margin-bottom:20px;"></div>
       
       <!-- Action button -->
       <button id="learn-action-btn" onclick="savePremiumLearnSettings()" style="width:100%; padding:16px; border-radius:16px; border:none; background: linear-gradient(135deg, #E7C978, #B5963E); color:white; font-size:15px; font-weight:800; cursor:pointer; font-family:inherit; box-shadow: 0 6px 20px rgba(181, 150, 62, 0.25); transition: all 0.2s ease;">
@@ -14255,10 +14255,26 @@ ${outputRules}`;
     let nyangAlarmCoachId = localStorage.getItem('nyang_alarm_coach') || 'cat';
     let nyangAlarmEnabled = localStorage.getItem('nyang_alarm_enabled') !== 'false';
 
+    function notifyNativeAlarm(time, enabled, coachId) {
+      const payload = { type: 'setAlarm', time: time, enabled: enabled, coachId: coachId };
+      const msg = JSON.stringify(payload);
+      try {
+        if (window.ReactNativeWebView) { window.ReactNativeWebView.postMessage(msg); }
+        else if (window.flutter_inappwebview) { window.flutter_inappwebview.callHandler('setAlarm', payload); }
+        else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.alarmHandler) { window.webkit.messageHandlers.alarmHandler.postMessage(payload); }
+        else if (window.Android) { window.Android.setAlarm(msg); }
+        else { console.log('[NativeBridge] setAlarm mock: ', payload); }
+      } catch(e) { console.error('[NativeBridge] alarm sync failed:', e); }
+    }
+
     function toggleDailyAlarm() {
       nyangAlarmEnabled = !nyangAlarmEnabled;
       const btn = document.getElementById('alarm-toggle-btn');
       if (btn) btn.classList.toggle('active', nyangAlarmEnabled);
+      
+      localStorage.setItem('nyang_alarm_enabled', nyangAlarmEnabled);
+      if (window.syncToFirebase) window.syncToFirebase('alarmSettings', { time: nyangAlarmTime, coachId: nyangAlarmCoachId, enabled: nyangAlarmEnabled });
+      notifyNativeAlarm(nyangAlarmTime, nyangAlarmEnabled, nyangAlarmCoachId);
     }
 
     function toggleAlarmSettings(show) {
@@ -14338,6 +14354,9 @@ ${outputRules}`;
       localStorage.setItem('nyang_alarm_enabled', nyangAlarmEnabled);
       if (window.syncToFirebase) window.syncToFirebase('alarmSettings', { time: nyangAlarmTime, coachId: nyangAlarmCoachId, enabled: nyangAlarmEnabled });
       
+      notifyNativeAlarm(nyangAlarmTime, nyangAlarmEnabled, nyangAlarmCoachId);
+      
+
       let coachName = '랜덤 코치';
       if (nyangAlarmCoachId !== 'random' && CHARS[nyangAlarmCoachId]) {
         coachName = CHARS[nyangAlarmCoachId].statusName;
@@ -14569,6 +14588,12 @@ ${outputRules}`;
         nyangAlarmTime    = localStorage.getItem('nyang_alarm_time')    || '07:00';
         nyangAlarmCoachId = localStorage.getItem('nyang_alarm_coach')   || 'cat';
         nyangAlarmEnabled = localStorage.getItem('nyang_alarm_enabled') !== 'false';
+        
+        // 데이터 로드 후 네이티브로 알람 정보 동기화
+        if (typeof notifyNativeAlarm === 'function') {
+          notifyNativeAlarm(nyangAlarmTime, nyangAlarmEnabled, nyangAlarmCoachId);
+        }
+
 
         // checkNewDay()가 이미 리셋을 했는데 Firebase 로드가 어제 데이터로 덮어쓴 경우 다시 비워줌
         if (needsPostFirebaseReset) {
