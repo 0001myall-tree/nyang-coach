@@ -6454,7 +6454,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-free">FRIENDS 플랜 포함</span>
           <div class="new-cs-name">냥냥 코치</div>
-          <div class="new-cs-quote">"오늘은 집사를 어떻게 조련할까?"</div>
+          <div class="new-cs-quote">"딱 5분만 해보자냥."</div>
         </div>
       </div>
       <div class="new-cs-card" id="ncard-boyfriend" onclick="newSelectChar('boyfriend')">
@@ -6462,7 +6462,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
           <div class="new-cs-name">남친 코치</div>
-          <div class="new-cs-quote">"계획대로 하기 싫으면 나한테 투정부려"</div>
+          <div class="new-cs-quote">"힘들었구나. 토닥토닥"</div>
         </div>
       </div>
       <div class="new-cs-card" id="ncard-halmae" onclick="newSelectChar('halmae')">
@@ -6470,7 +6470,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
           <div class="new-cs-name">할매 코치</div>
-          <div class="new-cs-quote">"염병! 얼른 인나라 내 새끼!"</div>
+          <div class="new-cs-quote">"내 새끼는 잘할겨"</div>
         </div>
       </div>
       <div class="new-cs-card" id="ncard-girlfriend" onclick="newSelectChar('girlfriend')">
@@ -6478,7 +6478,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
           <div class="new-cs-name">여친 코치</div>
-          <div class="new-cs-quote">"오늘도 내가 달달하게 응원해줄게♡"</div>
+          <div class="new-cs-quote">"오빠는 할 줄 알았어"</div>
         </div>
       </div>
       <div class="new-cs-card" id="ncard-bro" onclick="newSelectChar('bro')">
@@ -6486,7 +6486,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
           <div class="new-cs-name">갓생 형 코치</div>
-          <div class="new-cs-quote">"형이 같이 달려줄게. 가자!"</div>
+          <div class="new-cs-quote">"형이랑 가볍게 해보자"</div>
         </div>
       </div>
     </div>
@@ -8178,7 +8178,8 @@ ${MEM_RULES.pro}`
 
 [말투 및 톤]
 - 정겨운 시골 할머니의 구수한 사투리와 거친 말투를 사용한다. (예: "이놈아!", "뭐하러 사냐!", "굶어 죽어!")
-- 하지만 대화 끝에는 반드시 사용자에 대한 무한한 신뢰와 애정이 느껴져야 한다.
+- 하지만 대화 전체 흐름에서 사용자에 대한 신뢰와 애정이 자연스럽게 드러나면 된다. 억지로 끝에 붙이지 않는다.
+- 한 답변에서 비슷한 애정 표현을 두 번 쓰지 않는다.
 - 짧고 강렬한 문장을 사용하며, "밥은 먹었냐?", "기운 내라" 같은 걱정을 은근히 섞는다.
 
 [핵심 행동 지침]
@@ -8286,18 +8287,9 @@ ${MEM_RULES.pro}`
 핵심과 마일스톤이 의미상 연결된다고 판단되면 "이 일은 대표님의 [마일스톤명]과 직결됩니다"를 자연스럽게 한 줄 추가한다.
 연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
-[집중 타이머 - 매우 중요]
-사용자가 같은 일을 2회 이상 반복해서 미루고 있거나, 명확하게 "하기 싫다", "못 하겠다"고 표현할 때만 아래 흐름을 따른다.
-단순 질문("운동 해야 하나", "해야 할까" 등)이나 처음 언급하는 경우에는 절대 타이머를 띄우지 않는다.
-
-타이머 제안 흐름:
-1. 먼저 공감 멘트 + "지금 시간 괜찮으시면 10분만 해보실래요?" 라고 물어본다.
-2. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
-[TIMER_CONFIRM:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
-[TIMER_CONFIRM:15] → 어느 정도 의지가 있어 보일 때 (15분)
-[TIMER_CONFIRM:25] → 집중 모드 진입이 가능해 보일 때 (25분)
-예시: "자꾸 미루고 계시는 것 같은데, 지금 시간 괜찮으시면 10분만 해보실래요?\n[TIMER_CONFIRM:10]"
-일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
+[집중 타이머]
+- 타이머는 절대로 직접 제안하거나 태그로 띄우지 않는다. [TIMER_CONFIRM], [TIMER_START] 태그 사용 금지.
+- 사용자가 미루거나 귀찮아할 때는 대화로만 반응한다. 타이머는 사용자가 직접 버튼을 눌렀을 때만 작동한다.
 
 [할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
 1. 사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
@@ -8382,18 +8374,9 @@ ${MEM_RULES.master}`
 핵심과 마일스톤이 의미상 연결된다고 판단되면 "이 일은 대표님의 [마일스톤명]과 이어진 중요한 일이에요"를 자연스럽게 한 줄 추가한다.
 연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
-[집중 타이머 - 매우 중요]
-사용자가 같은 일을 2회 이상 반복해서 미루고 있거나, 명확하게 "하기 싫다", "못 하겠다"고 표현할 때만 아래 흐름을 따른다.
-단순 질문("운동 해야 하나", "해야 할까" 등)이나 처음 언급하는 경우에는 절대 타이머를 띄우지 않는다.
-
-타이머 제안 흐름:
-1. 먼저 공감 멘트 + "지금 시간 괜찮으시면 10분만 해보실래요?" 라고 물어본다.
-2. 답변 맨 끝에 아래 태그를 단독으로 삽입한다:
-[TIMER_CONFIRM:5] → 처음 시작하거나 많이 지쳐보일 때 (5분)
-[TIMER_CONFIRM:15] → 어느 정도 의지가 있어 보일 때 (15분)
-[TIMER_CONFIRM:25] → 집중 모드 진입이 가능해 보일 때 (25분)
-예시: "자꾸 미루고 계시는 것 같은데, 지금 시간 괜찮으시면 10분만 해보실래요?\n[TIMER_CONFIRM:10]"
-일반 대화나 정보 제공 시에는 절대 사용하지 않는다.
+[집중 타이머]
+- 타이머는 절대로 직접 제안하거나 태그로 띄우지 않는다. [TIMER_CONFIRM], [TIMER_START] 태그 사용 금지.
+- 사용자가 미루거나 귀찮아할 때는 대화로만 반응한다. 타이머는 사용자가 직접 버튼을 눌렀을 때만 작동한다.
 
 [할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
 1. 사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
@@ -12074,7 +12057,7 @@ ${profileCtx}
 
         if (isMaster) {
           outputRules += `
-3. 타이머 제안 시 [TIMER_START:분] 형식을 사용하세요. (예: [TIMER_START:25])
+3. [TIMER_START], [TIMER_CONFIRM] 등 타이머 관련 태그는 절대 사용하지 마세요. 타이머는 사용자가 직접 선택했을 때만 작동합니다.
 4. 선택 칩 제안 시 [CHIPS: 칩1|칩2] 형식을 답변 맨 끝에 사용하세요.`;
         } else {
           outputRules += `
@@ -12082,12 +12065,28 @@ ${profileCtx}
 4. 필요할 경우에만 선택 칩 [CHIPS: 칩1|칩2] 형식을 답변 맨 끝에 사용하세요.`;
         }
 
+        // 할매 코치 전용: 랜덤 애정 표현 주입
+        let halmaeHint = '';
+        if (currentChar === 'halmae') {
+          const halmaePool = [
+            '에이구 기특해라.',
+            '잘했다. 우리 새끼.',
+            '할미가 응원한다.',
+            '우리 새끼가 최고지.',
+            '아이고 예뻐라 우리 새끼.',
+            '내 새끼니까 당연히 잘했겠지.',
+            '할미가 믿는다.',
+          ];
+          const picked = halmaePool[Math.floor(Math.random() * halmaePool.length)];
+          halmaeHint = `\n[이번 대화 지침] 답변 어딘가에 "${picked}" 이 표현을 자연스럽게 한 번 녹여 써라. 끝에 억지로 붙이지 말고 문장 흐름 안에 자연스럽게 넣어라.`;
+        }
+
         const systemPrompt = `
 ${cfg.system}
 
 ${memoryContext}
 
-${outputRules}`;
+${outputRules}${halmaeHint}`;
 
         const response = await window.chatProxy({
           messages: [
@@ -12252,14 +12251,26 @@ ${outputRules}`;
     }
     function getCoreConfirmLine(text) {
       const lines = {
-        cat: `좋아냥. 오늘 핵심은 “${text}”. 이것부터 하면 된다냥.`,
-        boyfriend: `좋아. 오늘 핵심은 “${text}”. 이거 하나만 먼저 끝내자.`,
-        girlfriend: `좋아! 오늘은 “${text}”부터 가자. 하나만 끝내도 오늘 달라져.`,
-        bro: `좋아. 오늘의 핵심은 “${text}”. 목표를 적는 순간 현실이 된다.`,
-        halmae: `오냐, 오늘은 "${text}" 요거부터 해보자. 할미 믿지?`,
-        secretary: `알겠습니다. 오늘 핵심은 “${text}”이군요. 이 목표부터 확실하게 마무리하시죠.`,
+        cat: [`좋아냥. 오늘 핵심은"${text}". 이것부터 하면 된다냥.`],
+        boyfriend: [`좋아. 오늘 핵심은 "${text}". 이거 하나만 먼저 끝내자.`],
+        girlfriend: [`좋아! 오늘은 "${text}"부터 가자. 하나만 끝내도 오늘 달라져.`],
+        bro: [`좋아. 오늘의 핵심은 "${text}". 목표를 적는 순간 현실이 된다.`],
+        halmae: [`오냐, 오늘은 "${text}" 요거부터 해보자. 할미 믿지?`],
+        sec_male: [
+          `알겠습니다, 대표님. 오늘 집중하실 핵심 과제는 "${text}"입니다. 차질 없이 성공적으로 완수하실 수 있도록 돕겠습니다.`,
+          `네, 대표님. 핵심 과제 "${text}" 접수했습니다. 오늘 최우선으로 챙기겠습니다.`,
+          `핵심 업무 "${text}" 인지했습니다. 집중 모드로 전환할게요, 대표님.`,
+          `알겠습니다. "${text}" 오늘의 핵심으로 설정됐습니다. 흔들림 없이 완수하시죠.`,
+        ],
+        sec_female: [
+          `네, 대표님! 오늘 정해주신 소중한 핵심 목표는 "${text}"이네요. 지치지 않고 차근차근 이루어내실 수 있도록 곁에서 정성껏 서포트할게요.`,
+          `네, 대표님. 핵심 목표 "${text}" 접수했어요! 오늘 꼭 해내실 수 있도록 옆에서 함께할게요. 🌸`,
+          `"${text}" 오늘의 핵심으로 등록됐어요, 대표님! 하나씩 차근차근 해나가 봐요.`,
+          `핵심 업무 인지했습니다, 대표님. "${text}", 오늘도 잘 해내실 거예요! 응원할게요. 💪`,
+        ],
       };
-      return lines[currentChar] || lines.cat;
+      const arr = lines[currentChar] || lines.cat;
+      return arr[Math.floor(Math.random() * arr.length)];
     }
     function removeCoreTask(id) {
       coreTasks = coreTasks.filter(x => x.id !== id);
