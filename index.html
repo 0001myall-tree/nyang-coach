@@ -5473,10 +5473,10 @@
         <div class="hero-nameplate">남비서 코치</div>
       </div>
 
-      <!-- 욕쟁이 할매 코치 -->
+      <!-- 할매 코치 -->
       <div class="hero-char-wrap char-halmae-wrap floating" style="animation-delay: -1.5s;">
-        <div class="hero-char"><img src="images/halmae.png" alt="욕쟁이 할매"></div>
-        <div class="hero-nameplate">욕쟁이 할매 코치</div>
+        <div class="hero-char"><img src="images/halmae.png" alt="할매 코치"></div>
+        <div class="hero-nameplate">할매 코치</div>
       </div>
 
       <!-- 메인 냥코치 -->
@@ -6466,10 +6466,10 @@
         </div>
       </div>
       <div class="new-cs-card" id="ncard-halmae" onclick="newSelectChar('halmae')">
-        <img src="images/halmae.png" alt="욕쟁이 할매">
+        <img src="images/halmae.png" alt="할매 코치">
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
-          <div class="new-cs-name">욕쟁이 할매</div>
+          <div class="new-cs-name">할매 코치</div>
           <div class="new-cs-quote">"염병! 얼른 인나라 내 새끼!"</div>
         </div>
       </div>
@@ -6952,11 +6952,11 @@
 
       <div class="char-card halmae" id="card-halmae" onclick="selectChar('halmae')">
         <div class="char-card-img">
-          <img src="images/halmae.png" alt="욕쟁이 할매">
+          <img src="images/halmae.png" alt="할매 코치">
         </div>
         <div class="char-card-body">
           <span class="char-badge badge-pro">연 ₩2,900</span>
-          <div class="char-name">욕쟁이 할매</div>
+          <div class="char-name">할매 코치</div>
           <div class="char-desc">염병! 얼른 인나라 내 새끼!</div>
         </div>
       </div>
@@ -8157,7 +8157,7 @@ ${MEM_RULES.pro}`
       },
       halmae: {
         tier: 'pro',
-        emoji: '👵', name: '욕쟁이 할매 👵', statusName: '욕쟁이 할매',
+        emoji: '👵', name: '할매 코치 👵', statusName: '할매 코치',
         accentColor: '#B91C1C', accentLight: '#FEF2F2',
         imgUrl: 'images/halmae.png',
         chatBg: 'images/bg_halmae.png',
@@ -8173,7 +8173,7 @@ ${MEM_RULES.pro}`
 - 사용자가 처음 말을 걸어도 자기소개는 하지 않는다. 원래 알고 지냈던 사람처럼 바로 대화한다.
 
 [역할]
-너는 겉으로는 거칠게 욕을 섞어 말하지만, 속으로는 사용자를 누구보다 아끼고 응원하는 '욕쟁이 할매'다. 
+너는 겉으로는 거칠게 욕을 섞어 말하지만, 속으로는 사용자를 누구보다 아끼고 응원하는 '할매 코치'다. 
 사용자를 "이놈아", "내 새끼", "우리 강아지"라고 부르며, 츤데레(Tough Love) 정서로 사용자의 행동을 이끌어낸다.
 
 [말투 및 톤]
@@ -8800,12 +8800,13 @@ ${MEM_RULES.master}`
       // 어제 대화 요약용 복사본 저장
       const oldChatHistory = [...chatHistory];
 
-      // 날짜가 바뀌었으므로 즉시 모든 코치 대화 내역 초기화 (동기식)
-      ['cat','boyfriend','girlfriend','halmae','bro','sec_male','sec_female'].forEach(id => {
+      // 날짜가 바뀌었으므로 즉시 모든 코치 대화 내역 초기화 (동기식) 및 Firebase 동기화
+      const coachIds = ['cat','boyfriend','girlfriend','halmae','bro','sec_male','sec_female'];
+      coachIds.forEach(id => {
         localStorage.removeItem('nyang_chat_history_' + id);
+        if (window.syncToFirebase) window.syncToFirebase('chatHistory_' + id, []);
       });
       chatHistory = [];
-      saveChatHistory();
 
       // 실제 대화가 일어난 날짜로 대화 요약 생성 (비동기, 백그라운드)
       generateDailySummary(chatDate, oldChatHistory);
