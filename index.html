@@ -9689,11 +9689,19 @@ ${recordStr}
       }
 
       showTyping();
-      const reply = await callOpenAI(msg);
-      removeTyping(); addMessage('ai', reply);
-      const btn = document.getElementById('send-btn');
-      if (btn) btn.disabled = false;
-      if (input) input.focus();
+      try {
+        const reply = await callOpenAI(msg);
+        removeTyping();
+        addMessage('ai', reply);
+      } catch (err) {
+        console.error("sendMessage Error:", err);
+        removeTyping();
+        addMessage('ai', { text: "죄송해요, 잠시 오류가 발생했어요. 다시 한 번 말씀해 주세요! 🐾", tasks: [], chips: [] });
+      } finally {
+        const btn = document.getElementById('send-btn');
+        if (btn) btn.disabled = false;
+        if (input) input.focus();
+      }
     }
 
     async function sendChip(text) {
@@ -10933,6 +10941,7 @@ ${outputRules}`;
       document.getElementById('app').style.display = 'flex';
       updateVoiceButton();
       syncTodayScheduleToTasks();
+      injectTodayHabits();
       renderTasks();
       renderCoreTasks();
       renderGoals('week');
@@ -10941,6 +10950,12 @@ ${outputRules}`;
       updateChatGoalBar();
       const tabBar = document.getElementById('bottom-tab-bar');
       if (tabBar) tabBar.style.display = '';
+
+      // 코치 이동 시 기존 입력글 및 전송 버튼 상태 초기화
+      const input = document.getElementById('input');
+      if (input) { input.value = ''; autoResize(input); }
+      const sendBtn = document.getElementById('send-btn');
+      if (sendBtn) sendBtn.disabled = false;
       // 코치별 대화 로드 (화면 먼저 초기화)
       chatHistory = loadChatHistory(charId);
       const msgsEl = document.getElementById('messages');
