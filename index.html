@@ -11159,6 +11159,7 @@ ${outputRules}`;
       let chips = typeof content === 'string' ? [] : (content.chips || []);
       let suggestedTasks = typeof content === 'string' ? [] : (content.suggestedTasks || []);
       let timerMinutes = typeof content === 'string' ? null : (content.timerMinutes || null);
+      let timerConfirmMinutes = typeof content === 'string' ? null : (content.timerConfirmMinutes || null);
       let moveTaskActions = typeof content === 'string' ? [] : (content.moveTaskActions || []);
 
       const msgs = document.getElementById('messages');
