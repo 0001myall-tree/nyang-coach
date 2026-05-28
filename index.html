@@ -869,12 +869,6 @@
       box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
     }
 
-    .tier-card.active.pro {
-      border-color: #8B5CF6;
-      background: white;
-      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
-    }
-
     .tier-card.active.master {
       border-color: #F59E0B;
       background: white;
@@ -890,10 +884,6 @@
 
     .tier-icon-wrap.friends {
       color: #10B981;
-    }
-
-    .tier-icon-wrap.pro {
-      color: #8B5CF6;
     }
 
     .tier-icon-wrap.master {
@@ -924,10 +914,6 @@
 
     .tier-card.friends .tier-title {
       color: #059669;
-    }
-
-    .tier-card.pro .tier-title {
-      color: #7C3AED;
     }
 
     .tier-card.master .tier-title {
@@ -2530,11 +2516,6 @@
       --tier-accent-soft: rgba(139, 124, 255, 0.1);
     }
 
-    body[data-tier="pro"] {
-      --tier-accent: #1E1B4B;
-      --tier-bg: #F8FAFF;
-      --tier-accent-soft: rgba(30, 27, 75, 0.05);
-    }
 
     body[data-tier="master"] {
       --tier-accent: #D4AF37;
@@ -4433,6 +4414,19 @@
       padding: 4px 0;
     }
 
+    .core-expand-btn {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      opacity: 0.7;
+      padding: 4px 0 0 28px;
+      cursor: pointer;
+    }
+
+    .core-collapse-btn {
+      opacity: 0.5;
+    }
+
     .core-item {
       display: flex;
       align-items: center;
@@ -5670,6 +5664,18 @@
         color: #065F46;
       }
 
+      .nbadge-owned {
+        background: #DCFCE7;
+        color: #16A34A;
+        border: 1px solid #86EFAC;
+      }
+
+      .nbadge-free-trial {
+        background: #F3F0FF;
+        color: #6D28D9;
+        border: 1px solid #DDD6FE;
+      }
+
       .nbadge-pro {
         background: #D1FAE5;
         color: #065F46;
@@ -5995,8 +6001,7 @@
     }
 
     /* ── Immersive Layout for Friends & Pro ── */
-    body[data-tier="friends"].has-bg .app,
-    body[data-tier="pro"].has-bg .app {
+    body[data-tier="friends"].has-bg .app {
       background-size: cover !important;
       background-position: center !important;
       background-repeat: no-repeat !important;
@@ -6010,50 +6015,41 @@
     .app.coach-halmae { background-image: url('images/bg_halmae.png') !important; }
 
     /* Make chat-panel transparent to reveal .app background */
-    body[data-tier="friends"].has-bg .chat-panel,
-    body[data-tier="pro"].has-bg .chat-panel {
+    body[data-tier="friends"].has-bg .chat-panel {
       background: transparent !important;
     }
 
     /* ── Immersive Top Header ── */
-    body[data-tier="friends"].has-bg .header,
-    body[data-tier="pro"].has-bg .header {
+    body[data-tier="friends"].has-bg .header {
       background: transparent !important;
       border-bottom: none !important;
       color: white !important;
     }
-    body[data-tier="friends"].has-bg .header .header-name,
-    body[data-tier="pro"].has-bg .header .header-name {
+    body[data-tier="friends"].has-bg .header .header-name {
       color: white !important;
     }
-    body[data-tier="friends"].has-bg .header .header-status span,
-    body[data-tier="pro"].has-bg .header .header-status span {
+    body[data-tier="friends"].has-bg .header .header-status span {
       color: rgba(255, 255, 255, 0.7) !important;
     }
-    body[data-tier="friends"].has-bg .header .header-status:not(.resting) span,
-    body[data-tier="pro"].has-bg .header .header-status:not(.resting) span {
+    body[data-tier="friends"].has-bg .header .header-status:not(.resting) span {
       color: #34D399 !important;
     }
-    body[data-tier="friends"].has-bg .header .header-status:not(.resting) .status-dot,
-    body[data-tier="pro"].has-bg .header .header-status:not(.resting) .status-dot {
+    body[data-tier="friends"].has-bg .header .header-status:not(.resting) .status-dot {
       background: #34D399 !important;
       box-shadow: 0 0 6px rgba(52, 211, 153, 0.4);
     }
-    body[data-tier="friends"].has-bg .header .hbtn,
-    body[data-tier="pro"].has-bg .header .hbtn {
+    body[data-tier="friends"].has-bg .header .hbtn {
       background: rgba(255, 255, 255, 0.12) !important;
       border-color: rgba(255, 255, 255, 0.18) !important;
       color: white !important;
     }
-    body[data-tier="friends"].has-bg .header .hbtn:hover,
-    body[data-tier="pro"].has-bg .header .hbtn:hover {
+    body[data-tier="friends"].has-bg .header .hbtn:hover {
       background: rgba(255, 255, 255, 0.22) !important;
       border-color: rgba(255, 255, 255, 0.35) !important;
     }
 
     /* ── Immersive Bottom Tab Bar ── */
-    body[data-tier="friends"].has-bg .bottom-tab-bar,
-    body[data-tier="pro"].has-bg .bottom-tab-bar {
+    body[data-tier="friends"].has-bg .bottom-tab-bar {
       background: rgba(0, 0, 0, 0.28) !important;
       backdrop-filter: blur(16px) brightness(0.85) !important;
       -webkit-backdrop-filter: blur(16px) brightness(0.85) !important;
@@ -6061,56 +6057,45 @@
       box-shadow: none !important;
     }
     body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active),
-    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:not(.active),
-    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon,
-    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon {
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:not(.active) .btab-icon {
       color: rgba(255, 255, 255, 0.6) !important;
     }
-    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn.active,
-    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn.active {
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn.active {
       color: white !important;
     }
-    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn.active .btab-icon,
-    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn.active .btab-icon {
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn.active .btab-icon {
       color: white !important;
     }
-    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:hover,
-    body[data-tier="pro"].has-bg .bottom-tab-bar .btab-btn:hover {
+    body[data-tier="friends"].has-bg .bottom-tab-bar .btab-btn:hover {
       background: rgba(255, 255, 255, 0.1) !important;
     }
 
     /* ── Immersive Message Input Area ── */
-    body[data-tier="friends"].has-bg .input-area,
-    body[data-tier="pro"].has-bg .input-area {
+    body[data-tier="friends"].has-bg .input-area {
       background: transparent !important;
       border-top: none !important;
     }
-    body[data-tier="friends"].has-bg .input-box,
-    body[data-tier="pro"].has-bg .input-box {
+    body[data-tier="friends"].has-bg .input-box {
       background: rgba(255, 255, 255, 0.12) !important;
       border: 1px solid rgba(255, 255, 255, 0.18) !important;
       color: white !important;
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
-    body[data-tier="friends"].has-bg .input-box:focus,
-    body[data-tier="pro"].has-bg .input-box:focus {
+    body[data-tier="friends"].has-bg .input-box:focus {
       background: rgba(255, 255, 255, 0.2) !important;
       border-color: rgba(255, 255, 255, 0.35) !important;
       box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important;
     }
-    body[data-tier="friends"].has-bg .input-box::placeholder,
-    body[data-tier="pro"].has-bg .input-box::placeholder {
+    body[data-tier="friends"].has-bg .input-box::placeholder {
       color: rgba(255, 255, 255, 0.45) !important;
     }
-    body[data-tier="friends"].has-bg .mic-btn,
-    body[data-tier="pro"].has-bg .mic-btn {
+    body[data-tier="friends"].has-bg .mic-btn {
       background: rgba(255, 255, 255, 0.12) !important;
       border: 1px solid rgba(255, 255, 255, 0.18) !important;
       color: white !important;
     }
-    body[data-tier="friends"].has-bg .mic-btn:hover,
-    body[data-tier="pro"].has-bg .mic-btn:hover {
+    body[data-tier="friends"].has-bg .mic-btn:hover {
       background: rgba(255, 255, 255, 0.22) !important;
     }
 
@@ -6138,8 +6123,7 @@
         display: flex;
         color: var(--text);
       }
-      body[data-tier="friends"].has-bg .header-back-btn,
-      body[data-tier="pro"].has-bg .header-back-btn {
+      body[data-tier="friends"].has-bg .header-back-btn {
         color: white !important;
       }
     }
@@ -6452,7 +6436,7 @@
       <div class="new-cs-card" id="ncard-cat" onclick="newSelectChar('cat')">
         <img src="images/cat.png" alt="냥냥 코치">
         <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-free">FRIENDS 플랜 포함</span>
+          <span class="new-cs-badge nbadge-free-trial" id="badge-cat">무료 입장 가능</span>
           <div class="new-cs-name">냥냥 코치</div>
           <div class="new-cs-quote">"딱 5분만 해보자냥."</div>
         </div>
@@ -6460,7 +6444,7 @@
       <div class="new-cs-card" id="ncard-boyfriend" onclick="newSelectChar('boyfriend')">
         <img src="images/boyfriend.png" alt="남친 코치">
         <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
+          <span class="new-cs-badge nbadge-pro" id="badge-boyfriend">₩3,900 / 1년 이용</span>
           <div class="new-cs-name">남친 코치</div>
           <div class="new-cs-quote">"힘들었구나. 토닥토닥"</div>
         </div>
@@ -6468,7 +6452,7 @@
       <div class="new-cs-card" id="ncard-halmae" onclick="newSelectChar('halmae')">
         <img src="images/halmae.png" alt="할매 코치">
         <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
+          <span class="new-cs-badge nbadge-pro" id="badge-halmae">₩3,900 / 1년 이용</span>
           <div class="new-cs-name">할매 코치</div>
           <div class="new-cs-quote">"내 새끼는 잘할겨"</div>
         </div>
@@ -6476,7 +6460,7 @@
       <div class="new-cs-card" id="ncard-girlfriend" onclick="newSelectChar('girlfriend')">
         <img src="images/girlfriend.png" alt="여친 코치">
         <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
+          <span class="new-cs-badge nbadge-pro" id="badge-girlfriend">₩3,900 / 1년 이용</span>
           <div class="new-cs-name">여친 코치</div>
           <div class="new-cs-quote">"오빠는 할 줄 알았어"</div>
         </div>
@@ -6484,7 +6468,7 @@
       <div class="new-cs-card" id="ncard-bro" onclick="newSelectChar('bro')">
         <img src="images/bro.png" alt="갓생 형 코치">
         <div class="new-cs-card-body">
-          <span class="new-cs-badge nbadge-pro">₩2,900 / 1년 이용</span>
+          <span class="new-cs-badge nbadge-pro" id="badge-bro">₩3,900 / 1년 이용</span>
           <div class="new-cs-name">갓생 형 코치</div>
           <div class="new-cs-quote">"형이랑 가볍게 해보자"</div>
         </div>
@@ -6588,7 +6572,7 @@
     let _newSelectedChar = null;
 
     function ncsTab(tab) {
-      const tiers = ['friends', 'pro', 'master'];
+      const tiers = ['friends', 'master'];
       tiers.forEach(t => {
         const card = document.getElementById('ncs-card-' + t);
         if (card) {
@@ -6772,6 +6756,7 @@
     }
 
     function showCoachSelect() {
+      updateCoachBadges(); // owned_coaches 기준으로 배지 갱신
       const screen = document.getElementById('coach-select-screen');
       screen.style.display = 'flex';
       screen.classList.add('active');
@@ -6798,6 +6783,11 @@
       }, 400);
     }
     function newSelectChar(id) {
+      // 접근 불가 코치: 구매 모달 표시
+      if (!canAccessCoach(id)) {
+        showCoachPurchaseModal(id);
+        return;
+      }
       _newSelectedChar = id;
       document.querySelectorAll('.new-cs-card, .master-cs-card').forEach(el => el.classList.remove('selected'));
       const card = document.getElementById('ncard-' + id);
@@ -6805,6 +6795,111 @@
       const btn = document.getElementById('new-start-btn');
       btn.disabled = false;
       btn.style.opacity = '1';
+    }
+
+    function showCoachPurchaseModal(coachId) {
+      const cfg = CHARS[coachId] || {};
+      const planActive = isPlanActive();
+      const isMasterCoach = coachId === 'sec_male' || coachId === 'sec_female';
+
+      // 비서 코치는 구매가 아닌 구독 안내만
+      const bodyHtml = isMasterCoach
+        ? `<p style="font-size:14px;font-weight:600;color:#4B5563;text-align:center;margin:0 0 20px;">
+             master 플랜 구독자만 이용할 수 있는 코치예요.
+           </p>`
+        : !planActive
+        ? `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:13px;font-weight:600;color:#92400E;">
+             ⚠️ friends 또는 master 플랜 구독 후 구매할 수 있어요.
+           </div>`
+        : `<p style="font-size:14px;font-weight:600;color:#4B5563;text-align:center;margin:0 0 4px;">
+             이 코치는 개별 구매가 필요해요.
+           </p>
+           <p style="font-size:22px;font-weight:900;color:#1A1A2E;text-align:center;margin:0 0 20px;">
+             ₩3,900 <span style="font-size:13px;font-weight:600;color:#6B7280;">/ 1년</span>
+           </p>`;
+
+      const purchaseBtnHtml = (!isMasterCoach && planActive)
+        ? `<button onclick="purchaseCoach('${coachId}')"
+             style="width:100%;padding:14px;background:#03C75A;color:white;border:none;border-radius:14px;
+                    font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;">
+             구매하기
+           </button>`
+        : '';
+
+      const modal = document.createElement('div');
+      modal.id = 'coach-purchase-modal';
+      modal.style.cssText = `position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;
+        background:rgba(0,0,0,0.4);`;
+      modal.innerHTML = `
+        <div style="width:100%;background:white;border-radius:24px 24px 0 0;padding:28px 24px 40px;
+                    >
+          <div style="width:40px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 24px;"></div>
+          <div style="text-align:center;margin-bottom:16px;">
+            <img src="images/${coachId}.png" style="width:88px;height:88px;border-radius:20px;object-fit:cover;object-position:top;">
+          </div>
+          <div style="font-size:20px;font-weight:900;color:#1A1A2E;text-align:center;margin-bottom:16px;">
+            ${cfg.name || coachId}
+          </div>
+          ${bodyHtml}
+          ${purchaseBtnHtml}
+          <button onclick="document.getElementById('coach-purchase-modal').remove()"
+            style="width:100%;padding:14px;background:#F3F4F6;color:#374151;border:none;border-radius:14px;
+                   font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
+            닫기
+          </button>
+        </div>`;
+      modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+      document.body.appendChild(modal);
+    }
+
+    // 코치 카드 배지를 owned_coaches / 플랜 기준으로 갱신
+    function updateCoachBadges() {
+      // 냥냥 코치: 비구독자 → 무료 입장 가능, 구독자 → 플랜 포함
+      const catBadge = document.getElementById('badge-cat');
+      if (catBadge) {
+        if (!isPlanActive()) {
+          catBadge.textContent = '무료 입장 가능';
+          catBadge.className = 'new-cs-badge nbadge-free-trial';
+        } else {
+          catBadge.textContent = '플랜 포함';
+          catBadge.className = 'new-cs-badge nbadge-free';
+        }
+      }
+      // 나머지 friends 코치: 보유 여부 표시
+      const owned = userData.owned_coaches || [];
+      ['boyfriend', 'halmae', 'girlfriend', 'bro'].forEach(id => {
+        const badge = document.getElementById('badge-' + id);
+        if (!badge) return;
+        if (owned.includes(id)) {
+          badge.textContent = '보유 중 ✓';
+          badge.className = 'new-cs-badge nbadge-owned';
+        } else {
+          badge.textContent = '₩3,900 / 1년 이용';
+          badge.className = 'new-cs-badge nbadge-pro';
+        }
+      });
+    }
+
+    function purchaseCoach(coachId) {
+      // TODO: 실제 결제 연동 시 여기에 PG 로직 추가
+      // 결제 성공 가정
+      if (!userData.owned_coaches) userData.owned_coaches = [];
+      if (!userData.owned_coaches.includes(coachId)) {
+        userData.owned_coaches.push(coachId);
+        saveUserData();
+      }
+      document.getElementById('coach-purchase-modal')?.remove();
+      updateCoachBadges();
+      // 구매 완료 후 바로 코치 선택
+      newSelectChar(coachId);
+      // 완료 토스트
+      const cfg2 = CHARS[coachId] || {};
+      const ft = document.getElementById('flirt-toast');
+      if (ft) {
+        ft.textContent = `${cfg2.name || coachId} 구매 완료! 🎉`;
+        ft.classList.add('show');
+        setTimeout(() => ft.classList.remove('show'), 2500);
+      }
     }
     function newStartWithChar() {
       if (!_newSelectedChar) return;
@@ -6933,7 +7028,7 @@
           <img src="images/boyfriend.png" alt="남친 코치">
         </div>
         <div class="char-card-body">
-          <span class="char-badge badge-pro">연 ₩2,900</span>
+          <span class="char-badge badge-pro">연 ₩3,900</span>
           <div class="char-name">남친 코치</div>
           <div class="char-desc">차분하고 든든하게<br>널 응원해줄게</div>
         </div>
@@ -6944,7 +7039,7 @@
           <img src="images/girlfriend.png" alt="여친 코치">
         </div>
         <div class="char-card-body">
-          <span class="char-badge badge-pro">연 ₩2,900</span>
+          <span class="char-badge badge-pro">연 ₩3,900</span>
           <div class="char-name">여친 코치</div>
           <div class="char-desc">사랑스럽게 다독이며<br>널 챙겨줄게</div>
         </div>
@@ -6955,7 +7050,7 @@
           <img src="images/halmae.png" alt="할매 코치">
         </div>
         <div class="char-card-body">
-          <span class="char-badge badge-pro">연 ₩2,900</span>
+          <span class="char-badge badge-pro">연 ₩3,900</span>
           <div class="char-name">할매 코치</div>
           <div class="char-desc">염병! 얼른 인나라 내 새끼!</div>
         </div>
@@ -6966,7 +7061,7 @@
           <img src="images/bro.png" alt="형 코치">
         </div>
         <div class="char-card-body">
-          <span class="char-badge badge-pro">연 ₩2,900</span>
+          <span class="char-badge badge-pro">연 ₩3,900</span>
           <div class="char-name">갓생 형 코치</div>
           <div class="char-desc">동기부여로 널<br>한계 너머로 밀어줄게</div>
         </div>
@@ -6991,7 +7086,7 @@
       </div>
       <div class="header-info">
         <div style="display:flex;align-items:center;gap:6px;">
-          <div class="header-name" id="header-name">냥냥 코치</div>
+          <div class="header-name" id="header-name" onclick="handleHeaderNameClick()">냥냥 코치</div>
           <span id="header-pro-tag"
             style="display:none; font-size:10px; font-weight:900; color:#7C3AED; background:#EDE9FE; padding:2px 6px; border-radius:6px; border:1px solid #DDD6FE;">PRO</span>
         </div>
@@ -7770,7 +7865,7 @@
 
     const CHARS = {
       boyfriend: {
-        tier: 'pro',
+        tier: 'friends',
         emoji: '🧑', name: '남친 코치 💙', statusName: '남친 코치',
         accentColor: '#4B7BF5', accentLight: '#EEF2FF',
         imgUrl: 'images/boyfriend.png',
@@ -7911,7 +8006,7 @@
 ${MEM_RULES.pro}`
       },
       girlfriend: {
-        tier: 'pro',
+        tier: 'friends',
         emoji: '👧', name: '여친 코치 🩷', statusName: '여친 코치',
         accentColor: '#F472B6', accentLight: '#FDF2F8',
         imgUrl: 'images/girlfriend.png',
@@ -8050,7 +8145,7 @@ ${MEM_RULES.pro}`
 농담이야. 근데 하나는 해라, 집사.`
       },
       bro: {
-        tier: 'pro',
+        tier: 'friends',
         emoji: '💪', name: '갓생 형 코치', statusName: '갓생 형 코치',
         accentColor: '#374151', accentLight: '#F3F4F6',
         imgUrl: 'images/bro.png',
@@ -8154,7 +8249,7 @@ ${MEM_RULES.pro}`
 ${MEM_RULES.pro}`
       },
       halmae: {
-        tier: 'pro',
+        tier: 'friends',
         emoji: '👵', name: '할매 코치 👵', statusName: '할매 코치',
         accentColor: '#B91C1C', accentLight: '#FEF2F2',
         imgUrl: 'images/halmae.png',
@@ -8286,8 +8381,10 @@ ${MEM_RULES.pro}`
 연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
 [집중 타이머]
-- 타이머는 절대로 직접 제안하거나 태그로 띄우지 않는다. [TIMER_CONFIRM], [TIMER_START] 태그 사용 금지.
-- 사용자가 미루거나 귀찮아할 때는 대화로만 반응한다. 타이머는 사용자가 직접 버튼을 눌렀을 때만 작동한다.
+- [TIMER_START] 태그는 절대 사용 금지. 타이머를 직접 시작하지 않는다.
+- 사용자가 같은 할 일을 2회 이상 회피하거나 반복해서 미루는 경우에만, 대화 끝에 [TIMER_CONFIRM:5:할일이름] 또는 [TIMER_CONFIRM:10:할일이름] 태그로 선택지를 제시할 수 있다. 예: [TIMER_CONFIRM:5:보고서 작성]
+- 처음 귀찮다거나 하기 싫다고 하는 경우, 단순 질문인 경우에는 절대 띄우지 않는다. 대화로만 반응한다.
+- 선택지가 뜨면 사용자가 직접 버튼을 눌렀을 때만 타이머가 작동한다.
 
 [할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
 1. 사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
@@ -8373,8 +8470,10 @@ ${MEM_RULES.master}`
 연결되지 않으면 언급하지 않는다. 억지로 끼워넣지 말 것.
 
 [집중 타이머]
-- 타이머는 절대로 직접 제안하거나 태그로 띄우지 않는다. [TIMER_CONFIRM], [TIMER_START] 태그 사용 금지.
-- 사용자가 미루거나 귀찮아할 때는 대화로만 반응한다. 타이머는 사용자가 직접 버튼을 눌렀을 때만 작동한다.
+- [TIMER_START] 태그는 절대 사용 금지. 타이머를 직접 시작하지 않는다.
+- 사용자가 같은 할 일을 2회 이상 회피하거나 반복해서 미루는 경우에만, 대화 끝에 [TIMER_CONFIRM:5:할일이름] 또는 [TIMER_CONFIRM:10:할일이름] 태그로 선택지를 제시할 수 있다. 예: [TIMER_CONFIRM:5:보고서 작성]
+- 처음 귀찮다거나 하기 싫다고 하는 경우, 단순 질문인 경우에는 절대 띄우지 않는다. 대화로만 반응한다.
+- 선택지가 뜨면 사용자가 직접 버튼을 눌렀을 때만 타이머가 작동한다.
 
 [할 일 날짜 이동 및 미래 일정 등록 - 매우 중요]
 1. 사용자가 특정 할 일을 다른 날짜로 미루거나 옮기고 싶다고 할 때:
@@ -8438,6 +8537,9 @@ ${MEM_RULES.master}`
     let calSelectedDate = null;
     let streak = parseInt(localStorage.getItem('nyang_streak') || '0');
     let lastDate = localStorage.getItem('nyang_last_date') || '';
+    let lastWeek = localStorage.getItem('nyang_last_week') || '';
+    let lastMonth = localStorage.getItem('nyang_last_month') || '';
+    let coreExpanded = false;
     let history = JSON.parse(localStorage.getItem('nyang_history') || '[]');
     let completedLog = JSON.parse(localStorage.getItem('nyang_completed_log') || '[]');
     let chatHistory = JSON.parse(localStorage.getItem('nyang_chat_history_' + (localStorage.getItem('nyang_char') || 'cat')) || '[]');
@@ -8471,6 +8573,79 @@ ${MEM_RULES.master}`
     }
     let resetHour = parseInt(localStorage.getItem('nyang_reset_hour') || '3');
     let needsPostFirebaseReset = false; // checkNewDay()가 리셋을 했는데 Firebase 로드가 나중에 덮어쓸 경우 대비
+
+    // ── 사용자 데이터 (플랜 / 포인트 / 보유 코치) ─────────────
+    const _userDataDefaults = {
+      plan_type: 'none',       // 'none' | 'friends' | 'master'
+      points: 0,
+      owned_coaches: [],       // 개별 구매한 코치 ID 배열
+      plan_expires_at: null,   // ISO 8601 문자열 or null
+    };
+    let userData = Object.assign({}, _userDataDefaults,
+      JSON.parse(localStorage.getItem('nyang_user_data') || '{}')
+    );
+
+    // ── [DEVELOPER MOCK] URL 쿼리 파라미터로 실기기 플랜 변경 테스트 ─────────
+    const _urlParams = new URLSearchParams(window.location.search);
+    const _devPlan = _urlParams.get('dev_plan');
+    if (_devPlan && ['none', 'friends', 'master'].includes(_devPlan)) {
+      userData.plan_type = _devPlan;
+      userData.plan_expires_at = null;
+      localStorage.setItem('nyang_user_data', JSON.stringify(userData));
+      const _cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.replaceState({}, document.title, _cleanUrl);
+    }
+
+    function saveUserData() {
+      localStorage.setItem('nyang_user_data', JSON.stringify(userData));
+      if (window.syncToFirebase) window.syncToFirebase('userData', userData);
+    }
+
+    // ── [DEVELOPER MOCK] 실기기 5번 탭으로 플랜 변경 팝업 트리거 ─────────────
+    let _logoTapCount = 0;
+    let _logoTapTimer = null;
+    window.handleHeaderNameClick = function() {
+      _logoTapCount++;
+      clearTimeout(_logoTapTimer);
+      _logoTapTimer = setTimeout(() => { _logoTapCount = 0; }, 2000);
+      if (_logoTapCount === 5) {
+        _logoTapCount = 0;
+        const p = prompt('🛠️ 개발자 플랜 시뮬레이터\n변경할 플랜을 입력하세요 (none, friends, master):', userData.plan_type);
+        if (p !== null && ['none', 'friends', 'master'].includes(p.trim().toLowerCase())) {
+          userData.plan_type = p.trim().toLowerCase();
+          userData.plan_expires_at = null;
+          saveUserData();
+          location.reload();
+        }
+      }
+    };
+
+    /** 플랜이 현재 유효한지 (plan_type !== 'none' && 만료 전) */
+    function isPlanActive() {
+      if (userData.plan_type === 'none') return false;
+      if (!userData.plan_expires_at) return true; // 만료일 미설정 = 영구
+      return new Date(userData.plan_expires_at) > new Date();
+    }
+
+    /**
+     * 특정 코치에 접근 가능한지 여부
+     * 1. 냥냥코치(cat): 누구나 무료 입장
+     * 2. 비서코치(sec_male/sec_female): master 플랜 구독자만
+     * 3. 나머지 friends 코치: friends/master 플랜 구독자 중 해당 코치를 구매한 사람만
+     */
+    function canAccessCoach(coachId) {
+      if (coachId === 'cat') return true;
+      if (!isPlanActive()) return false;
+      if (coachId === 'sec_male' || coachId === 'sec_female') {
+        return userData.plan_type === 'master';
+      }
+      // 나머지 friends 코치 — 플랜 활성 + 개별 구매 필요
+      return (userData.owned_coaches || []).includes(coachId);
+    }
+
+    // 냥냥코치 비구독자 무료체험 단계 (0=없음, 1=인트로 완료, 2=업셀 완료)
+    let _catFreeTrialStep = 0;
+
     let isRecording = false;
     let recognition = null;
     let selectedChar = '';
@@ -8768,7 +8943,7 @@ ${MEM_RULES.master}`
         if (prev && (prev.success || isLastVacation)) streak = 1;
         else streak = 0;
       }
-      tasks = []; coreTasks = [];
+      tasks = []; coreTasks = []; coreExpanded = false;
       needsPostFirebaseReset = true; // Firebase 로드가 이 리셋을 덮어쓸 수 있으므로 플래그 저장
       lastDate = today;
       localStorage.setItem('nyang_tasks', JSON.stringify(tasks));
@@ -8776,8 +8951,10 @@ ${MEM_RULES.master}`
       localStorage.setItem('nyang_streak', streak);
       localStorage.setItem('nyang_last_date', lastDate);
       saveTodayRecord();
-      renderTasks(); renderMobileTasks(); updateChatGoalBar();
+      renderTasks(); renderMobileTasks(); renderCoreTasks(); updateChatGoalBar();
       setTimeout(() => injectTodayHabits(), 100);
+      checkWeekMonthReset();
+
       // 어제 대화 요약용 복사본 저장
       const oldChatHistory = [...chatHistory];
 
@@ -8792,6 +8969,40 @@ ${MEM_RULES.master}`
       // 실제 대화가 일어난 날짜로 대화 요약 생성 (비동기, 백그라운드)
       generateDailySummary(chatDate, oldChatHistory);
     }
+    function checkWeekMonthReset() {
+      const thisWeek = getWeekMondayStr();
+      const _n = new Date();
+      const thisMonth = `${_n.getFullYear()}-${String(_n.getMonth() + 1).padStart(2, '0')}`;
+
+      // 주 목표 리셋 (매주 월요일 기준)
+      if (!lastWeek) {
+        // 최초 실행 — 현재 주를 기준으로 초기화만 (리셋 없음)
+        lastWeek = thisWeek;
+        localStorage.setItem('nyang_last_week', lastWeek);
+      } else if (lastWeek !== thisWeek) {
+        lastWeek = thisWeek;
+        localStorage.setItem('nyang_last_week', lastWeek);
+        weekGoals = [];
+        localStorage.setItem('nyang_week_goals', '[]');
+        if (window.syncToFirebase) window.syncToFirebase('weekGoals', []);
+        renderGoals('week');
+      }
+
+      // 월 목표 리셋 (매월 1일 기준)
+      if (!lastMonth) {
+        // 최초 실행 — 현재 달을 기준으로 초기화만 (리셋 없음)
+        lastMonth = thisMonth;
+        localStorage.setItem('nyang_last_month', lastMonth);
+      } else if (lastMonth !== thisMonth) {
+        lastMonth = thisMonth;
+        localStorage.setItem('nyang_last_month', lastMonth);
+        monthGoals = [];
+        localStorage.setItem('nyang_month_goals', '[]');
+        if (window.syncToFirebase) window.syncToFirebase('monthGoals', []);
+        renderGoals('month');
+      }
+    }
+
     function getLast7Records() {
       const arr = []; const today = new Date();
       for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(today.getDate() - i); const ds = normalizeDate(d); arr.push(history.find(h => h.date === ds) || { date: ds, doneCount: 0, totalCount: 0, success: false, tasks: [] }); }
@@ -9603,7 +9814,7 @@ ${recordStr}
 
     // ── Character select ──────────────────────────────────
     function switchCoachTab(tab) {
-      const tiers = ['friends', 'pro', 'master'];
+      const tiers = ['friends', 'master'];
       tiers.forEach(t => {
         const card = document.getElementById('tab-card-' + t);
         if (card) {
@@ -9627,11 +9838,86 @@ ${recordStr}
       }
     }
 
+    function showCatUpsellPopup() {
+      // 이미 있으면 중복 생성 방지
+      if (document.getElementById('cat-upsell-popup')) return;
+      const overlay = document.createElement('div');
+      overlay.id = 'cat-upsell-popup';
+      overlay.style.cssText = `
+        position: fixed; inset: 0; z-index: 9999;
+        display: flex; align-items: flex-end; justify-content: center;
+        background: rgba(0,0,0,0.45);
+      `;
+      overlay.innerHTML = `
+        <div style="
+          background: #fff; border-radius: 24px 24px 0 0;
+          padding: 28px 24px 36px; width: 100%; max-width: 480px;
+          text-align: center; box-shadow: 0 -4px 32px rgba(0,0,0,0.12);
+        ">
+          <div style="font-size: 2.2rem; margin-bottom: 10px;">🐾</div>
+          <div style="font-size: 1.05rem; font-weight: 700; color: #1a1a1a; margin-bottom: 6px;">냥냥코치와 계속 대화하려면</div>
+          <div style="font-size: 0.9rem; color: #555; margin-bottom: 24px;">플랜을 시작하면 냥냥코치와<br>무제한으로 이야기할 수 있어냥!</div>
+          <button id="cat-upsell-plan-btn" style="
+            width: 100%; padding: 14px; background: #6D28D9; color: #fff;
+            border: none; border-radius: 14px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; margin-bottom: 10px;
+          ">플랜 보기</button>
+          <button id="cat-upsell-browse-btn" style="
+            width: 100%; padding: 13px; background: #f4f4f4; color: #555;
+            border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer;
+          ">조금 더 둘러볼게요</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('cat-upsell-plan-btn').addEventListener('click', () => {
+        overlay.remove();
+        // TODO: 플랜 선택 화면으로 이동
+        // 예: showScreen('plan-screen') 또는 openPlanModal()
+        if (typeof showScreen === 'function') showScreen('plan-screen');
+      });
+      document.getElementById('cat-upsell-browse-btn').addEventListener('click', () => {
+        overlay.remove();
+        // 코치 선택 화면으로 돌아가기
+        if (typeof showScreen === 'function') showScreen('coach-select-screen');
+      });
+    }
+
     async function sendMessage(text = null) {
       if (!API_KEY) return;
       const input = document.getElementById('input');
       const msg = text || (input ? input.value.trim() : '');
       if (!msg) return;
+
+      // 냥냥코치 비구독자 무료체험 2단계: 첫 메시지 → 업셀 (API 호출 절대 금지)
+      if (currentChar === 'cat' && !isPlanActive() && _catFreeTrialStep === 1) {
+        if (input && !text) { input.value = ''; autoResize(input); }
+        document.getElementById('send-btn').disabled = true;
+        const qc = document.getElementById('quick-chips');
+        if (qc) { qc.innerHTML = ''; qc.style.display = 'none'; }
+        addMessage('user', msg);
+        chatHistory.push({ role: 'user', content: msg, time: getTime() });
+        _catFreeTrialStep = 2;
+        showTyping();
+        setTimeout(() => {
+          removeTyping();
+          const upsell = '냥냥코치와 더 이야기하고 싶다면\n플랜을 시작해보라냥 🐾';
+          addMessage('ai', upsell);
+          chatHistory.push({ role: 'assistant', content: upsell, time: getTime() });
+          saveChatHistory();
+          const btn = document.getElementById('send-btn');
+          if (btn) btn.disabled = false;
+          if (input) input.focus();
+          setTimeout(() => showCatUpsellPopup(), 300);
+        }, 800);
+        return; // API 절대 호출 안 함
+      }
+
+      // 냥냥코치 비구독자 3단계 이후: 팝업만 다시 표시
+      if (currentChar === 'cat' && !isPlanActive() && _catFreeTrialStep >= 2) {
+        showCatUpsellPopup();
+        return;
+      }
 
       if (input && !text) { input.value = ''; autoResize(input); }
 
@@ -10819,6 +11105,7 @@ ${outputRules}`;
 
     function launchApp(charId, greet) {
       checkNewDay();
+      checkWeekMonthReset();
       currentChar = charId; localStorage.setItem('nyang_char', charId);
       const cfg = CHARS[charId];
       applyAccent(charId);
@@ -10839,21 +11126,17 @@ ${outputRules}`;
         }
       }
 
-      // Pro/Master Coach UI 차별화
+      // Master Coach UI 차별화
       const isMaster = ['sec_male', 'sec_female'].includes(charId);
-      const isPro = false;
-      const isPremium = isMaster || isPro;
 
       const mainHeader = document.getElementById('main-header');
-      const proTag = document.getElementById('header-pro-tag');
       const appEl = document.getElementById('app');
 
       if (mainHeader) {
-        mainHeader.classList.toggle('pro-header', isPro);
         mainHeader.classList.toggle('master-header', isMaster);
       }
       if (appEl) {
-        appEl.classList.toggle('pro-chat', isPremium);
+        appEl.classList.toggle('pro-chat', isMaster);
         appEl.classList.toggle('master-chat', isMaster);
       }
 
@@ -10906,7 +11189,7 @@ ${outputRules}`;
   </svg>`;
       const pawSvgLarge = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#6D28D9"><ellipse cx="12" cy="15.5" rx="5" ry="4.2"/><ellipse cx="6.5" cy="9.5" rx="2" ry="2.5" transform="rotate(-20 6.5 9.5)"/><ellipse cx="12" cy="7.8" rx="1.9" ry="2.5"/><ellipse cx="17.5" cy="9.5" rx="2" ry="2.5" transform="rotate(20 17.5 9.5)"/></svg>`;
       const rocketImg = `<img src="images/rocket.png" style="width:18px;height:18px;vertical-align:text-bottom;margin-right:3px;object-fit:contain;">`;
-      const isFriends = !isPro && !isMaster;
+      const isFriends = !isMaster;
       const streakIconHtml = isFriends ? pawSvg : rocketImg;
       const mainIcon = document.getElementById('streak-icon-main');
       const chatIcon = document.getElementById('streak-icon-chat');
@@ -10947,6 +11230,16 @@ ${outputRules}`;
       } else if (['sec_male', 'sec_female'].includes(charId)) {
         // 비서: 오늘 첫 대화면 상황별 인사 먼저
         setTimeout(() => startSecretaryGreeting(), 600);
+      } else if (charId === 'cat' && !isPlanActive()) {
+        // 냥냥코치 비구독자: 로컬 인트로 메시지
+        _catFreeTrialStep = 0;
+        setTimeout(() => {
+          const intro = '안녕! 나는 냥냥코치다냥 🐾\n오늘 해야 할 일이나 습관, 목표들을 같이 챙겨주고 있어!\n주변의 할 일창이나 습관 트래커도 자유롭게 눌러보라냥~';
+          addMessage('ai', intro);
+          chatHistory.push({ role: 'assistant', content: intro, time: getTime() });
+          saveChatHistory();
+          _catFreeTrialStep = 1;
+        }, 600);
       }
     }
 
@@ -11142,6 +11435,7 @@ ${outputRules}`;
       let suggestedTasks = typeof content === 'string' ? [] : (content.suggestedTasks || []);
       let timerMinutes = typeof content === 'string' ? null : (content.timerMinutes || null);
       let timerConfirmMinutes = typeof content === 'string' ? null : (content.timerConfirmMinutes || null);
+      let timerConfirmTaskName = typeof content === 'string' ? null : (content.timerConfirmTaskName || null);
       let moveTaskActions = typeof content === 'string' ? [] : (content.moveTaskActions || []);
 
       const msgs = document.getElementById('messages');
@@ -11178,7 +11472,7 @@ ${outputRules}`;
           font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">
           ▶ 지금 잠깐이라도 해볼게
         </button>
-        <button onclick="masterTimerConfirmLater('${confirmId}')"
+        <button onclick="masterTimerConfirmLater('${confirmId}', '${(timerConfirmTaskName||'').replace(/'/g,"\\'")}' )"
           style="width:100%;padding:12px;border-radius:12px;
           border:1.5px solid #E5E7EB;background:white;color:#6B7280;
           font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
@@ -11532,15 +11826,23 @@ ${outputRules}`;
       addMessage('ai', '', [], mins, null, []);
     }
 
-    function masterTimerConfirmLater(confirmId) {
+    function masterTimerConfirmLater(confirmId, taskName) {
       const card = document.getElementById(confirmId + '-card');
       if (card) card.remove();
-      const cfg = CHARS[currentChar] || CHARS.cat;
       const isMale = currentChar === 'sec_male';
+
+      // 미뤄진 할일 localStorage에 저장
+      if (taskName && taskName.trim()) {
+        localStorage.setItem('pendingDeferTask', JSON.stringify({
+          taskName: taskName.trim(),
+          timestamp: Date.now()
+        }));
+      }
+
       const msg = isMale
-        ? '알겠습니다, 대표님. 일 마치시고 편하게 시작하세요. 필요하시면 부르십시오.'
-        : '네, 알겠어요 대표님. 일 끝나시면 그때 같이 해봐요. 제가 여기 있을게요 😊';
-      addMessage('ai', msg, [], null, null, []);
+        ? '알겠습니다, 대표님. 일 끝나고 돌아오실 때 다시 리마인드 해드릴게요.'
+        : '네, 알겠어요 대표님. 일 끝나고 돌아오실 때 다시 리마인드 해드릴게요 😊';
+      addMessage('ai', msg);
     }
 
     function masterTimerConfirmSelf(confirmId) {
@@ -11806,12 +12108,6 @@ ${JSON.stringify(masterProfile)}
       if (tier === 'friends') {
         profileCtx += `\n- 실시간 상태: ${masterProfile.high_change.energy_fatigue || '관찰 중'} / ${masterProfile.high_change.mood_condition || '기록 전'}
 - 오늘의 장애물: ${masterProfile.high_change.obstacles || '없음'}`;
-      } else if (tier === 'pro') {
-        profileCtx += `\n[실시간 상태]\n- 에너지/기분: ${masterProfile.high_change.energy_fatigue} / ${masterProfile.high_change.mood_condition}
-\n[현재 챕터]\n- 챕터: ${masterProfile.mid_change.chapter.title}
-- 상세: ${masterProfile.mid_change.chapter.description}
-\n[관찰된 패턴]\n- 의사결정 패턴: ${masterProfile.low_change.decision_pattern}
-- 성공/실패 공식: ${masterProfile.low_change.success_failure_formula}`;
       } else {
         profileCtx += `\n[고변화 - 실시간]\n- 상태: ${masterProfile.high_change.energy_fatigue} / ${masterProfile.high_change.mood_condition}\n- 장애물: ${masterProfile.high_change.obstacles}
 \n[중변화 - 최근 맥락]\n- 챕터: ${masterProfile.mid_change.chapter.title} (${masterProfile.mid_change.chapter.description})\n- 관심 축: ${masterProfile.mid_change.keywords_axis.map(formatMidItem).join(', ')}
@@ -12055,7 +12351,7 @@ ${profileCtx}
 
         if (isMaster) {
           outputRules += `
-3. [TIMER_START], [TIMER_CONFIRM] 등 타이머 관련 태그는 절대 사용하지 마세요. 타이머는 사용자가 직접 선택했을 때만 작동합니다.
+3. 사용자가 반복해서 미루는 경우에만 [TIMER_CONFIRM:분:할일이름] 형식으로 선택지를 제시할 수 있습니다. 예: [TIMER_CONFIRM:5:보고서 작성]. [TIMER_START]는 절대 사용 금지입니다.
 4. 선택 칩 제안 시 [CHIPS: 칩1|칩2] 형식을 답변 맨 끝에 사용하세요.`;
         } else {
           outputRules += `
@@ -12280,16 +12576,29 @@ ${outputRules}${halmaeHint}`;
       const el = document.getElementById('core-list');
       if (!el) return;
       if (!coreTasks.length) {
+        coreExpanded = false;
         el.innerHTML = '<div class="core-empty">아직 핵심이 없어요.<br>코치가 먼저 제안하고, 내가 최종 선택해요.</div>';
         return;
       }
-      el.innerHTML = coreTasks.slice(0, 3).map((c, i) => `
-        <div class="core-item" draggable="true" data-id="${c.id}">
+      const visibleTasks = coreExpanded ? coreTasks.slice(0, 3) : coreTasks.slice(0, 1);
+      const hiddenCount = coreTasks.slice(0, 3).length - 1;
+      const expandRow = !coreExpanded && hiddenCount > 0
+        ? `<div class="core-expand-btn" onclick="coreExpanded=true;renderCoreTasks()">+ 핵심 ${hiddenCount}개 더</div>`
+        : '';
+      const collapseRow = coreExpanded && hiddenCount > 0
+        ? `<div class="core-expand-btn core-collapse-btn" onclick="coreExpanded=false;renderCoreTasks()">접기</div>`
+        : '';
+      el.innerHTML = visibleTasks.map((c, i) => {
+        const origTask = tasks.find(t => t.text === c.text);
+        const isDone = origTask ? !!origTask.done : false;
+        return `
+        <div class="core-item${isDone ? ' core-done' : ''}" draggable="true" data-id="${c.id}">
           <span class="core-drag-handle">⠿</span>
-          <div class="core-num">${i + 1}</div>
-          <div class="core-text">${escapeHtml(c.text)}</div>
+          <div class="core-num">${isDone ? '✓' : (i + 1)}</div>
+          <div class="core-text" style="${isDone ? 'text-decoration:line-through;color:var(--muted);' : ''}">${escapeHtml(c.text)}</div>
           <button class="core-remove" onclick="removeCoreTask(${c.id})">×</button>
-        </div>`).join('');
+        </div>`;
+      }).join('') + expandRow + collapseRow;
 
       let dragSrcId = null;
 
@@ -12358,6 +12667,53 @@ ${outputRules}${halmaeHint}`;
       });
     }
 
+    // ── 한국어 시간 표현 추출 ───────────────────────────────
+    function extractTimeFromTask(rawText) {
+      // 패턴: (오전|아침|오후|저녁|밤)? N시 (M분)? (에|쯤|경)?
+      const timeRegex = /((?:오전|아침|오후|저녁|밤)\s*)?(\d{1,2})시(?:\s*(\d{1,2})분)?(?:\s*(?:에|쯤|경))?/;
+      const match = rawText.match(timeRegex);
+      if (!match) return { cleanText: rawText.trim(), time: null };
+
+      const prefix = (match[1] || '').replace(/\s/g, '');
+      const rawHour = parseInt(match[2]);
+      const minute = match[3] ? parseInt(match[3]) : 0;
+
+      // 유효 범위 확인 (1~12시만 처리)
+      if (rawHour < 1 || rawHour > 12) return { cleanText: rawText.trim(), time: null };
+
+      let hour24;
+      if (prefix === '오전' || prefix === '아침') {
+        hour24 = rawHour === 12 ? 0 : rawHour;
+      } else if (prefix === '오후' || prefix === '저녁' || prefix === '밤') {
+        hour24 = rawHour === 12 ? 12 : rawHour + 12;
+      } else {
+        // 오전/오후 표시 없음 → 현재 시간 기준 "바로 다음 n시" 판별
+        const now = new Date();
+        const currentTotal = now.getHours() * 60 + now.getMinutes();
+        const amHour = rawHour === 12 ? 0 : rawHour;
+        const pmHour = rawHour === 12 ? 12 : rawHour + 12;
+        const amTotal = amHour * 60 + minute;
+        const pmTotal = pmHour * 60 + minute;
+
+        if (amTotal > currentTotal) {
+          hour24 = amHour;           // 오전쪽이 아직 안 지남
+        } else if (pmTotal > currentTotal) {
+          hour24 = pmHour;           // 오후쪽이 아직 안 지남
+        } else {
+          return null;               // 오늘은 둘 다 지남 → 제안 건너뜀
+        }
+      }
+
+      const hStr = String(hour24).padStart(2, '0');
+      const mStr = String(minute).padStart(2, '0');
+      const time = `${hStr}:${mStr}`;
+
+      // 텍스트에서 시간 표현 제거 후 정리
+      const cleanText = rawText.replace(match[0], '').replace(/\s+/g, ' ').trim();
+
+      return { cleanText: cleanText || rawText.trim(), time };
+    }
+
     // ── Tasks ─────────────────────────────────────────────
     function parseAndAddTasks(text) {
       const regex = /\[TASK_ADD:\s*(\{[^}]+\})\]/g;
@@ -12365,8 +12721,9 @@ ${outputRules}${halmaeHint}`;
       const simpleTaskRegex = /\[TASK:\s*(.+?)\]/g;
       const chipRegex = /\[CHIPS:\s*(.+?)\]/g;
       const timerRegex = /\[TIMER_START:(\d+)\]/g;
-      const timerConfirmRegex = /\[TIMER_CONFIRM:(\d+)\]/g;
+      const timerConfirmRegex = /\[TIMER_CONFIRM:(\d+)(?::([^\]]+))?\]/g;
       let timerConfirmMinutes = null;
+      let timerConfirmTaskName = null;
       const habitDismissRegex = /\[HABIT_DISMISS:(.+?)\]/g;
       const moveTaskRegex = /\[MOVE_TASK:([a-zA-Z0-9_\-]+):([\d\-]+)\]/g;
       let match, clean = text;
@@ -12434,6 +12791,7 @@ ${outputRules}${halmaeHint}`;
       // TIMER_CONFIRM 감지 (버튼 먼저 보여주기)
       while ((match = timerConfirmRegex.exec(text)) !== null) {
         timerConfirmMinutes = parseInt(match[1]) || 10;
+        timerConfirmTaskName = match[2] ? match[2].trim() : null;
         clean = clean.replace(match[0], '').trim();
       }
 
@@ -12457,20 +12815,32 @@ ${outputRules}${halmaeHint}`;
       while ((match = suggestRegex.exec(text)) !== null) {
         try {
           const d = JSON.parse(match[1]);
-          if (d.text) suggestedTasks.push(d);
+          if (d.text) {
+            // time 필드가 없으면 텍스트에서 시간 추출 시도
+            if (!d.time) {
+              const result = extractTimeFromTask(d.text);
+              if (result === null) { clean = clean.replace(match[0], '').trim(); continue; } // 둘 다 지남 → 건너뜀
+              d.text = result.cleanText;
+              if (result.time) d.time = result.time;
+            }
+            suggestedTasks.push(d);
+          }
           clean = clean.replace(match[0], '').trim();
         } catch (e) { }
       }
 
-      // [TASK: 단순 내용] 처리
+      // [TASK: 단순 내용] 처리 — 시간 표현 자동 분리
       while ((match = simpleTaskRegex.exec(text)) !== null) {
-        suggestedTasks.push({ text: match[1].trim() });
+        const result = extractTimeFromTask(match[1].trim());
+        if (result !== null) { // null = 오늘 시간대 지남 → 제안 건너뜀
+          suggestedTasks.push({ text: result.cleanText, time: result.time });
+        }
         clean = clean.replace(match[0], '').trim();
       }
 
       console.log('[parseAndAddTasks] raw:', text);
       console.log('[parseAndAddTasks] suggestedTasks:', suggestedTasks);
-      return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes, timerConfirmMinutes, moveTaskActions };
+      return { text: clean, tasks: proposedTasks, suggestedTasks, chips, timerMinutes, timerConfirmMinutes, timerConfirmTaskName, moveTaskActions };
     }
     function addTask(text, category = 'today', time = null, timeEnd = null) {
       const targetDate = category.trim();
@@ -12612,6 +12982,27 @@ ${outputRules}${halmaeHint}`;
               : `'${t.text}' 완료했어요. ${typeLabel}인 '${goal.name}'에 한 걸음 더 가까워지셨네요!`;
             break;
           }
+        }
+      }
+
+      // 미뤄둔 할일 리마인드 체크 (비서 코치 전용)
+      const deferredRaw = localStorage.getItem('pendingDeferTask');
+      if (isMasterCoach && deferredRaw) {
+        try {
+          const deferred = JSON.parse(deferredRaw);
+          const deferredTaskName = deferred.taskName || '';
+          // 완료된 항목이 미뤄둔 항목 자체가 아닐 때만 리마인드
+          if (deferredTaskName && t.text !== deferredTaskName) {
+            localStorage.removeItem('pendingDeferTask');
+            const isMale = currentChar === 'sec_male';
+            const remindMsg = isMale
+              ? `고생하셨습니다, 대표님. 아까 미뤄두신 '${deferredTaskName}', 슬슬 해볼 타이밍인 것 같습니다.`
+              : `고생하셨어요, 대표님 ☺️ 아까 미뤄두셨던 '${deferredTaskName}', 슬슬 해볼 타이밍인 것 같은데요.`;
+            setTimeout(() => addMessage('ai', remindMsg), 800);
+            return;
+          }
+        } catch (e) {
+          localStorage.removeItem('pendingDeferTask');
         }
       }
 
@@ -12920,6 +13311,12 @@ ${outputRules}${halmaeHint}`;
     }
 
     function saveHabit() {
+      if (!isPlanActive()) {
+        closeHabitModal();
+        showPlanModal();
+        showToast('⚠️ 습관 등록은 구독 플랜이 필요하다냥!');
+        return;
+      }
       const name = document.getElementById('habit-name-input').value.trim();
       if (!name) { alert('습관 이름을 입력해주세요!'); return; }
       if (_habitFreq === 'weekly' && _habitDays.length === 0) { alert('요일을 하나 이상 선택해주세요!'); return; }
@@ -14154,16 +14551,35 @@ ${outputRules}${halmaeHint}`;
         <div class="milestone-drag-handle" title="드래그하여 순서 변경">
           <span></span><span></span><span></span>
         </div>
-        <div class="milestone-num ${done ? 'done' : ''}" onclick="toggleMilestoneDone(this)">
+        <div class="milestone-num ${done ? 'done' : ''}">
           ${done ? '✓' : idx}
         </div>
         <div class="milestone-content-wrap">
-          <input type="text" class="milestone-input" placeholder="단계 목표 입력..." value="${escapeHtml(text)}">
+          <input type="text" class="milestone-input" placeholder="단계 목표 입력..." value="${escapeHtml(text)}" style="${done ? 'text-decoration:line-through;color:#9CA3AF;' : ''}">
           <div class="milestone-date-wrap">
             <span style="font-size:12px;">📅</span>
             <input type="date" class="milestone-date-input" value="${date}" onchange="updateMilestoneDateText(this)">
             <span class="milestone-date-text">${date ? date : '기한 선택'}</span>
           </div>
+          <button class="milestone-done-btn ${done ? 'is-done' : ''}" onclick="toggleMilestoneDone(this.closest('.milestone-edit-item'))" style="
+            margin-top:8px;
+            width:100%;
+            padding:7px 0;
+            border-radius:10px;
+            border: 1.5px solid ${done ? '#8B5CF6' : '#E5E7EB'};
+            background: ${done ? '#F5F0FF' : '#F9FAFB'};
+            color: ${done ? '#7C3AED' : '#9CA3AF'};
+            font-size:13px;
+            font-weight:700;
+            cursor:pointer;
+            font-family:inherit;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+          ">
+            ${done ? '✅ 완료됨' : '○ 완료 표시'}
+          </button>
         </div>
         <button onclick="this.parentElement.remove(); updateMilestoneIndices();" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; align-self:flex-start; margin-top:2px;">×</button>
       `;
@@ -14265,14 +14681,28 @@ ${outputRules}${halmaeHint}`;
       }
     }
 
-    function toggleMilestoneDone(el) {
-      el.classList.toggle('done');
-      const isDone = el.classList.contains('done');
-      if (isDone) {
-        el.textContent = '✓';
-      } else {
-        updateMilestoneIndices();
+    function toggleMilestoneDone(item) {
+      const numDiv = item.querySelector('.milestone-num');
+      const btn = item.querySelector('.milestone-done-btn');
+      const textInput = item.querySelector('.milestone-input');
+      const isDone = numDiv.classList.contains('done');
+      const newDone = !isDone;
+
+      numDiv.classList.toggle('done', newDone);
+      numDiv.textContent = newDone ? '✓' : '';
+
+      if (textInput) {
+        textInput.style.textDecoration = newDone ? 'line-through' : '';
+        textInput.style.color = newDone ? '#9CA3AF' : '';
       }
+      if (btn) {
+        btn.classList.toggle('is-done', newDone);
+        btn.textContent = newDone ? '✅ 완료됨' : '○ 완료 표시';
+        btn.style.border = `1.5px solid ${newDone ? '#8B5CF6' : '#E5E7EB'}`;
+        btn.style.background = newDone ? '#F5F0FF' : '#F9FAFB';
+        btn.style.color = newDone ? '#7C3AED' : '#9CA3AF';
+      }
+      updateMilestoneIndices();
     }
 
     function updateMilestoneDateText(input) {
@@ -14286,10 +14716,11 @@ ${outputRules}${halmaeHint}`;
 
     function updateMilestoneIndices() {
       const items = document.querySelectorAll('.milestone-edit-item');
-      items.forEach((item, i) => {
+      let counter = 1;
+      items.forEach((item) => {
         const num = item.querySelector('.milestone-num');
         if (!num.classList.contains('done')) {
-          num.textContent = i + 1;
+          num.textContent = counter++;
         }
       });
     }
@@ -14435,7 +14866,6 @@ ${outputRules}${halmaeHint}`;
             <div class="coach-info-small" style="flex:1;">
               <div class="coach-name-small" style="font-size:15px; font-weight:800; color:${isSelected ? 'var(--accent)' : 'var(--text)'}; display:flex; align-items:center; gap:6px;">
                 ${cfg.statusName}
-                ${cfg.isPro ? '<span style="font-size:9px; background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-weight:800;">PRO</span>' : ''}
               </div>
             </div>
             <div style="width:24px; height:24px; border-radius:50%; border:2px solid ${isSelected ? 'var(--accent)' : '#E5E7EB'}; margin-left:auto; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:white;">
@@ -14708,7 +15138,7 @@ ${outputRules}${halmaeHint}`;
           localStorage.setItem('nyang_tasks', '[]');
           localStorage.setItem('nyang_core_tasks', '[]');
           needsPostFirebaseReset = false;
-          renderCoreTasks();
+          renderTasks(); renderMobileTasks(); renderCoreTasks();
         }
 
         console.log('[Nyang] Firebase 데이터 불러오기 완료');
