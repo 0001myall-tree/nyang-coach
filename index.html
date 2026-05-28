@@ -6446,7 +6446,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro" id="badge-boyfriend">₩3,900 / 1년 이용</span>
           <div class="new-cs-name">남친 코치</div>
-          <div class="new-cs-quote">"힘들었구나. 토닥토닥"</div>
+          <div class="new-cs-quote">"괜찮아. 토닥토닥"</div>
         </div>
       </div>
       <div class="new-cs-card" id="ncard-halmae" onclick="newSelectChar('halmae')">
@@ -6470,7 +6470,7 @@
         <div class="new-cs-card-body">
           <span class="new-cs-badge nbadge-pro" id="badge-bro">₩3,900 / 1년 이용</span>
           <div class="new-cs-name">갓생 형 코치</div>
-          <div class="new-cs-quote">"형이랑 가볍게 해보자"</div>
+          <div class="new-cs-quote">"형이랑 시작해보자"</div>
         </div>
       </div>
     </div>
@@ -8592,8 +8592,14 @@ ${MEM_RULES.master}`
       userData.plan_type = _devPlan;
       userData.plan_expires_at = null;
       localStorage.setItem('nyang_user_data', JSON.stringify(userData));
-      const _cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-      window.history.replaceState({}, document.title, _cleanUrl);
+      try {
+        if (window.location.protocol !== 'file:') {
+          const _cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.replaceState({}, document.title, _cleanUrl);
+        }
+      } catch (e) {
+        console.warn("replaceState is blocked on local file:// protocol", e);
+      }
     }
 
     function saveUserData() {
