@@ -8989,6 +8989,10 @@ ${MEM_RULES.master}`
       lastDate = today;
       localStorage.setItem('nyang_tasks', JSON.stringify(tasks));
       localStorage.setItem('nyang_core_tasks', JSON.stringify(coreTasks));
+      if (window.syncToFirebase) {
+        window.syncToFirebase('tasks', tasks);
+        window.syncToFirebase('coreTasks', coreTasks);
+      }
       localStorage.setItem('nyang_streak', streak);
       localStorage.setItem('nyang_last_date', lastDate);
       saveTodayRecord();
@@ -15200,6 +15204,10 @@ ${outputRules}${halmaeHint}`;
           coreTasks = [];
           localStorage.setItem('nyang_tasks', '[]');
           localStorage.setItem('nyang_core_tasks', '[]');
+          if (window.syncToFirebase) {
+            window.syncToFirebase('tasks', []);
+            window.syncToFirebase('coreTasks', []);
+          }
           needsPostFirebaseReset = false;
           renderTasks(); renderMobileTasks(); renderCoreTasks();
         }
