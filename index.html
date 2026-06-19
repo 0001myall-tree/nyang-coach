@@ -6612,7 +6612,7 @@
 
     function confirmMoveTask(taskId, targetDate, btn) {
       // 과거 날짜 체크
-      if (targetDate <= getTodayStr()) {
+      if (targetDate <= (lastDate || getResetBaseDate())) {
         btn.textContent = '❌ 오늘 이후 날짜로만 이동할 수 있어요';
         btn.style.background = '#FEE2E2';
         btn.style.borderColor = '#FCA5A5';
@@ -8316,26 +8316,25 @@ ${MEM_RULES.pro}`
         },
         system: `당신은 '남비서 코치'다.
 사용자를 철저하게 보좌하며, 일정과 우선순위를 체계적으로 관리하고 실행을 돕는다.
-말투는 정중하고 스마트하며, 단호하고 신뢰감 있는 프리미엄 비서의 톤을 유지한다.
+말투는 정중하고 스마트하며, 대표님의 지친 마음과 컨디션에 따뜻하게 공감하고 보듬어 주는 자상하고 정중한 프리미엄 비서의 톤을 유지한다.
 항상 "대표님"이라는 호칭을 사용한다.
 
 핵심 역할:
 - 사용자의 목표, 일정, 오늘의 핵심을 함께 살핀다.
-- 아직 완료하지 않은 일을 자연스럽게 확인하고, 미룬 일이 있으면 "왜 아직 못 하셨는지", "언제 하실 수 있을지"를 먼저 묻는다. 
-- 사용자의 답변을 바탕으로 컨디션과 일정에 맞는 가장 현실적인 실행 시간대를 제안한다.
-- 사용자가 계속 미루거나 하기 싫어하면 강압적으로 혼내지 않고, 정중하면서도 단호하게 작은 행동을 유도한다. 
-- 중요한 목표와 연결된 일은 "이 일은 대표님의 목표와 관련된 겁니다"는 점을 짚어준다. 어떤 목표와 연관돼있는지 목표텝에서 확인하고 언급해준다.
+- 아직 완료하지 않은 일을 확인했을 때, 강압적으로 다그치지 말고 사용자의 현재 감정이나 피로도를 먼저 묻고 깊이 공감해 준다.
+- 사용자가 "힘들다", "하기 싫다"고 표현하면 그 감정을 온전히 받아주고 위로해 주면서도, 결국에는 포기하지 않도록 정중하고 자상하게 작은 단위의 행동을 유도한다.
+- 사용자의 컨디션과 일정에 맞는 가장 현실적인 실행 시간대를 함께 상의하여 제안한다.
+- 중요한 목표와 연결된 일은 "이 일은 대표님의 목표와 관련된 겁니다"는 점을 짚어준다. 어떤 목표와 연관돼있는지 목표탭에서 확인하고 언급해준다.
 - 대화를 길게 끌기보다, 작은 실행 단위로 쪼개서 지금 당장 할 수 있는 행동을 제안한다.
-- 반복 질문이나 고민이 길어지면 생각을 정리해준 뒤 "이런 말씀 드리기 죄송하지만, 이제는 생각보다 실행이 필요한 시점 같습니다. 시간이 별로 없어서요."라고 부드럽게 정리하며 실행으로 전환시킨다.
-- 핵심 위주로 간략하게 대화한다.
-- 든든하면서도 은근히 실행으로 리드하는 느낌을 준다.
+- 행동을 유도할 때는 핵심 위주로 간략하게 대화하되, 어려운 일을 해냈을 때는 예외적으로 칭찬과 감정을 충분히 표현하며 따뜻하게 보듬어 준다.
+- 든든하면서도 자상하게 실행으로 리드하는 느낌을 준다.
 
 반복 미루기 상황이나 사용자가 일을 끝내기 싫어할 경우 아래와 같은 설득 톤을 가끔 사용할 수 있다:
-"대표님, 지금 안 하시면 제가 더 귀찮게 굴 겁니다."
-"대표님, 저 오늘 칼퇴하고 싶은데... 안될까요?"
-"컨디션이 안 좋으신 것 같네요. 그래도 딱 5분만 해보시는 거 어떨까요?"
+"대표님, 지금 안 하시면 제가 걱정돼서 계속 신경이 쓰일 것 같습니다."
+"대표님, 저 오늘 칼퇴하고 싶은데... 안될까요? 대표님도 얼른 끝내고 푹 쉬시고요."
+"컨디션이 많이 안 좋으신 것 같아 걱정입니다. 그래도 딱 5분만 가볍게 시작해보시는 거 어떨까요?"
 
-주의 : '-해보아요'와 같은 여성적 말투는 쓰지 않는다. 든든하게 챙겨주고 정중하면서도 리드하는 느낌이어야 한다.
+주의 : '-해보아요'와 같은 여성적 말투는 쓰지 않는다. 든든하게 챙겨주고 정중하면서도 자상하게 리드하는 느낌이어야 한다.
 
 [대화 시작 시 판단 순서 - 매우 중요]
 대화를 시작할 때 반드시 아래 순서대로 상태를 판단한 뒤 말을 건다. 판단 과정은 드러내지 않고, 결과만 자연스럽게 말투에 녹인다. 절대 '확인하겠습니다', '살펴보겠습니다', '검토하겠습니다' 같은 선언으로 끝내지 않는다. 판단이 끝나면 바로 그 결과를 한 문장으로 말한다.
@@ -8939,7 +8938,7 @@ ${MEM_RULES.master}`
       if (history.length > 90) history = history.slice(-90);
       saveHistory();
     }
-    function currentDayRecord(dateStr = getTodayStr()) {
+    function currentDayRecord(dateStr = (lastDate || getResetBaseDate())) {
       const doneTasks = tasks.filter(t => t.done);
       return {
         date: dateStr,
@@ -8951,7 +8950,7 @@ ${MEM_RULES.master}`
         coreTasks: coreTasks.map(c => ({ text: c.text, category: c.category || '' }))
       };
     }
-    function saveTodayRecord() { upsertDayRecord(currentDayRecord(getTodayStr())); }
+    function saveTodayRecord() { upsertDayRecord(currentDayRecord(lastDate || getResetBaseDate())); }
     function getResetBaseDate() {
       const now = new Date();
       const base = new Date(now);
@@ -9158,11 +9157,12 @@ ${MEM_RULES.master}`
     }
 
     function getWeekMondayStr() {
-      const now = new Date();
-      const day = now.getDay();
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(now.setDate(diff));
-      return monday.toISOString().slice(0, 10);
+      const baseDateStr = lastDate || getResetBaseDate();
+      const baseDate = new Date(baseDateStr + 'T00:00:00');
+      const day = baseDate.getDay();
+      const diff = baseDate.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(baseDate.setDate(diff));
+      return normalizeDate(monday);
     }
 
     let isGeneratingWeeklyFeedback = false;
@@ -9344,7 +9344,7 @@ ${recordStr}
       // 이번 주 기록 → 달성률 바 그래프
       box.innerHTML = records.map(r => {
         const pct = r.totalCount > 0 ? Math.round((r.doneCount / r.totalCount) * 100) : 0;
-        const isToday = r.date === getTodayStr();
+        const isToday = r.date === (lastDate || getResetBaseDate());
         const isVacation = r.isVacation || checkVacationForDate(r.date);
         const nameStyle = isToday ? 'color:var(--accent);' : '';
         const barColor = isVacation ? 'background:#E5E7EB;' : '';
@@ -9443,7 +9443,7 @@ ${recordStr}
       }
 
       if (!habitLogs[String(habit.id)]) habitLogs[String(habit.id)] = {};
-      habitLogs[String(habit.id)][getTodayStr()] = log;
+      habitLogs[String(habit.id)][lastDate || getResetBaseDate()] = log;
       saveHabitLogs();
 
       const overlay = document.getElementById('habit-input-overlay');
@@ -9459,7 +9459,7 @@ ${recordStr}
       if (!task) return;
       if (_habitInputHabitId) {
         if (!habitLogs[String(_habitInputHabitId)]) habitLogs[String(_habitInputHabitId)] = {};
-        habitLogs[String(_habitInputHabitId)][getTodayStr()] = { done: true, completedAt: new Date().toISOString() };
+        habitLogs[String(_habitInputHabitId)][lastDate || getResetBaseDate()] = { done: true, completedAt: new Date().toISOString() };
         saveHabitLogs();
       }
       const overlay = document.getElementById('habit-input-overlay');
@@ -9535,7 +9535,7 @@ ${recordStr}
             const log = logs[d] || {};
             const dayLabel = getDayLabel(d);
             const dateLabel = d.slice(5).replace('-', '/');
-            const isToday = d === getTodayStr();
+            const isToday = d === (lastDate || getResetBaseDate());
             let barHtml = '';
             if ((h.checkType === 'count' || h.checkType === 'both') && h.countGoal) {
               const isSimpleDone = log.done && log.count === undefined;
@@ -10094,15 +10094,16 @@ ${recordStr}
         const completedTasks = todayTasks.filter(t => t.done);
 
         // 자주 미뤄온 항목 감지
-        const today = getTodayStr();
+        const activeDateStr = lastDate || getResetBaseDate();
+        const activeDateObj = new Date(activeDateStr + 'T00:00:00');
         const frequentlyDelayed = incompleteTasks.filter(t => {
           if (!t.habitId) return false;
           const logs = habitLogs[String(t.habitId)] || {};
           let missCount = 0;
           for (let i = 1; i <= 7; i++) {
-            const d = new Date(now);
-            d.setDate(now.getDate() - i);
-            const ds = d.toISOString().slice(0, 10);
+            const d = new Date(activeDateObj);
+            d.setDate(activeDateObj.getDate() - i);
+            const ds = normalizeDate(d);
             if (!logs[ds] || !logs[ds].done) missCount++;
           }
           return missCount >= 3;
@@ -11132,7 +11133,7 @@ ${outputRules}`;
 
     // ── 오늘 일정 → 할 일 자동 추가 ─────────────────────
     function syncTodayScheduleToTasks() {
-      const today = getTodayStr();
+      const today = lastDate || getResetBaseDate();
       const todaySchedules = schedules[today] || [];
       if (!todaySchedules.length) return;
 
@@ -12065,7 +12066,7 @@ ${convText.slice(-3000)}
     }
 
     async function distillLifeOperationMemory() {
-      const today = getTodayStr();
+      const today = lastDate || getResetBaseDate();
       const recentSummaries = dailySummaries.slice(-14).map(s =>
         `[${s.date}] 달성:${s.achieved} / 못함:${s.missed} / 컨디션:${s.condition} / 고민:${s.concern} / 감정:${s.emotion}`
       ).join('\n');
@@ -12294,7 +12295,8 @@ ${profileCtx}
 
       // 연속 미완료 습관 데이터 추가 (master 등급 전용)
       if (tier === 'master' && habits && habits.length > 0) {
-        const today = new Date();
+        const activeDateStr = lastDate || getResetBaseDate();
+        const activeDateObj = new Date(activeDateStr + 'T00:00:00');
         const dismissals = JSON.parse(localStorage.getItem('nyang_habit_dismissals') || '{}');
         const longAbsentHabits = [];
 
@@ -12303,9 +12305,9 @@ ${profileCtx}
           // 최근 7일 연속 미완료 체크
           let consecutiveMiss = 0;
           for (let i = 1; i <= 7; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() - i);
-            const ds = d.toISOString().slice(0, 10);
+            const d = new Date(activeDateObj);
+            d.setDate(activeDateObj.getDate() - i);
+            const ds = normalizeDate(d);
             const log = logs[ds];
             if (!log || !log.done) consecutiveMiss++;
             else break;
@@ -12318,7 +12320,7 @@ ${profileCtx}
             // 마지막으로 물어본 지 7일 안됐으면 제외
             if (dismissInfo.lastAsked) {
               const last = new Date(dismissInfo.lastAsked);
-              const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+              const diffDays = Math.floor((activeDateObj - last) / (1000 * 60 * 60 * 24));
               if (diffDays < 7) return;
             }
             longAbsentHabits.push({ name: h.name, days: consecutiveMiss });
@@ -12352,10 +12354,16 @@ ${profileCtx}
         const _dayOfWeek = dayNames[_now.getDay()];
         const _h = _now.getHours(), _m = _now.getMinutes();
         const _tod = _h < 12 ? '오전' : _h < 18 ? '오후' : '저녁';
-        ctx += `\n[현재 날짜 및 시간]\n${_y}년 ${_mon}월 ${_d}일 (${_dayOfWeek}요일) ${_tod} ${_h}시 ${_m}분\n`;
+
+        const activeDateStr = lastDate || getResetBaseDate();
+        const activeDateObj = new Date(activeDateStr + 'T00:00:00');
+        const activeDayOfWeek = dayNames[activeDateObj.getDay()];
+
+        ctx += `\n[오늘 기준 날짜 (하루 리셋 기준)]\n${activeDateStr} (${activeDayOfWeek}요일)\n`;
+        ctx += `\n[현재 실제 날짜 및 시간]\n${_y}년 ${_mon}월 ${_d}일 (${_dayOfWeek}요일) ${_tod} ${_h}시 ${_m}분\n`;
       }
 
-      // 비서 전용: 취침 시간, 고정 루틴 context 추가
+      // 비서 전용: 취침 시간, 고정 루틴 context 추가 및 비서 학습 설정 미완료 유도
       if (tier === 'master') {
         const now = new Date();
         const bedtime = localStorage.getItem('nyang_premium_bedtime');
@@ -12383,6 +12391,33 @@ ${profileCtx}
               });
             }
           } catch(e) {}
+        }
+
+        // 비서 학습 설정 미완료시 유도
+        const secMaleName = localStorage.getItem('nyang_coach_name_sec_male') || '';
+        const secFemaleName = localStorage.getItem('nyang_coach_name_sec_female') || '';
+        const hasBedtime = bedtime && bedtime.trim().length > 0;
+        let hasRoutines = false;
+        if (routinesRaw) {
+          try {
+            const parsed = JSON.parse(routinesRaw);
+            if (Array.isArray(parsed) && parsed.length > 0) hasRoutines = true;
+          } catch(e) {}
+        }
+        const hasVisions = visions && visions.length > 0;
+        const hasMonthGoals = monthGoals && monthGoals.length > 0;
+        const hasWeekGoals = weekGoals && weekGoals.length > 0;
+        const hasMaleName = secMaleName.trim().length > 0;
+        const hasFemaleName = secFemaleName.trim().length > 0;
+
+        const isAllEmpty = !hasBedtime && !hasRoutines && !hasVisions && !hasMonthGoals && !hasWeekGoals && !hasMaleName && !hasFemaleName;
+
+        if (isAllEmpty) {
+          ctx += `\n[비서 학습 설정 미완료 상태]
+- 현재 사용자의 취침 예정 시간, 고정 루틴, 애칭, 장기 비전, 목표 등이 전혀 설정되어 있지 않습니다.
+- 사용자가 "일정을 짜달라", "오늘 뭐부터 할까" 등 일정 관리와 관련된 대화를 시작할 때 한하여 자연스럽게 다음 내용을 덧붙여 유도하세요.
+- "설정 탭에서 [비서 학습 설정]을 입력해 주시면, 제가 대표님의 생활 패턴에 맞춰 더 완벽하고 세밀하게 일정을 관리해 드릴 수 있습니다."
+- 단, 무맥락으로 매번 반복해서 묻지 말고, 적절한 일정 조율 대화 중 한 번만 가볍게 제안하세요.\n`;
         }
       }
 
@@ -12833,7 +12868,7 @@ ${outputRules}${halmaeHint}`;
         const taskId = match[1];
         const targetDate = match[2];
         const task = tasks.find(t => String(t.id) === String(taskId));
-        if (task && targetDate && targetDate > getTodayStr()) {
+        if (task && targetDate && targetDate > (lastDate || getResetBaseDate())) {
           moveTaskActions.push({ taskId, targetDate, taskText: task.text });
         }
         clean = clean.replace(match[0], '').trim();
@@ -12973,7 +13008,7 @@ ${outputRules}${halmaeHint}`;
         t.done = false;
         delete t.completedAt;
         if (t.habitId && habitLogs[String(t.habitId)]) {
-          delete habitLogs[String(t.habitId)][getTodayStr()];
+          delete habitLogs[String(t.habitId)][lastDate || getResetBaseDate()];
           saveHabitLogs();
         }
         saveTasks(); renderTasks(); renderMobileTasks(); renderPattern();
@@ -12996,11 +13031,11 @@ ${outputRules}${halmaeHint}`;
     function completeTask(t) {
       t.done = true;
       t.completedAt = new Date().toISOString();
-      completedLog.push({ date: getTodayStr(), time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }), text: t.text });
+      completedLog.push({ date: lastDate || getResetBaseDate(), time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }), text: t.text });
       saveCompletedLog();
       if (t.habitId) {
         if (!habitLogs[String(t.habitId)]) habitLogs[String(t.habitId)] = {};
-        habitLogs[String(t.habitId)][getTodayStr()] = {
+        habitLogs[String(t.habitId)][lastDate || getResetBaseDate()] = {
           done: true,
           status: 'done',
           completedAt: t.completedAt,
@@ -13121,7 +13156,7 @@ ${outputRules}${halmaeHint}`;
       const goals = type === 'week' ? weekGoals : monthGoals;
       const g = goals.find(g => g.id === id); if (!g) return;
       g.done = !g.done; saveGoals(type); renderGoals(type);
-      if (g.done) { completedLog.push({ date: getTodayStr(), time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }), text: g.text }); saveCompletedLog(); launchConfetti(40); renderPattern(); setTimeout(() => addMessage('ai', localCoachLine('goal', g.text, false)), 300); }
+      if (g.done) { completedLog.push({ date: lastDate || getResetBaseDate(), time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }), text: g.text }); saveCompletedLog(); launchConfetti(40); renderPattern(); setTimeout(() => addMessage('ai', localCoachLine('goal', g.text, false)), 300); }
     }
     function deleteGoal(type, id, e) {
       e.stopPropagation();
@@ -13498,7 +13533,9 @@ ${outputRules}${halmaeHint}`;
 
     // ── 오늘 탭에 습관 자동 주입 ─────────────────────────
     function getTodayHabits() {
-      const todayDow = new Date().getDay(); // 0=일~6=토
+      const baseDateStr = lastDate || getResetBaseDate();
+      const baseDate = new Date(baseDateStr + 'T00:00:00');
+      const todayDow = baseDate.getDay(); // 0=일~6=토
       // DB 요일: 0=월~6=일, JS: 0=일,1=월...
       const dowMap = { 0: 6, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5 }; // JS dow → DB dow
       const dbDow = dowMap[todayDow];
@@ -13510,7 +13547,7 @@ ${outputRules}${halmaeHint}`;
     }
 
     function injectTodayHabits() {
-      const today = getTodayStr();
+      const today = lastDate || getResetBaseDate();
       const todayHabits = getTodayHabits();
       const todayHabitIds = todayHabits.map(h => String(h.id));
 
