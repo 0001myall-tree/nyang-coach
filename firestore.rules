@@ -7,16 +7,56 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.email == '0001mynew@naver.com';
     }
 
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin: 전체 읽기 가능
     match /{document=**} {
       allow read: if isAdmin();
     }
 
+    // ── 사용자 데이터 ──
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      
-      match /appData/{document=**} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+
+      // 앱 데이터 (tasks, habits 등)
+      match /data/{document=**} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
+
+      // 기존 appData 경로 (하위호환)
+      match /appData/{document=**} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      // 분석 요약 (analytics_service.dart → users/{uid}/analytics/summary)
+      match /analytics/{document=**} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      // 일별 분석 (analytics_service.dart → users/{uid}/analytics_daily/{dateKey})
+      match /analytics_daily/{document=**} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      // 타임라인 이벤트 (analytics_service.dart → users/{uid}/timeline/)
+      match /timeline/{document=**} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+
+    // ── 전역 analytics 컬렉션 ──
+    // 네이티브 앱이 여기에 DAU, API 비용, 대화 통계를 씁니다
+    match /analytics/{docId} {
+      allow read: if isAdmin();
+      allow write: if isSignedIn();
+    }
+
+    // ── 에러 로그 ──
+    match /error_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn() || true; // 비로그인 에러도 기록 가능
     }
   }
 }
